@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXORIA — نظام مكافحة التسويف</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;500;600;700&family=Tajawal:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #F7DC97;
+            --gold-deep: #C9A030;
+            --gold-dark: #7B5010;
+            --gold-dim: #3a2200;
+            
+            --black: #030302;
+            --black2: #060504;
+            --black3: #0a0908;
+            
+            --body: #b8965a;
+            --muted: #5a3d18;
+            --faint: #2a1e0a;
+            
+            --white-soft: #FFF8E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::selection {
+            background: var(--gold-dark);
+            color: var(--white-soft);
+        }
+
+        body {
+            font-family: 'Scheherazade New', 'Amiri', serif;
+            background: var(--black);
+            color: var(--body);
+            line-height: 2;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            direction: rtl;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--gold);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.4;
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+
+        p {
+            font-size: clamp(1.15rem, 1.5vw, 1.35rem);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            max-width: 75ch;
+            line-height: 2.2;
+        }
+
+        strong {
+            color: var(--gold-deep);
+            font-weight: 700;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            background: linear-gradient(180deg, var(--black) 0%, var(--black2) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, var(--gold-dim) 0%, transparent 70%);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .brand-container {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .brand {
+            font-family: 'Tajawal', sans-serif;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            letter-spacing: 0.5em;
+            color: var(--gold);
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .brand::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, var(--gold-dark) 0%, transparent 70%);
+            opacity: 0.3;
+            filter: blur(20px);
+            z-index: -1;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .brand-shimmer {
+            background: linear-gradient(90deg, 
+                var(--gold-dark) 0%, 
+                var(--gold) 25%, 
+                var(--gold-deep) 50%, 
+                var(--gold) 75%, 
+                var(--gold-dark) 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 8s linear infinite;
+        }
+
+        .hero-title {
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.3s forwards;
+        }
+
+        .hero-subtitle {
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.6s forwards;
+            max-width: 50ch;
+            margin: 0 auto;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: var(--muted);
+            letter-spacing: 0.2em;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 1.2s forwards, sPulse 2s ease-in-out 2s infinite;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .scroll-hint::after {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--gold-dark), transparent);
+            margin: 1rem auto 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Styling */
+        section {
+            padding: 8rem 0;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        section.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-number {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.3em;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to left, var(--gold-dark), transparent);
+            margin: 3rem 0;
+        }
+
+        /* Content Blocks */
+        .content-block {
+            margin-bottom: 3rem;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, var(--black2) 0%, var(--black3) 100%);
+            border-right: 2px solid var(--gold-dark);
+            padding: 2.5rem;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, var(--gold-dim) 0%, transparent 60%);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .insight-box h3 {
+            color: var(--gold-deep);
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-box p {
+            color: var(--body);
+        }
+
+        /* List Styling */
+        .principle-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .principle-list li {
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-right: 3rem;
+        }
+
+        .principle-list li::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0.5rem;
+            width: 8px;
+            height: 8px;
+            background: var(--gold-dark);
+            transform: rotate(45deg);
+        }
+
+        .principle-list strong {
+            display: block;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+        }
+
+        /* Steps */
+        .step {
+            margin-bottom: 3rem;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2rem;
+            align-items: start;
+            direction: rtl;
+        }
+
+        .step-number {
+            font-family: 'Amiri', serif;
+            font-size: 3rem;
+            color: var(--gold-dark);
+            font-weight: 700;
+            line-height: 1;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .step-content h3 {
+            color: var(--gold-deep);
+            font-size: 1.8rem;
+        }
+
+        /* Exercise Cards */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .exercise-card {
+            background: var(--black2);
+            border: 1px solid var(--faint);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to left, var(--gold-dark), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .exercise-card:hover {
+            border-color: var(--gold-dark);
+            transform: translateY(-4px);
+        }
+
+        .exercise-card:hover::before {
+            opacity: 1;
+        }
+
+        .exercise-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* System Framework */
+        .framework-container {
+            background: linear-gradient(135deg, var(--black3) 0%, var(--black2) 100%);
+            padding: 4rem;
+            margin: 3rem 0;
+            position: relative;
+            border: 1px solid var(--faint);
+        }
+
+        .framework-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            right: 20%;
+            left: 20%;
+            height: 1px;
+            background: var(--gold-dark);
+        }
+
+        .framework-container::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: 20%;
+            left: 20%;
+            height: 1px;
+            background: var(--gold-dark);
+        }
+
+        /* Final Section */
+        .final-insight {
+            text-align: center;
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .final-insight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--gold-dark), transparent);
+        }
+
+        .final-quote {
+            font-family: 'Amiri', serif;
+            font-size: clamp(2rem, 3vw, 3.5rem);
+            color: var(--gold);
+            font-weight: 700;
+            line-height: 1.8;
+            max-width: 30ch;
+            margin: 0 auto 3rem;
+        }
+
+        .signature {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.3em;
+            margin-top: 4rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--faint);
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmerText {
+            0% {
+                background-position: 200% center;
+            }
+            100% {
+                background-position: -200% center;
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 0.8;
+                filter: blur(0px);
+            }
+            50% {
+                opacity: 1;
+                filter: blur(1px);
+            }
+        }
+
+        @keyframes sPulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 5rem 0;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .step-number {
+                font-size: 2rem;
+            }
+
+            .framework-container,
+            .insight-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .exercise-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .principle-list li {
+                padding-right: 2rem;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Arabic Number Styling */
+        .arabic-number {
+            font-family: 'Amiri', serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="brand-container">
+            <div class="brand brand-shimmer">VEXORIA</div>
+        </div>
+        <h1 class="hero-title">نظام مكافحة التسويف</h1>
+        <p class="subtitle hero-subtitle">توقف عن تأجيل حياتك. ابنِ نظاماً يجعل العمل تلقائياً.</p>
+        <div class="scroll-hint">ابدأ القراءة</div>
+    </section>
+
+    <!-- Section 1: The Real Problem -->
+    <section id="problem">
+        <div class="container">
+            <div class="section-number">القسم الأول</div>
+            <h2>المشكلة الحقيقية</h2>
+            <div class="section-divider"></div>
+            
+            <div class="content-block">
+                <p>التسويف ليس كسلاً. وليس عيباً في الشخصية. وليس مسألة إرادة.</p>
+                
+                <p>التسويف هو <strong>آلية دفاع نفسية</strong>—نمط من تجنب الانزعاج عبر تأجيل العمل، حتى عندما يخلق هذا التأجيل عواقب أسوأ.</p>
+                
+                <p>كل يوم تؤجل فيه عملاً مهماً، تفقد الزخم. كل مهمة تتجنبها تصبح أثقل. كل هدف تؤجله يبتعد أكثر.</p>
+                
+                <p>الضرر الحقيقي ليس ما تفشل في فعله. الضرر الحقيقي هو ما يفعله التسويف <strong>بثقتك في نفسك</strong>. كل تأجيل يؤكد اعتقاداً: "لا أستطيع الالتزام." هذا الاعتقاد يصبح هويتك.</p>
+            </div>
+
+            <div class="insight-box">
+                <h3>التكلفة الصامتة</h3>
+                <p>التسويف يدمر التقدم بصمت. إنه يخلق فجوة بين من أنت ومن تريد أن تكون. هذه الفجوة تتسع مع كل قرار مؤجل، كل محادثة متجنبة، كل مشروع متأخر.</p>
+                <p>كلما انتظرت أطول، كلما أصبح البدء أصعب. المقاومة تتضاعف. الشعور بالذنب يتراكم. المهمة تكبر في عقلك حتى تبدو مستحيلة.</p>
+            </div>
+
+            <p>لا يمكنك حل التسويف بالتحفيز. التحفيز يتلاشى. لا يمكنك حله بالانضباط وحده. الانضباط ينكسر تحت الضغط.</p>
+            
+            <p>أنت بحاجة إلى <strong>نظام</strong>—نهج منظم يزيل الحواجز النفسية التي تمنعك من البدء.</p>
+        </div>
+    </section>
+
+    <!-- Section 2: Why Humans Procrastinate -->
+    <section id="psychology">
+        <div class="container">
+            <div class="section-number">القسم الثاني</div>
+            <h2>لماذا يسوّف البشر</h2>
+            <div class="section-divider"></div>
+            
+            <p>فهم الأسباب الجذرية للتسويف هو الخطوة الأولى للقضاء عليه. هذه ليست أعذاراً. إنها <strong>حقائق نفسية</strong> يجب الاعتراف بها ومعالجتها.</p>
+
+            <ul class="principle-list">
+                <li>
+                    <strong>الخوف من الفشل</strong>
+                    <p>تتجنب المهام لأن جزءاً منك يخاف من النتيجة. إذا لم تحاول أبداً، فلن تفشل أبداً. هذه الآلية الوقائية تبقيك آمناً من الحكم—لكنها أيضاً تمنعك من التقدم.</p>
+                </li>
+                <li>
+                    <strong>الإرهاق من المهمة</strong>
+                    <p>المهمة تبدو كبيرة جداً، معقدة جداً، غامضة جداً. عقلك لا يستطيع معالجتها، فيرفضها. الإرهاق يثير التجنب. الوضوح يمكّن العمل.</p>
+                </li>
+                <li>
+                    <strong>أهداف غير واضحة</strong>
+                    <p>تؤجل لأنك لا تعرف بالضبط كيف يبدو النجاح. بدون هدف واضح، ليس لعقلك اتجاه. النوايا الغامضة تنتج نتائج غامضة.</p>
+                </li>
+                <li>
+                    <strong>المقاومة العاطفية</strong>
+                    <p>بعض المهام تحمل وزناً عاطفياً—محادثات صعبة، مواجهة الأخطاء، مواجهة عدم اليقين. جهازك العصبي يقاوم الانزعاج. التجنب يبدو أكثر أماناً من المشاركة.</p>
+                </li>
+                <li>
+                    <strong>الإشباع الفوري</strong>
+                    <p>عقلك مصمم لإعطاء الأولوية للمكافآت الفورية على الفوائد المستقبلية. الترفيه، الإلهاء، والراحة متاحة الآن. العائد من العمل المهم بعيد وغير مؤكد.</p>
+                </li>
+            </ul>
+
+            <p>هذه القوى تعمل تحت الوعي. لا يمكنك التغلب عليها بقوة الإرادة وحدها. يجب عليك <strong>تصميم نظام</strong> يأخذها في الاعتبار.</p>
+        </div>
+    </section>
+
+    <!-- Section 3: The Procrastination Loop -->
+    <section id="loop">
+        <div class="container">
+            <div class="section-number">القسم الثالث</div>
+            <h2>دائرة التسويف</h2>
+            <div class="section-divider"></div>
+            
+            <p>التسويف ليس حدثاً واحداً. إنه دورة ذاتية التعزيز تصبح أقوى في كل مرة تكررها.</p>
+
+            <div class="framework-container">
+                <h3 style="text-align: center; margin-bottom: 3rem;">الدورة ذات المراحل الأربع</h3>
+                
+                <div class="step">
+                    <div class="step-number arabic-number">١</div>
+                    <div class="step-content">
+                        <h3>التأجيل</h3>
+                        <p>تواجه مهمة تثير الانزعاج. بدلاً من البدء، تؤجل. تخبر نفسك أنك ستفعلها لاحقاً. تختار بديلاً أكثر راحة.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number arabic-number">٢</div>
+                    <div class="step-content">
+                        <h3>الشعور بالذنب</h3>
+                        <p>تمر الساعات. المهمة تبقى غير منجزة. الشعور بالذنب يبدأ في التراكم. تعلم أنه يجب أن تكون تعمل، لكنك لست كذلك. هذا الذنب يخلق ضوضاء عقلية تمنع التركيز والاستمتاع.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number arabic-number">٣</div>
+                    <div class="step-content">
+                        <h3>الضغط</h3>
+                        <p>مع اقتراب الموعد النهائي، يتكثف الضغط. المهمة تصبح عاجلة. الذعر يحل. تعمل في حالة من القلق، منتجاً نتائج ذات جودة أقل مما أنت قادر عليه.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number arabic-number">٤</div>
+                    <div class="step-content">
+                        <h3>تعزيز التجنب</h3>
+                        <p>تكمل المهمة تحت الضغط، لكن التجربة كانت مؤلمة. عقلك يتعلم: "هذه المهمة تسبب المعاناة." في المرة القادمة التي تواجه فيها شيئاً مشابهاً، تزداد المقاومة. الدورة تتكرر، أقوى من قبل.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p>كسر هذه الدورة يتطلب <strong>تدخلاً في المرحلة الأولى</strong>. يجب عليك منع التأجيل الأولي. بمجرد بدء الدورة، تكتسب زخماً.</p>
+        </div>
+    </section>
+
+    <!-- Section 4: The VEXORIA System -->
+    <section id="system">
+        <div class="container">
+            <div class="section-number">القسم الرابع</div>
+            <h2>نظام VEXORIA</h2>
+            <div class="section-divider"></div>
+            
+            <p>نظام VEXORIA لمكافحة التسويف مبني على مبدأ بسيط: <strong>إزالة الظروف التي تمكّن التأجيل</strong>.</p>
+
+            <p>هذا ليس عن التحفيز. هذا ليس عن الإلهام. هذا عن <strong>الهندسة السلوكية</strong>—خلق بيئة وعملية تجعل العمل هو المسار الأقل مقاومة.</p>
+
+            <div class="insight-box">
+                <h3>الفلسفة الأساسية</h3>
+                <p>عقلك سيختار دائماً الخيار الأسهل المتاح. إذا كان التسويف أسهل من العمل، ستسوّف. إذا كان العمل أسهل من التسويف، ستعمل.</p>
+                <p>النظام يعمل بجعل <strong>البدء بسيطاً</strong>، <strong>الاستمرار تلقائياً</strong>، و<strong>الإنجاز حتمياً</strong>.</p>
+            </div>
+
+            <p>هذا النظام لا يعتمد على الانضباط. لا يتطلب تركيزاً خارقاً. إنه يعمل لأنه <strong>يقلل الاحتكاك</strong> عند كل نقطة قرار.</p>
+
+            <p>النتيجة ليست إنتاجية مثالية. النتيجة هي <strong>حركة أمامية متسقة</strong>—تقدم يتضاعف مع الوقت دون الحاجة لجهد مستمر.</p>
+        </div>
+    </section>
+
+    <!-- Section 5: Core Principles -->
+    <section id="principles">
+        <div class="container">
+            <div class="section-number">القسم الخامس</div>
+            <h2>المبادئ الأساسية</h2>
+            <div class="section-divider"></div>
+            
+            <p>هذه المبادئ تشكل أساس النظام. استوعبها. عد إليها عندما تشعر بالمقاومة.</p>
+
+            <ul class="principle-list">
+                <li>
+                    <strong>الوضوح فوق التحفيز</strong>
+                    <p>إجراء واضح ومحدد أسهل في البدء من هدف غامض. حدد بالضبط ما ستفعله، متى ستفعله، وكيف يبدو الإنجاز. الدقة تزيل التردد.</p>
+                </li>
+                <li>
+                    <strong>الزخم فوق الكمال</strong>
+                    <p>البدء بشكل سيء أفضل من عدم البدء. المسودة الأولى يمكن أن تكون رهيبة. المحاولة الأولى يمكن أن تفشل. ما يهم هو أنك تبدأ. الزخم يُبنى من خلال العمل، وليس التخطيط.</p>
+                </li>
+                <li>
+                    <strong>القيود فوق الخيارات</strong>
+                    <p>الكثير من الخيارات يخلق الشلل. قلل خياراتك. حدد خطوة واحدة واضحة تالية. أزل المسارات البديلة. عندما يكون هناك اتجاه واحد فقط، تصبح الحركة تلقائية.</p>
+                </li>
+                <li>
+                    <strong>الفورية فوق التأجيل</strong>
+                    <p>في اللحظة التي تفكر فيها بفعل شيء مهم، تصرف خلال ٥ ثوانٍ. كلما انتظرت أطول، كلما أصبحت المقاومة أقوى. السرعة تهزم التفكير الزائد.</p>
+                </li>
+                <li>
+                    <strong>العملية فوق النتيجة</strong>
+                    <p>ركز على تنفيذ الخطوة التالية، وليس على تحقيق النتيجة النهائية. لا يمكنك التحكم في النتائج. يمكنك التحكم في الإجراءات. ثق أن التنفيذ المتسق ينتج نتائج مع الوقت.</p>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Section 6: Action Framework -->
+    <section id="framework">
+        <div class="container">
+            <div class="section-number">القسم السادس</div>
+            <h2>إطار العمل</h2>
+            <div class="section-divider"></div>
+            
+            <p>هذا هو المنهج العملي. اتبع هذه الخطوات في كل مرة تواجه فيها مهمة تريد تجنبها.</p>
+
+            <div class="step">
+                <div class="step-number arabic-number">١</div>
+                <div class="step-content">
+                    <h3>حدد أصغر إجراء ممكن</h3>
+                    <p>قسّم المهمة حتى تحدد أصغر خطوة يمكنك اتخاذها الآن. ليس خطوة لمدة ٣٠ دقيقة. خطوة دقيقتين. فتح ملف. كتابة جملة واحدة. إرسال بريد إلكتروني واحد.</p>
+                    <p>كلما كان الإجراء أصغر، كلما قلت المقاومة التي يمكن أن يولدها عقلك. اجعله صغيراً جداً بحيث يبدو الرفض سخيفاً.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number arabic-number">٢</div>
+                <div class="step-content">
+                    <h3>أزل جميع الحواجز</h3>
+                    <p>تخلص من أي شيء يقف بينك وبين البدء. أغلق المشتتات. افتح الأدوات الضرورية. ضع كل ما تحتاجه في متناول اليد. نظف مساحة عملك المادية والرقمية.</p>
+                    <p>كل حاجز، مهما كان صغيراً، يزيد الاحتكاك. الاحتكاك يمكّن التسويف.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number arabic-number">٣</div>
+                <div class="step-content">
+                    <h3>التزم بـ ٥ دقائق</h3>
+                    <p>وعد نفسك أنك ستعمل لمدة ٥ دقائق بالضبط. اضبط مؤقتاً. أخبر نفسك أنك تستطيع التوقف بعد ٥ دقائق إذا أردت.</p>
+                    <p>هذا الالتزام قابل للإدارة نفسياً. ٥ دقائق تبدو آمنة. ما يحدث هو أنه بمجرد أن تبدأ، يتولى الزخم. في معظم الأحيان، ستستمر بعد ٥ دقائق.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number arabic-number">٤</div>
+                <div class="step-content">
+                    <h3>نفّذ فوراً</h3>
+                    <p>لا تفكر. لا تستعد أكثر. لا تنتظر اللحظة المثالية. ابدأ الآن. اتخذ الإجراء الأول. حرك يديك. اكتب الكلمة الأولى. اصنع العلامة الأولى.</p>
+                    <p>التردد هو العدو. العمل يخلق الوضوح. ستكتشف التفاصيل أثناء التقدم.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number arabic-number">٥</div>
+                <div class="step-content">
+                    <h3>اعترف بالتقدم</h3>
+                    <p>عندما تنتهي الـ ٥ دقائق، لاحظ ما أنجزته. حتى لو كان صغيراً. حتى لو كان غير كامل. لقد اتخذت إجراءً. هذا يهم أكثر من النتيجة.</p>
+                    <p>التعرف على التقدم يعزز السلوك. عقلك يتعلم: "البدء ليس صعباً كما كنت أعتقد."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 7: Daily Execution Method -->
+    <section id="daily">
+        <div class="container">
+            <div class="section-number">القسم السابع</div>
+            <h2>منهج التنفيذ اليومي</h2>
+            <div class="section-divider"></div>
+            
+            <p>البنية تمنع التسويف. نظام يومي واضح يزيل إرهاق القرار ويخلق تقدماً تلقائياً.</p>
+
+            <div class="insight-box">
+                <h3>استراتيجية الالتزام المسبق</h3>
+                <p>كل مساء، حدد المهام الثلاث الأكثر أهمية لليوم التالي. اكتبها. كن محدداً. كل مهمة يجب أن يكون لها نتيجة واضحة وتقدير للوقت.</p>
+                <p>هذا الالتزام المسبق يزيل اتخاذ القرار الصباحي. عندما تستيقظ، تعرف بالفعل ما ستفعله. الوضوح يزيل التردد.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>بروتوكول التنفيذ الصباحي</h3>
+                <p>ابدأ يومك بمهمتك الأكثر أهمية. لا تفحص البريد الإلكتروني. لا تتصفح. لا تستهلك. نفّذ أولاً.</p>
+                <p>اعمل على مهمتك الأساسية لمدة <strong>٩٠ دقيقة دون انقطاع</strong>. هذه الفترة من التركيز العميق تنتج قيمة أكثر من الجهد المشتت طوال اليوم.</p>
+                <p>بعد ٩٠ دقيقة، خذ استراحة ١٥ دقيقة. حرك جسمك. ابتعد عن مساحة عملك. دع عقلك يعيد الضبط.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>بنية بعد الظهر</h3>
+                <p>استخدم فترة ما بعد الظهر للمهام التي تتطلب عبئاً معرفياً أقل—الاجتماعات، التواصل، العمل الإداري، التخطيط.</p>
+                <p>تركيز عقلك الأقصى قد استُنفد. اعمل مع هذا الواقع بدلاً من محاربته.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>مراجعة نهاية اليوم</h3>
+                <p>اقضِ ١٠ دقائق في مراجعة ما أنجزته. ليس للحكم على نفسك. للتعلم مما نجح وما لم ينجح.</p>
+                <p>ثم جهّز مهام الغد الثلاث. أغلق عملك. انفصل تماماً.</p>
+            </div>
+
+            <p>هذه البنية تخلق <strong>تقدماً متوقعاً</strong>. تعرف ما تفعله. تعرف متى تفعله. القرارات تُتخذ مسبقاً. التنفيذ يصبح آلياً.</p>
+        </div>
+    </section>
+
+    <!-- Section 8: Practical Exercises -->
+    <section id="exercises">
+        <div class="container">
+            <div class="section-number">القسم الثامن</div>
+            <h2>تمارين عملية</h2>
+            <div class="section-divider"></div>
+            
+            <p>هذه التمارين تدرب عقلك على البدء بشكل أسرع والمقاومة بشكل أقل. مارسها باستمرار.</p>
+
+            <div class="exercise-grid">
+                <div class="exercise-card">
+                    <h3>قاعدة الـ ٥ ثوانٍ</h3>
+                    <p>عندما تفكر في فعل شيء مهم، عد تنازلياً: ٥-٤-٣-٢-١. ثم تحرك. قف جسدياً. افتح المستند. اتخذ الإجراء.</p>
+                    <p>هذا يقطع الحلقة العقلية التي تبني المقاومة. السرعة تهزم التفكير الزائد.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>تفكيك المهام</h3>
+                    <p>خذ مهمة كنت تتجنبها. اكتبها. ثم قسّمها إلى ١٠ خطوات أصغر. ثم قسّم الخطوة الأولى إلى ٥ إجراءات أصغر.</p>
+                    <p>استمر في التقسيم حتى يصبح الإجراء الأول صغيراً جداً بحيث يمكنك فعله في أقل من دقيقتين. ثم افعله.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>تصميم البيئة</h3>
+                    <p>أعد مساحة عملك بحيث يكون البدء سهلاً. احتفظ بأدواتك الأكثر أهمية مرئية ويمكن الوصول إليها. أزل جميع المشتتات من بيئتك المباشرة.</p>
+                    <p>بيئتك يجب أن تجذبك نحو العمل، وليس دفعك نحو التجنب.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>تتبع الإنجاز</h3>
+                    <p>كل يوم، حدد ما إذا كنت قد أكملت مهامك الثلاث ذات الأولوية. استخدم تقويماً بسيطاً أو دفتر ملاحظات. شاهد سلسلتك تنمو.</p>
+                    <p>هذا يخلق مساءلة بصرية. رؤية التقدم تحفز الاستمرار. كسر السلسلة يبدو مكلفاً.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>رسم خريطة المقاومة</h3>
+                    <p>عندما تشعر بالمقاومة تجاه مهمة، اكتب بالضبط ما تخاف منه. ما هي أسوأ نتيجة؟ ما الذي يجعل هذا يبدو غير مريح؟</p>
+                    <p>تسمية الخوف يقلل من قوته. بمجرد أن يصبح مرئياً، يصبح قابلاً للإدارة.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>قاعدة الدقيقتين</h3>
+                    <p>إذا كانت المهمة تستغرق أقل من دقيقتين، افعلها فوراً. لا تأجيل. لا "سأفعلها لاحقاً." تنفيذ فوري.</p>
+                    <p>هذا يزيل تراكم المهام الصغيرة التي تخلق ضغطاً في الخلفية.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 9: Long-Term Discipline -->
+    <section id="discipline">
+        <div class="container">
+            <div class="section-number">القسم التاسع</div>
+            <h2>الانضباط طويل المدى</h2>
+            <div class="section-divider"></div>
+            
+            <p>النظام يعمل فقط إذا أصبح دائماً. الجهد المؤقت ينتج نتائج مؤقتة. التغيير الدائم يتطلب <strong>تثبيت العادات</strong>.</p>
+
+            <div class="content-block">
+                <h3>فترة الدمج لـ ٣٠ يوماً</h3>
+                <p>خلال الـ ٣٠ يوماً الأولى، هدفك الوحيد هو اتباع النظام. ليس لتحقيق نتائج استثنائية. ليس لإكمال مشاريع ضخمة. فقط <strong>تنفيذ العملية</strong> كل يوم.</p>
+                <p>هذه الفترة تدرب جهازك العصبي. الإجراءات تصبح مألوفة. المقاومة تقل. ما كان يتطلب جهداً يصبح تلقائياً.</p>
+            </div>
+
+            <div class="insight-box">
+                <h3>تحول الهوية</h3>
+                <p>أنت لا تحاول التوقف عن التسويف. أنت تصبح شخصاً يتخذ إجراءً فورياً. هذا تحول في الهوية، وليس فقط السلوك.</p>
+                <p>في كل مرة تبدأ مهمة خلال ٥ ثوانٍ، تعزز هذه الهوية الجديدة. كل مهمة ذات أولوية مكتملة هي دليل على من تصبح.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>التعامل مع النكسات</h3>
+                <p>ستكون لديك أيام سيئة. ستؤجل مهام. ستكسر سلسلتك. هذا طبيعي. هذا متوقع.</p>
+                <p>ما يهم ليس الكمال. ما يهم هو <strong>سرعة العودة</strong>. كم بسرعة تعود للمسار بعد الفشل؟</p>
+                <p>الممارسون المهرة يفشلون بنفس القدر الذي يفشل فيه المبتدئون. الفرق هو أنهم يتعافون بشكل أسرع. لا يتركون يوماً فائتاً يصبح أسبوعاً. يعيدون البدء فوراً.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>تحسين النظام</h3>
+                <p>بعد ٣٠ يوماً، قيّم ما ينجح. ما الذي يخلق أكبر مقاومة؟ ما الذي يجعل البدء أسهل؟ اضبط النظام بناءً على بيانات حقيقية من تجربتك.</p>
+                <p>النظام ليس ثابتاً. يتطور بينما تتعلم كيف تعمل بشكل أفضل. التحسين المستمر يخلق تحسناً مستمراً.</p>
+            </div>
+
+            <p>هذا هو كيف تصبح الإجراءات المؤقتة أنماطاً دائمة. التكرار يخلق الموثوقية. الموثوقية تخلق الثقة. الثقة تخلق الثقة بالنفس.</p>
+        </div>
+    </section>
+
+    <!-- Section 10: Final Insight -->
+    <section id="final" class="final-insight reveal">
+        <div class="container">
+            <div class="section-number">القسم العاشر</div>
+            <h2>البصيرة النهائية</h2>
+            <div class="section-divider" style="margin: 3rem auto;"></div>
+            
+            <p class="final-quote">
+                الفرق بين من أنت ومن تريد أن تكون هو ما تفعله
+            </p>
+
+            <p style="max-width: 60ch; margin: 0 auto;">
+                التسويف ليس عيباً. إنه عادة. العادات يمكن تغييرها. الأنظمة يمكن تعلمها. الأنماط يمكن إعادة كتابتها.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                أنت تعرف بالفعل ما تحتاج إلى فعله. المهام واضحة. الأهداف محددة. ما كان مفقوداً هو <strong>طريقة موثوقة للبدء</strong>.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                لديك الآن تلك الطريقة.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                السؤال لم يعد "كيف". السؤال هو "متى".
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                الجواب هو الآن.
+            </p>
+
+            <div class="signature">VEXORIA</div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© ٢٠٢٤ VEXORIA — نظام مكافحة التسويف</p>
+        <p style="margin-top: 1rem; font-size: 0.8rem;">نظام إنتاجية سلوكي فاخر</p>
+    </footer>
+
+    <script>
+        // Reveal sections on scroll
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

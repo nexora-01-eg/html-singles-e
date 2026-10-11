@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Gallery</title>
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --bg-card: #16161a;
+    --bg-card-hover: #1d1d23;
+    --gold: #c9a24b;
+    --gold-soft: #e3c47a;
+    --text: #e8e6e1;
+    --text-dim: #9a968e;
+    --border: #2a2a30;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #121215 0%, var(--bg) 100%);
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  header h1 span { color: var(--text); }
+
+  header p {
+    margin-top: 8px;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+  }
+
+  .search-bar {
+    max-width: 420px;
+    margin: 28px auto 0;
+  }
+
+  .search-bar input {
+    width: 100%;
+    padding: 12px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-bar input:focus { border-color: var(--gold); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 22px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 36px 24px 60px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+    background: var(--bg-card-hover);
+  }
+
+  .thumb {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+    background: #101013;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .thumb.missing {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+  }
+
+  .card-body {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .card-body h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: capitalize;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .btn-view {
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-view:hover {
+    background: var(--gold);
+    color: #111;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    width: min(1000px, 100%);
+    height: min(80vh, 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(201, 162, 75, 0.15);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-header h2 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--gold-soft);
+    text-transform: capitalize;
+  }
+
+  .modal-actions { display: flex; gap: 10px; }
+
+  .modal-actions a,
+  .modal-actions button {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .modal-actions a:hover,
+  .modal-actions button:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .modal iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DEMO <span>GALLERY</span></h1>
+  <p>Browse all samples from the demos folder</p>
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search demos...">
+  </div>
+</header>
+
+<main class="grid" id="grid"></main>
+
+<div class="modal-overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Demo</h2>
+      <div class="modal-actions">
+        <a id="openNew" href="#" target="_blank">Open in new tab ↗</a>
+        <button id="closeBtn">✕ Close</button>
+      </div>
+    </div>
+    <iframe id="modalFrame" src=""></iframe>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // The page automatically checks demos/1.html ... demos/100.html
+  // and skips any number that does not exist. Just drop files in!
+  // Named demos (like law.html) go in the extraDemos list below.
+  // ============================================================
+  const MAX_DEMOS = 3;
+  const extraDemos = [];
+
+  const demos = [];
+  for (let i = 1; i <= MAX_DEMOS; i++) demos.push(String(i));
+  extraDemos.forEach(n => demos.push(n));
+
+  const grid = document.getElementById("grid");
+  const overlay = document.getElementById("overlay");
+  const modalFrame = document.getElementById("modalFrame");
+  const modalTitle = document.getElementById("modalTitle");
+  const openNew = document.getElementById("openNew");
+
+  function makeCard(name) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.name = name.toLowerCase();
+
+    // Existence check: "ok" / "fail" / "unknown" (unknown = opened from
+    // disk, where fetch is blocked — then the screenshot decides instead)
+    let htmlStatus = "pending";
+    let imgStatus = "pending";
+
+    function decide() {
+      if (htmlStatus === "fail") { card.remove(); return; }           // no html -> bypass
+      if (imgStatus === "fail") {
+        if (htmlStatus === "ok") {                                    // html exists, no image
+          const ph = document.createElement("div");
+          ph.className = "thumb missing";
+          ph.textContent = "NO SCREENSHOT";
+          card.replaceChild(ph, img);
+        } else if (htmlStatus === "unknown") {                        // can't verify -> bypass
+          card.remove();
+        }
+      }
+    }
+
+    fetch("demos/" + name + ".html", { method: "HEAD" })
+      .then(r => { htmlStatus = r.ok ? "ok" : "fail"; decide(); })
+      .catch(() => { htmlStatus = "unknown"; decide(); });
+
+    // Screenshot: try .png first, fall back to .jpg
+    const img = document.createElement("img");
+    img.className = "thumb";
+    img.alt = name;
+    img.src = "demos/" + name + ".png";
+    img.onload = function () { imgStatus = "ok"; };
+    img.onerror = function () {
+      if (!img.dataset.triedJpg) {
+        img.dataset.triedJpg = "1";
+        img.src = "demos/" + name + ".jpg";
+      } else {
+        imgStatus = "fail";
+        decide();
+      }
+    };
+    card.appendChild(img);
+
+    const body = document.createElement("div");
+    body.className = "card-body";
+
+    const title = document.createElement("h3");
+    title.textContent = name;
+    body.appendChild(title);
+
+    const btn = document.createElement("button");
+    btn.className = "btn-view";
+    btn.textContent = "View";
+    btn.onclick = () => openModal(name);
+    body.appendChild(btn);
+
+    card.appendChild(body);
+    return card;
+  }
+
+  demos.forEach(name => grid.appendChild(makeCard(name)));
+
+  function openModal(name) {
+    modalTitle.textContent = name;
+    modalFrame.src = "demos/" + name + ".html";
+    openNew.href = "demos/" + name + ".html";
+    overlay.classList.add("open");
+  }
+
+  function closeModal() {
+    overlay.classList.remove("open");
+    modalFrame.src = "";
+  }
+
+  document.getElementById("closeBtn").onclick = closeModal;
+  overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  // Search filter
+  document.getElementById("search").addEventListener("input", function () {
+    const q = this.value.toLowerCase().trim();
+    document.querySelectorAll(".card").forEach(card => {
+      card.style.display = card.dataset.name.includes(q) ? "" : "none";
+    });
+  });
+</script>
+
+</body>
+</html>

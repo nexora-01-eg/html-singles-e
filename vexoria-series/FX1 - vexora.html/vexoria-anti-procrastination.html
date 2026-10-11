@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXORIA — Anti-Procrastination System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #F7DC97;
+            --gold-deep: #C9A030;
+            --gold-dark: #7B5010;
+            --gold-dim: #3a2200;
+            
+            --black: #030302;
+            --black2: #060504;
+            --black3: #0a0908;
+            
+            --body: #b8965a;
+            --muted: #5a3d18;
+            --faint: #2a1e0a;
+            
+            --white-soft: #FFF8E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::selection {
+            background: var(--gold-dark);
+            color: var(--white-soft);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--body);
+            line-height: 1.8;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            color: var(--gold);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            line-height: 1.3;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .subtitle {
+            font-family: 'Libre Baskerville', serif;
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        p {
+            font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+            margin-bottom: 1.5rem;
+            font-weight: 300;
+            max-width: 75ch;
+        }
+
+        strong {
+            color: var(--gold-deep);
+            font-weight: 500;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            background: linear-gradient(180deg, var(--black) 0%, var(--black2) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, var(--gold-dim) 0%, transparent 70%);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .brand-container {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .brand {
+            font-family: 'Libre Baskerville', serif;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            letter-spacing: 0.3em;
+            color: var(--gold);
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .brand::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, var(--gold-dark) 0%, transparent 70%);
+            opacity: 0.3;
+            filter: blur(20px);
+            z-index: -1;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .brand-shimmer {
+            background: linear-gradient(90deg, 
+                var(--gold-dark) 0%, 
+                var(--gold) 25%, 
+                var(--gold-deep) 50%, 
+                var(--gold) 75%, 
+                var(--gold-dark) 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 8s linear infinite;
+        }
+
+        .hero-title {
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.3s forwards;
+        }
+
+        .hero-subtitle {
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.6s forwards;
+            max-width: 50ch;
+            margin: 0 auto;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: var(--muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 1.2s forwards, sPulse 2s ease-in-out 2s infinite;
+        }
+
+        .scroll-hint::after {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--gold-dark), transparent);
+            margin: 1rem auto 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Styling */
+        section {
+            padding: 8rem 0;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        section.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-number {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.85rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to right, var(--gold-dark), transparent);
+            margin: 3rem 0;
+        }
+
+        /* Content Blocks */
+        .content-block {
+            margin-bottom: 3rem;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, var(--black2) 0%, var(--black3) 100%);
+            border-left: 2px solid var(--gold-dark);
+            padding: 2.5rem;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top left, var(--gold-dim) 0%, transparent 60%);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .insight-box h3 {
+            color: var(--gold-deep);
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-box p {
+            color: var(--body);
+        }
+
+        /* List Styling */
+        .principle-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .principle-list li {
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .principle-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 8px;
+            height: 8px;
+            background: var(--gold-dark);
+            transform: rotate(45deg);
+        }
+
+        .principle-list strong {
+            display: block;
+            font-size: 1.3rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 500;
+        }
+
+        /* Steps */
+        .step {
+            margin-bottom: 3rem;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .step-number {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            color: var(--gold-dark);
+            font-weight: 300;
+            line-height: 1;
+            min-width: 60px;
+        }
+
+        .step-content h3 {
+            color: var(--gold-deep);
+            font-size: 1.8rem;
+        }
+
+        /* Exercise Cards */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .exercise-card {
+            background: var(--black2);
+            border: 1px solid var(--faint);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, var(--gold-dark), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .exercise-card:hover {
+            border-color: var(--gold-dark);
+            transform: translateY(-4px);
+        }
+
+        .exercise-card:hover::before {
+            opacity: 1;
+        }
+
+        .exercise-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* System Framework */
+        .framework-container {
+            background: linear-gradient(135deg, var(--black3) 0%, var(--black2) 100%);
+            padding: 4rem;
+            margin: 3rem 0;
+            position: relative;
+            border: 1px solid var(--faint);
+        }
+
+        .framework-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: var(--gold-dark);
+        }
+
+        .framework-container::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: var(--gold-dark);
+        }
+
+        /* Final Section */
+        .final-insight {
+            text-align: center;
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .final-insight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--gold-dark), transparent);
+        }
+
+        .final-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 3vw, 3rem);
+            color: var(--gold);
+            font-weight: 300;
+            line-height: 1.5;
+            max-width: 30ch;
+            margin: 0 auto 3rem;
+            font-style: italic;
+        }
+
+        .signature {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 0.9rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-top: 4rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--faint);
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmerText {
+            0% {
+                background-position: 200% center;
+            }
+            100% {
+                background-position: -200% center;
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 0.8;
+                filter: blur(0px);
+            }
+            50% {
+                opacity: 1;
+                filter: blur(1px);
+            }
+        }
+
+        @keyframes sPulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 5rem 0;
+            }
+
+            .step {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .step-number {
+                font-size: 2rem;
+            }
+
+            .framework-container,
+            .insight-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .exercise-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .principle-list li {
+                padding-left: 2rem;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="brand-container">
+            <div class="brand brand-shimmer">VEXORIA</div>
+        </div>
+        <h1 class="hero-title">Anti-Procrastination<br>System</h1>
+        <p class="subtitle hero-subtitle">Stop delaying your life. Build a system that makes action automatic.</p>
+        <div class="scroll-hint">Scroll to Begin</div>
+    </section>
+
+    <!-- Section 1: The Real Problem -->
+    <section id="problem">
+        <div class="container">
+            <div class="section-number">Section 01</div>
+            <h2>The Real Problem</h2>
+            <div class="section-divider"></div>
+            
+            <div class="content-block">
+                <p>Procrastination is not laziness. It is not a character flaw. It is not a matter of willpower.</p>
+                
+                <p>Procrastination is a <strong>psychological defense mechanism</strong>—a pattern of avoiding discomfort by delaying action, even when that delay creates worse consequences.</p>
+                
+                <p>Every day you delay important work, you lose momentum. Every task you avoid becomes heavier. Every goal you postpone drifts further away.</p>
+                
+                <p>The real damage is not what you fail to do. The real damage is what procrastination does to your <strong>self-trust</strong>. Each delay confirms a belief: "I can't follow through." This belief becomes your identity.</p>
+            </div>
+
+            <div class="insight-box">
+                <h3>The Silent Cost</h3>
+                <p>Procrastination silently destroys progress. It creates a gap between who you are and who you want to become. This gap widens with every postponed decision, every avoided conversation, every delayed project.</p>
+                <p>The longer you wait, the harder it becomes to start. Resistance compounds. Guilt accumulates. The task grows in your mind until it feels insurmountable.</p>
+            </div>
+
+            <p>You cannot solve procrastination with motivation. Motivation fades. You cannot solve it with discipline alone. Discipline breaks under stress.</p>
+            
+            <p>You need a <strong>system</strong>—a structured approach that removes the psychological barriers that keep you from starting.</p>
+        </div>
+    </section>
+
+    <!-- Section 2: Why Humans Procrastinate -->
+    <section id="psychology">
+        <div class="container">
+            <div class="section-number">Section 02</div>
+            <h2>Why Humans Procrastinate</h2>
+            <div class="section-divider"></div>
+            
+            <p>Understanding the root causes of procrastination is the first step to eliminating it. These are not excuses. They are <strong>psychological realities</strong> that must be acknowledged and addressed.</p>
+
+            <ul class="principle-list">
+                <li>
+                    <strong>Fear of Failure</strong>
+                    <p>You avoid tasks because part of you fears the outcome. If you never try, you never fail. This protective mechanism keeps you safe from judgment—but also keeps you from progress.</p>
+                </li>
+                <li>
+                    <strong>Task Overwhelm</strong>
+                    <p>The task feels too large, too complex, too ambiguous. Your brain cannot process it, so it rejects it. Overwhelm triggers avoidance. Clarity enables action.</p>
+                </li>
+                <li>
+                    <strong>Unclear Goals</strong>
+                    <p>You delay because you don't know exactly what success looks like. Without a clear target, your brain has no direction. Vague intentions produce vague results.</p>
+                </li>
+                <li>
+                    <strong>Emotional Resistance</strong>
+                    <p>Some tasks carry emotional weight—difficult conversations, confronting mistakes, facing uncertainty. Your nervous system resists discomfort. Avoidance feels safer than engagement.</p>
+                </li>
+                <li>
+                    <strong>Instant Gratification</strong>
+                    <p>Your brain is wired to prioritize immediate rewards over future benefits. Entertainment, distraction, and comfort are available now. The payoff from important work is distant and uncertain.</p>
+                </li>
+            </ul>
+
+            <p>These forces operate below conscious awareness. You cannot overcome them through willpower alone. You must <strong>design a system</strong> that accounts for them.</p>
+        </div>
+    </section>
+
+    <!-- Section 3: The Procrastination Loop -->
+    <section id="loop">
+        <div class="container">
+            <div class="section-number">Section 03</div>
+            <h2>The Procrastination Loop</h2>
+            <div class="section-divider"></div>
+            
+            <p>Procrastination is not a single event. It is a self-reinforcing cycle that becomes stronger each time you repeat it.</p>
+
+            <div class="framework-container">
+                <h3 style="text-align: center; margin-bottom: 3rem;">The Four-Stage Cycle</h3>
+                
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Delay</h3>
+                        <p>You encounter a task that triggers discomfort. Instead of starting, you delay. You tell yourself you'll do it later. You choose a more comfortable alternative.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Guilt</h3>
+                        <p>Hours pass. The task remains undone. Guilt begins to accumulate. You know you should be working, but you're not. This guilt creates mental noise that prevents focus and enjoyment.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Stress</h3>
+                        <p>As the deadline approaches, stress intensifies. The task becomes urgent. Panic sets in. You work in a state of anxiety, producing lower-quality results than you're capable of.</p>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Avoidance Reinforcement</h3>
+                        <p>You complete the task under pressure, but the experience was painful. Your brain learns: "This task causes suffering." The next time you face something similar, resistance increases. The loop repeats, stronger than before.</p>
+                    </div>
+                </div>
+            </div>
+
+            <p>Breaking this loop requires <strong>intervention at the first stage</strong>. You must prevent the initial delay. Once the cycle begins, it gains momentum.</p>
+        </div>
+    </section>
+
+    <!-- Section 4: The VEXORIA System -->
+    <section id="system">
+        <div class="container">
+            <div class="section-number">Section 04</div>
+            <h2>The VEXORIA System</h2>
+            <div class="section-divider"></div>
+            
+            <p>The VEXORIA Anti-Procrastination System is built on a simple principle: <strong>remove the conditions that enable delay</strong>.</p>
+
+            <p>This is not about motivation. This is not about inspiration. This is about <strong>behavioral architecture</strong>—creating an environment and a process that make action the path of least resistance.</p>
+
+            <div class="insight-box">
+                <h3>Core Philosophy</h3>
+                <p>Your brain will always choose the easiest available option. If procrastination is easier than action, you will procrastinate. If action is easier than procrastination, you will act.</p>
+                <p>The system works by making <strong>starting simple</strong>, <strong>continuation automatic</strong>, and <strong>completion inevitable</strong>.</p>
+            </div>
+
+            <p>This system does not rely on discipline. It does not require superhuman focus. It works because it <strong>reduces friction</strong> at every decision point.</p>
+
+            <p>The result is not perfect productivity. The result is <strong>consistent forward movement</strong>—progress that compounds over time without requiring constant effort.</p>
+        </div>
+    </section>
+
+    <!-- Section 5: Core Principles -->
+    <section id="principles">
+        <div class="container">
+            <div class="section-number">Section 05</div>
+            <h2>The Core Principles</h2>
+            <div class="section-divider"></div>
+            
+            <p>These principles form the foundation of the system. Internalize them. Return to them when you feel resistance.</p>
+
+            <ul class="principle-list">
+                <li>
+                    <strong>Clarity Over Motivation</strong>
+                    <p>A clear, specific action is easier to start than a vague goal. Define exactly what you will do, when you will do it, and what completion looks like. Precision eliminates hesitation.</p>
+                </li>
+                <li>
+                    <strong>Momentum Over Perfection</strong>
+                    <p>Starting poorly is better than not starting. The first draft can be terrible. The first attempt can fail. What matters is that you begin. Momentum builds through action, not planning.</p>
+                </li>
+                <li>
+                    <strong>Constraint Over Options</strong>
+                    <p>Too many choices create paralysis. Limit your options. Define one clear next step. Remove alternative paths. When there is only one direction, movement becomes automatic.</p>
+                </li>
+                <li>
+                    <strong>Immediacy Over Delay</strong>
+                    <p>The moment you think of doing something important, act within 5 seconds. The longer you wait, the stronger the resistance becomes. Speed defeats overthinking.</p>
+                </li>
+                <li>
+                    <strong>Process Over Outcome</strong>
+                    <p>Focus on executing the next step, not achieving the final result. You cannot control outcomes. You can control actions. Trust that consistent execution produces results over time.</p>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Section 6: Action Framework -->
+    <section id="framework">
+        <div class="container">
+            <div class="section-number">Section 06</div>
+            <h2>The Action Framework</h2>
+            <div class="section-divider"></div>
+            
+            <p>This is the practical method. Follow these steps every time you face a task you want to avoid.</p>
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Define the Smallest Possible Action</h3>
+                    <p>Break the task down until you identify the absolute smallest step you can take right now. Not a 30-minute step. A 2-minute step. Opening a file. Writing one sentence. Sending one email.</p>
+                    <p>The smaller the action, the less resistance your brain can generate. Make it so small that refusal feels absurd.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Remove All Barriers</h3>
+                    <p>Eliminate anything that stands between you and starting. Close distractions. Open the necessary tools. Position everything you need within reach. Clear your physical and digital workspace.</p>
+                    <p>Every barrier, no matter how small, increases friction. Friction enables procrastination.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Commit to 5 Minutes</h3>
+                    <p>Promise yourself you will work for exactly 5 minutes. Set a timer. Tell yourself you can stop after 5 minutes if you want to.</p>
+                    <p>This commitment is psychologically manageable. 5 minutes feels safe. What happens is that once you start, momentum takes over. Most of the time, you will continue past 5 minutes.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Execute Immediately</h3>
+                    <p>Do not think. Do not prepare further. Do not wait for the perfect moment. Start now. Take the first action. Move your hands. Type the first word. Make the first mark.</p>
+                    <p>Hesitation is the enemy. Action creates clarity. You will figure out the details as you go.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Acknowledge Progress</h3>
+                    <p>When the 5 minutes end, notice what you accomplished. Even if it's small. Even if it's imperfect. You took action. This matters more than the result.</p>
+                    <p>Recognizing progress reinforces the behavior. Your brain learns: "Starting isn't as hard as I thought."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 7: Daily Execution Method -->
+    <section id="daily">
+        <div class="container">
+            <div class="section-number">Section 07</div>
+            <h2>Daily Execution Method</h2>
+            <div class="section-divider"></div>
+            
+            <p>Structure prevents procrastination. A clear daily system removes decision fatigue and creates automatic progress.</p>
+
+            <div class="insight-box">
+                <h3>The Pre-Commitment Strategy</h3>
+                <p>Every evening, define the three most important tasks for the next day. Write them down. Be specific. Each task should have a clear outcome and a time estimate.</p>
+                <p>This pre-commitment removes morning decision-making. When you wake up, you already know what you're doing. Clarity eliminates hesitation.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>Morning Execution Protocol</h3>
+                <p>Start your day with your most important task. Do not check email. Do not browse. Do not consume. Execute first.</p>
+                <p>Work on your primary task for <strong>90 minutes without interruption</strong>. This period of deep focus produces more value than scattered effort throughout the day.</p>
+                <p>After 90 minutes, take a 15-minute break. Move your body. Step away from your workspace. Let your mind reset.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>Afternoon Structure</h3>
+                <p>Use the afternoon for tasks that require less cognitive load—meetings, communication, administrative work, planning.</p>
+                <p>Your brain's peak focus has been depleted. Work with this reality instead of fighting it.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>End-of-Day Review</h3>
+                <p>Spend 10 minutes reviewing what you accomplished. Not to judge yourself. To learn what worked and what didn't.</p>
+                <p>Then prepare tomorrow's three tasks. Close your work. Disconnect completely.</p>
+            </div>
+
+            <p>This structure creates <strong>predictable progress</strong>. You know what you're doing. You know when you're doing it. Decisions are made in advance. Execution becomes mechanical.</p>
+        </div>
+    </section>
+
+    <!-- Section 8: Practical Exercises -->
+    <section id="exercises">
+        <div class="container">
+            <div class="section-number">Section 08</div>
+            <h2>Practical Exercises</h2>
+            <div class="section-divider"></div>
+            
+            <p>These exercises train your brain to start faster and resist less. Practice them consistently.</p>
+
+            <div class="exercise-grid">
+                <div class="exercise-card">
+                    <h3>The 5-Second Rule</h3>
+                    <p>When you think of doing something important, count backwards: 5-4-3-2-1. Then move. Physically stand up. Open the document. Take the action.</p>
+                    <p>This interrupts the mental loop that builds resistance. Speed defeats overthinking.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>Task Decomposition</h3>
+                    <p>Take a task you've been avoiding. Write it down. Then break it into 10 smaller steps. Then break the first step into 5 even smaller actions.</p>
+                    <p>Keep breaking it down until the first action is so small you can do it in less than 2 minutes. Then do it.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>Environment Design</h3>
+                    <p>Set up your workspace so that starting is effortless. Keep your most important tools visible and accessible. Remove all distractions from your immediate environment.</p>
+                    <p>Your environment should pull you toward action, not push you toward avoidance.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>Completion Tracking</h3>
+                    <p>Every day, mark whether you completed your three priority tasks. Use a simple calendar or notebook. See your streak grow.</p>
+                    <p>This creates visual accountability. Seeing progress motivates continuation. Breaking a streak feels costly.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>Resistance Mapping</h3>
+                    <p>When you feel resistance to a task, write down exactly what you're afraid of. What's the worst outcome? What's making this feel uncomfortable?</p>
+                    <p>Naming the fear reduces its power. Once visible, it becomes manageable.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <h3>The 2-Minute Rule</h3>
+                    <p>If a task takes less than 2 minutes, do it immediately. No delay. No "I'll do it later." Immediate execution.</p>
+                    <p>This eliminates the mental backlog of small tasks that create background stress.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 9: Long-Term Discipline -->
+    <section id="discipline">
+        <div class="container">
+            <div class="section-number">Section 09</div>
+            <h2>Long-Term Discipline</h2>
+            <div class="section-divider"></div>
+            
+            <p>A system only works if it becomes permanent. Temporary effort produces temporary results. Lasting change requires <strong>habit installation</strong>.</p>
+
+            <div class="content-block">
+                <h3>The 30-Day Integration Period</h3>
+                <p>For the first 30 days, your only goal is to follow the system. Not to achieve extraordinary results. Not to complete massive projects. Just to <strong>execute the process</strong> every single day.</p>
+                <p>This period trains your nervous system. The actions become familiar. Resistance decreases. What once required effort becomes automatic.</p>
+            </div>
+
+            <div class="insight-box">
+                <h3>Identity Shift</h3>
+                <p>You are not trying to stop procrastinating. You are becoming someone who takes action immediately. This is a shift in identity, not just behavior.</p>
+                <p>Every time you start a task within 5 seconds, you reinforce this new identity. Every completed priority task is evidence of who you are becoming.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>Handling Setbacks</h3>
+                <p>You will have bad days. You will delay tasks. You will break your streak. This is normal. This is expected.</p>
+                <p>What matters is not perfection. What matters is <strong>return speed</strong>. How quickly do you get back on track after a failure?</p>
+                <p>Skilled practitioners fail just as often as beginners. The difference is they recover faster. They don't let one missed day become a week. They restart immediately.</p>
+            </div>
+
+            <div class="content-block">
+                <h3>System Refinement</h3>
+                <p>After 30 days, evaluate what's working. What creates the most resistance? What makes starting easier? Adjust the system based on real data from your experience.</p>
+                <p>The system is not fixed. It evolves as you learn how you work best. Continuous refinement creates continuous improvement.</p>
+            </div>
+
+            <p>This is how temporary actions become permanent patterns. Repetition creates reliability. Reliability creates trust. Trust creates confidence.</p>
+        </div>
+    </section>
+
+    <!-- Section 10: Final Insight -->
+    <section id="final" class="final-insight reveal">
+        <div class="container">
+            <div class="section-number">Section 10</div>
+            <h2>Final Insight</h2>
+            <div class="section-divider" style="margin: 3rem auto;"></div>
+            
+            <p class="final-quote">
+                "The difference between who you are and who you want to be is what you do."
+            </p>
+
+            <p style="max-width: 60ch; margin: 0 auto;">
+                Procrastination is not a flaw. It is a habit. Habits can be changed. Systems can be learned. Patterns can be rewritten.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                You already know what you need to do. The tasks are clear. The goals are defined. What has been missing is <strong>a reliable method for starting</strong>.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                You now have that method.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                The question is no longer "how." The question is "when."
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                The answer is now.
+            </p>
+
+            <div class="signature">VEXORIA</div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2024 VEXORIA — Anti-Procrastination System</p>
+        <p style="margin-top: 1rem; font-size: 0.8rem;">A Premium Behavioral Productivity System</p>
+    </footer>
+
+    <script>
+        // Reveal sections on scroll
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Smooth scroll for internal links (if any are added)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

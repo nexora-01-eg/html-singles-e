@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VEXORIA — نظام فك شفرة السلوك البشري</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;500;600;700&family=Tajawal:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #F7DC97;
+            --gold-deep: #C9A030;
+            --gold-dark: #7B5010;
+            --gold-dim: #3a2200;
+            
+            --black: #030302;
+            --black2: #060504;
+            --black3: #0a0908;
+            
+            --body: #b8965a;
+            --muted: #5a3d18;
+            --faint: #2a1e0a;
+            
+            --white-soft: #FFF8E0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::selection {
+            background: var(--gold-dark);
+            color: var(--white-soft);
+        }
+
+        body {
+            font-family: 'Scheherazade New', 'Amiri', serif;
+            background: var(--black);
+            color: var(--body);
+            line-height: 2;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            direction: rtl;
+        }
+
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--gold);
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6.5rem);
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.4;
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+        }
+
+        p {
+            font-size: clamp(1.15rem, 1.5vw, 1.35rem);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            max-width: 75ch;
+            line-height: 2.2;
+        }
+
+        strong {
+            color: var(--gold-deep);
+            font-weight: 700;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            background: linear-gradient(180deg, var(--black) 0%, var(--black2) 100%);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, var(--gold-dim) 0%, transparent 70%);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .brand-container {
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .brand {
+            font-family: 'Tajawal', sans-serif;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            letter-spacing: 0.5em;
+            color: var(--gold);
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .brand::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, var(--gold-dark) 0%, transparent 70%);
+            opacity: 0.3;
+            filter: blur(20px);
+            z-index: -1;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .brand-shimmer {
+            background: linear-gradient(90deg, 
+                var(--gold-dark) 0%, 
+                var(--gold) 25%, 
+                var(--gold-deep) 50%, 
+                var(--gold) 75%, 
+                var(--gold-dark) 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 8s linear infinite;
+        }
+
+        .hero-title {
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.3s forwards;
+        }
+
+        .hero-subtitle {
+            opacity: 0;
+            animation: fadeUp 1s ease-out 0.6s forwards;
+            max-width: 50ch;
+            margin: 0 auto;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.9rem;
+            color: var(--muted);
+            letter-spacing: 0.2em;
+            opacity: 0;
+            animation: fadeUp 1s ease-out 1.2s forwards, sPulse 2s ease-in-out 2s infinite;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .scroll-hint::after {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--gold-dark), transparent);
+            margin: 1rem auto 0;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Styling */
+        section {
+            padding: 8rem 0;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        section.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-number {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.3em;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .section-divider {
+            width: 60px;
+            height: 1px;
+            background: linear-gradient(to left, var(--gold-dark), transparent);
+            margin: 3rem 0;
+        }
+
+        /* Content Blocks */
+        .content-block {
+            margin-bottom: 3rem;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, var(--black2) 0%, var(--black3) 100%);
+            border-right: 2px solid var(--gold-dark);
+            padding: 2.5rem;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, var(--gold-dim) 0%, transparent 60%);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .insight-box h3 {
+            color: var(--gold-deep);
+            margin-bottom: 1.5rem;
+        }
+
+        .insight-box p {
+            color: var(--body);
+        }
+
+        /* List Styling */
+        .behavior-list {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .behavior-list li {
+            margin-bottom: 2.5rem;
+            position: relative;
+            padding-right: 3rem;
+        }
+
+        .behavior-list li::before {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0.5rem;
+            width: 8px;
+            height: 8px;
+            background: var(--gold-dark);
+            transform: rotate(45deg);
+        }
+
+        .behavior-list strong {
+            display: block;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+        }
+
+        /* Pattern Cards */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .pattern-card {
+            background: var(--black2);
+            border: 1px solid var(--faint);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pattern-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to left, var(--gold-dark), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .pattern-card:hover {
+            border-color: var(--gold-dark);
+            transform: translateY(-4px);
+        }
+
+        .pattern-card:hover::before {
+            opacity: 1;
+        }
+
+        .pattern-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Signal Indicators */
+        .signal-container {
+            background: linear-gradient(135deg, var(--black3) 0%, var(--black2) 100%);
+            padding: 3rem;
+            margin: 3rem 0;
+            position: relative;
+            border: 1px solid var(--faint);
+        }
+
+        .signal-container::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            right: 20%;
+            left: 20%;
+            height: 1px;
+            background: var(--gold-dark);
+        }
+
+        .signal-item {
+            margin-bottom: 2.5rem;
+            padding-right: 2rem;
+            position: relative;
+        }
+
+        .signal-item::before {
+            content: '◆';
+            position: absolute;
+            right: 0;
+            top: 0;
+            color: var(--gold-dark);
+            font-size: 0.8rem;
+        }
+
+        /* Manipulation Warning Box */
+        .warning-box {
+            background: linear-gradient(135deg, rgba(123, 80, 16, 0.1) 0%, rgba(10, 9, 8, 0.9) 100%);
+            border: 1px solid var(--gold-dark);
+            border-right: 3px solid var(--gold-dark);
+            padding: 2.5rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .warning-box::before {
+            content: '⚠';
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 1.5rem;
+            color: var(--gold);
+            opacity: 0.3;
+        }
+
+        /* Exercise Cards */
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .exercise-card {
+            background: var(--black2);
+            border: 1px solid var(--faint);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to left, var(--gold-dark), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .exercise-card:hover {
+            border-color: var(--gold-dark);
+            transform: translateY(-4px);
+        }
+
+        .exercise-card:hover::before {
+            opacity: 1;
+        }
+
+        .exercise-number {
+            font-family: 'Amiri', serif;
+            font-size: 2.5rem;
+            color: var(--gold-dark);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Final Section */
+        .final-insight {
+            text-align: center;
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .final-insight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--gold-dark), transparent);
+        }
+
+        .final-quote {
+            font-family: 'Amiri', serif;
+            font-size: clamp(2rem, 3vw, 3.5rem);
+            color: var(--gold);
+            font-weight: 700;
+            line-height: 1.8;
+            max-width: 30ch;
+            margin: 0 auto 3rem;
+        }
+
+        .signature {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gold-dark);
+            letter-spacing: 0.3em;
+            margin-top: 4rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--faint);
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmerText {
+            0% {
+                background-position: 200% center;
+            }
+            100% {
+                background-position: -200% center;
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 0.8;
+                filter: blur(0px);
+            }
+            50% {
+                opacity: 1;
+                filter: blur(1px);
+            }
+        }
+
+        @keyframes sPulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section {
+                padding: 5rem 0;
+            }
+
+            .signal-container,
+            .insight-box,
+            .warning-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .pattern-grid,
+            .exercise-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .behavior-list li {
+                padding-right: 2rem;
+            }
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain-overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="brand-container">
+            <div class="brand brand-shimmer">VEXORIA</div>
+        </div>
+        <h1 class="hero-title">نظام فك شفرة<br>السلوك البشري</h1>
+        <p class="subtitle hero-subtitle">معظم الناس يرون الأفعال. قليلون يفهمون الأسباب وراءها.</p>
+        <div class="scroll-hint">ابدأ القراءة</div>
+    </section>
+
+    <!-- Section 1: Why Humans Are Hard to Understand -->
+    <section id="complexity">
+        <div class="container">
+            <div class="section-number">القسم الأول</div>
+            <h2>لماذا يصعب فهم البشر</h2>
+            <div class="section-divider"></div>
+            
+            <div class="content-block">
+                <p>السلوك البشري ليس عشوائياً. لكنه يبدو كذلك.</p>
+                
+                <p>الناس يتصرفون بطرق تبدو متناقضة. يقولون شيئاً ويفعلون عكسه. يظهرون عاطفة ويخفون أخرى. يدعون نوايا ويخفون دوافع مختلفة تماماً.</p>
+                
+                <p>هذا ليس لأنهم يكذبون بالضرورة. إنه لأن <strong>معظم السلوك البشري يُقاد من تحت الوعي</strong>.</p>
+            </div>
+
+            <div class="insight-box">
+                <h3>الطبقات الخفية</h3>
+                <p>كل فعل بشري له ثلاث طبقات:</p>
+                <p><strong>السطح</strong> — ما يقولونه أو يفعلونه علناً.</p>
+                <p><strong>الوسط</strong> — ما يعتقدون أنهم يشعرون به.</p>
+                <p><strong>العمق</strong> — الدافع النفسي الحقيقي الذي يحرك السلوك.</p>
+                <p>معظم الناس لا يصلون أبداً إلى الطبقة الثالثة. إنهم يحكمون فقط على السطح ويخطئون في التفسير.</p>
+            </div>
+
+            <p>البشر معقدون لأنهم يعملون على مستويات متعددة في وقت واحد. إنهم يديرون <strong>الصورة الذاتية، والقبول الاجتماعي، والاحتياجات العاطفية، وآليات الدفاع</strong>—كلها في نفس الوقت.</p>
+            
+            <p>فهم شخص ما يعني فهم ليس فقط ما يفعلونه، بل <strong>لماذا يحتاجون لفعل ذلك</strong>.</p>
+        </div>
+    </section>
+
+    <!-- Section 2: Hidden Drivers of Behavior -->
+    <section id="drivers">
+        <div class="container">
+            <div class="section-number">القسم الثاني</div>
+            <h2>المحركات الخفية للسلوك</h2>
+            <div class="section-divider"></div>
+            
+            <p>السلوك ليس عشوائياً. إنه يُقاد بقوى نفسية يمكن التنبؤ بها. فهم هذه القوى يكشف الأنماط.</p>
+
+            <ul class="behavior-list">
+                <li>
+                    <strong>العواطف</strong>
+                    <p>العاطفة تسبق المنطق. الناس يشعرون أولاً، ثم يبررون لاحقاً. معظم القرارات عاطفية بعمق، حتى عندما تبدو عقلانية. الخوف، الرغبة، الغضب، الخجل—هذه تشكل الأفعال أكثر من التفكير الواعي.</p>
+                </li>
+                <li>
+                    <strong>المخاوف</strong>
+                    <p>الخوف من الرفض. الخوف من الفشل. الخوف من الحكم. الخوف من الخسارة. الخوف يحرك سلوكاً دفاعياً—التجنب، الإنكار، العدوانية، الخضوع. الناس نادراً ما يعترفون بمخاوفهم، لكن أفعالهم تكشفها.</p>
+                </li>
+                <li>
+                    <strong>الرغبات</strong>
+                    <p>البشر يسعون وراء ما يريدون، حتى عندما يدعون أنهم لا يفعلون ذلك. الرغبة في الحب، القوة، الأمان، التحقق، المتعة—هذه تحرك السلوك بقوة. السلوك الذي يبدو غير منطقي غالباً ما يكون محاولة لتلبية رغبة غير معلنة.</p>
+                </li>
+                <li>
+                    <strong>الضغط الاجتماعي</strong>
+                    <p>البشر حيوانات اجتماعية. إنهم يتشكلون من خلال توقعات المجموعة، والأعراف الثقافية، والهوية القبلية. الناس غالباً ما يتصرفون ليس وفقاً لقناعاتهم، بل وفقاً لما يعتقدون أن قبيلتهم الاجتماعية تتوقعه.</p>
+                </li>
+                <li>
+                    <strong>السعي وراء المكانة</strong>
+                    <p>المكانة هي عملة اجتماعية. الناس يتنافسون باستمرار على الاحترام، الاعتراف، التفوق. حتى الأفعال المتواضعة ظاهرياً يمكن أن تكون استراتيجيات مكانة. فهم دوافع المكانة يكشف الكثير عن السلوك.</p>
+                </li>
+            </ul>
+
+            <p>هذه القوى تعمل في كل إنسان. إنها ليست عيوباً. إنها <strong>الهندسة النفسية للطبيعة البشرية</strong>.</p>
+        </div>
+    </section>
+
+    <!-- Section 3: Behavioral Patterns -->
+    <section id="patterns">
+        <div class="container">
+            <div class="section-number">القسم الثالث</div>
+            <h2>الأنماط السلوكية</h2>
+            <div class="section-divider"></div>
+            
+            <p>البشر ليسوا لا يمكن التنبؤ بهم كما يظنون. إنهم يكررون أنماطاً. التعرف على هذه الأنماط يكشف الشخصية.</p>
+
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h3>نمط التجنب</h3>
+                    <p>الناس الذين يتجنبون الصراع، المحادثات الصعبة، أو المواجهة باستمرار يكشفون عن <strong>خوف من الرفض أو عدم الاستحقاق</strong>. إنهم يختارون السلام قصير المدى على الحل طويل المدى.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>نمط السيطرة</h3>
+                    <p>أولئك الذين يحتاجون للسيطرة على البيئات، المحادثات، أو الأشخاص الآخرين يكشفون عن <strong>القلق والخوف من عدم اليقين</strong>. التحكم هو محاولة لإدارة الخوف الداخلي.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>نمط البحث عن التحقق</h3>
+                    <p>الناس الذين يبحثون باستمرار عن الموافقة، الثناء، أو الاعتراف يكشفون عن <strong>احترام ذات منخفض أو هوية غير مؤمنة</strong>. إنهم يعتمدون على مصادر خارجية للقيمة.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>نمط التضحية بالنفس</h3>
+                    <p>أولئك الذين يضحون بالنفس باستمرار—يضعون الآخرين أولاً، يتجاهلون احتياجاتهم الخاصة—غالباً ما يستخدمون ذلك كـ<strong>استراتيجية مكانة أو آلية للتعامل مع الشعور بالذنب</strong>.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>نمط الدفاع المسبق</h3>
+                    <p>الناس الذين يبررون، يشرحون، أو يدافعون عن أنفسهم قبل الاتهام يكشفون عن <strong>خجل داخلي أو إدراك بالخطأ</strong>. الدفاع هو محاولة للحماية من الحكم المتوقع.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>نمط الإسقاط</h3>
+                    <p>أولئك الذين يتهمون الآخرين بصفات يمتلكونها بأنفسهم غالباً ما <strong>يُسقطون مخاوفهم أو عيوبهم</strong>. الإسقاط يكشف عن الصراع الداخلي غير المعترف به.</p>
+                </div>
+            </div>
+
+            <p>الأنماط تكرر نفسها لأنها تخدم وظائف نفسية. الناس يتمسكون بالسلوكيات التي <strong>تحميهم، حتى عندما تؤذيهم</strong>.</p>
+        </div>
+    </section>
+
+    <!-- Section 4: Reading People -->
+    <section id="reading">
+        <div class="container">
+            <div class="section-number">القسم الرابع</div>
+            <h2>قراءة الناس</h2>
+            <div class="section-divider"></div>
+            
+            <p>قراءة الناس ليست سحراً. إنها ملاحظة منضبطة. انتبه لـ<strong>التناقضات، التكرارات، والردود الفعل</strong>.</p>
+
+            <div class="signal-container">
+                <h3 style="margin-bottom: 2rem;">ما يجب ملاحظته</h3>
+                
+                <div class="signal-item">
+                    <h3>التناقض بين الكلمات والأفعال</h3>
+                    <p>عندما يقول شخص ما شيئاً لكن يفعل العكس، صدق الفعل. السلوك يكشف النية الحقيقية. الكلمات يمكن أن تُدار؛ الأفعال تكشف الحقيقة.</p>
+                </div>
+
+                <div class="signal-item">
+                    <h3>الأنماط المتكررة</h3>
+                    <p>الناس يفعلون نفس الشيء مراراً وتكراراً. إذا تكرر السلوك، فهو ليس صدفة—إنه نمط. الأنماط تكشف الشخصية الأساسية.</p>
+                </div>
+
+                <div class="signal-item">
+                    <h3>ردود الفعل تحت الضغط</h3>
+                    <p>الشخصية الحقيقية تظهر تحت الضغط. راقب كيف يتصرف الناس عندما يكونون قلقين، غاضبين، أو متحدين. الضغط يكشف الطبيعة الحقيقية.</p>
+                </div>
+
+                <div class="signal-item">
+                    <h3>ما يتجنبونه</h3>
+                    <p>ما لا يتحدث عنه الناس، يتجنبونه، أو يتفاعلون معه بشكل دفاعي غالباً ما يكون حيث يكمن الضعف أو الخوف. التجنب يشير إلى الحساسية.</p>
+                </div>
+
+                <div class="signal-item">
+                    <h3>مستويات الاتساق</h3>
+                    <p>الأشخاص المتسقون عبر السياقات المختلفة عادة ما يكونون أصيلين. أولئك الذين يتغيرون بشكل جذري بناءً على من هم معه غالباً ما <strong>يديرون الصورة بدلاً من التعبير عن الذات</strong>.</p>
+                </div>
+
+                <div class="signal-item">
+                    <h3>السرعة في إصدار الأحكام</h3>
+                    <p>الناس الذين يحكمون على الآخرين بسرعة غالباً ما يكشفون عن <strong>انعدام أمنهم الخاص</strong>. الحكم هو آلية دفاع—رفع الذات من خلال خفض الآخرين.</p>
+                </div>
+            </div>
+
+            <p>الملاحظة تتطلب الصبر. لا تتسرع في الاستنتاج. راقب مع الوقت. <strong>السلوك المتسق أكثر إفادة من الحوادث المعزولة</strong>.</p>
+        </div>
+    </section>
+
+    <!-- Section 5: Emotional Signals -->
+    <section id="emotions">
+        <div class="container">
+            <div class="section-number">القسم الخامس</div>
+            <h2>الإشارات العاطفية</h2>
+            <div class="section-divider"></div>
+            
+            <p>العواطف تحرك القرارات أكثر من المنطق. فهم الحالة العاطفية لشخص ما يفسر سلوكه.</p>
+
+            <div class="insight-box">
+                <h3>العواطف كبيانات</h3>
+                <p>العواطف ليست عشوائية. إنها ردود فعل على التهديدات المدركة، الفرص، أو الاحتياجات غير الملباة. كل عاطفة تحمل معلومات حول ما يحدث داخلياً لشخص ما.</p>
+            </div>
+
+            <ul class="behavior-list">
+                <li>
+                    <strong>الغضب</strong>
+                    <p>الغضب عادة ما يخفي الخوف أو الجرح. عندما يتفاعل شخص ما بغضب، اسأل: ما الذي يُهدد؟ ما الذي يُجرح؟ الغضب هو آلية دفاع.</p>
+                </li>
+                <li>
+                    <strong>القلق</strong>
+                    <p>القلق يكشف عن <strong>الحاجة للسيطرة أو الخوف من عدم اليقين</strong>. الأشخاص القلقون يتصرفون للحد من التهديد المتصور—حتى عندما لا يكون هناك تهديد حقيقي.</p>
+                </li>
+                <li>
+                    <strong>الخجل</strong>
+                    <p>الخجل يحرك الانسحاب والدفاع وإخفاء الذات. عندما يختبر الناس الخجل، إنهم يحمون أنفسهم—من خلال الإنكار، الإسقاط، أو العدوانية.</p>
+                </li>
+                <li>
+                    <strong>الحسد</strong>
+                    <p>الحسد يظهر عندما يريد شخص ما ما يملكه الآخرون. إنه يحرك المقارنة، الاستياء، والتقليل من شأن الآخرين. الحسد يكشف عن عدم الرضا عن الذات.</p>
+                </li>
+                <li>
+                    <strong>الفرح الحقيقي</strong>
+                    <p>الفرح الأصيل نادر. معظم "السعادة" الاجتماعية هي أداء. الفرح الحقيقي يأتي من الإنجاز، الاتصال، أو المعنى—ليس من التحقق الخارجي.</p>
+                </li>
+            </ul>
+
+            <p>العواطف تكشف الاحتياجات. عندما تفهم ما يحتاجه شخص ما عاطفياً، تفهم سلوكه.</p>
+        </div>
+    </section>
+
+    <!-- Section 6: Hidden Motives -->
+    <section id="motives">
+        <div class="container">
+            <div class="section-number">القسم السادس</div>
+            <h2>الدوافع الخفية</h2>
+            <div class="section-divider"></div>
+            
+            <p>معظم الناس لا يكشفون عن دوافعهم الحقيقية—حتى لأنفسهم. الدوافع تعمل تحت الوعي.</p>
+
+            <div class="content-block">
+                <h3>السؤال الأساسي</h3>
+                <p>لفهم دافع شخص ما، اسأل: <strong>"ما الذي يستفيده هذا الشخص من هذا السلوك؟"</strong></p>
+                <p>كل سلوك يخدم غرضاً. حتى السلوك المدمر ذاتياً يلبي حاجة نفسية—التحقق، التحكم، التجنب، الحماية، المكانة.</p>
+            </div>
+
+            <div class="insight-box">
+                <h3>الدوافع الشائعة الخفية</h3>
+                <p><strong>حماية الأنا:</strong> الناس يحمون صورتهم الذاتية. السلوك الذي يحافظ على احترام الذات—حتى من خلال الإنكار أو اللوم—شائع جداً.</p>
+                <p><strong>تجنب الألم العاطفي:</strong> البشر يفعلون الكثير لتجنب الانزعاج. التسويف، التجنب، الإنكار—كلها استراتيجيات للهروب من الألم العاطفي.</p>
+                <p><strong>اكتساب المكانة:</strong> حتى السلوكيات المتواضعة يمكن أن تكون مناورات مكانة. المساعدة، الشكوى، التفاخر، التقليل من الشأن—كلها يمكن أن تكون استراتيجيات لزيادة المكانة الاجتماعية.</p>
+                <p><strong>تأكيد المعتقدات:</strong> الناس يتصرفون بطرق تؤكد ما يعتقدونه بالفعل. الدوافع الخفية غالباً ما تتعلق بتعزيز السرد الذاتي الموجود.</p>
+            </div>
+
+            <p>الدوافع الخفية ليست بالضرورة شريرة. إنها <strong>آليات بقاء نفسية</strong>. فهمها يساعدك على رؤية ما وراء السطح.</p>
+        </div>
+    </section>
+
+    <!-- Section 7: Manipulation Awareness -->
+    <section id="manipulation">
+        <div class="container">
+            <div class="section-number">القسم السابع</div>
+            <h2>الوعي بالتلاعب</h2>
+            <div class="section-divider"></div>
+            
+            <p>التلاعب هو التأثير المتعمد الذي يخدم مصلحة المتلاعب على حساب الآخرين. التعرف عليه يحمي من الاستغلال.</p>
+
+            <div class="warning-box">
+                <h3>تكتيكات التلاعب الشائعة</h3>
+                
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem;">الإضاءة الغازية</h3>
+                    <p>جعلك تشكك في إدراكك، ذاكرتك، أو عقلانيتك. المتلاعب ينكر الواقع، يعيد كتابة التاريخ، أو يجعلك تشعر بالجنون لتساؤلك.</p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem;">الشعور بالذنب</h3>
+                    <p>جعلك تشعر بالمسؤولية عن مشاعرهم أو أفعالهم. "بعد كل ما فعلته من أجلك..." هو تكتيك كلاسيكي للذنب.</p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem;">الحب القنبلة</h3>
+                    <p>الاهتمام الساحق، المديح، والعاطفة في وقت مبكر—ليس لأنك مميز، بل لخلق الاعتماد والسيطرة. إنها تكتيك للتلاعب، وليس حباً حقيقياً.</p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem;">لعب الضحية</h3>
+                    <p>تصوير أنفسهم دائماً كالضحية لكسب التعاطف، تجنب المسؤولية، أو التلاعب بالآخرين لإنقاذهم. الضحية الدائمة غالباً ما تكون المتلاعب.</p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem;">المثلث الدرامي</h3>
+                    <p>إنشاء صراع بين الناس للحفاظ على السيطرة. يدور المتلاعب بين دور الضحية، المنقذ، والمضطهد—مما يبقي الآخرين غير متوازنين.</p>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3 style="font-size: 1.3rem; color: var(--gold); margin-bottom: 1rem;">المعاملة الصامتة</h3>
+                    <p>الانسحاب من التواصل كعقاب. هذا خلق قلق ويجبر الشخص الآخر على التوسل للاهتمام—إعطاء القوة للمتلاعب.</p>
+                </div>
+            </div>
+
+            <div class="insight-box" style="margin-top: 3rem;">
+                <h3>الحماية من التلاعب</h3>
+                <p>ثق بردود فعلك الداخلية. إذا شعرت بالارتباك، التشكيك في الذات، أو الإرهاق العاطفي المستمر في علاقة، انتبه. جسمك يكتشف ما عقلك ينكره.</p>
+                <p>ضع حدوداً. المتلاعبون يختبرون الحدود. الحدود الثابتة تحميك.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 8: Social Dynamics -->
+    <section id="social">
+        <div class="container">
+            <div class="section-number">القسم الثامن</div>
+            <h2>الديناميكيات الاجتماعية</h2>
+            <div class="section-divider"></div>
+            
+            <p>الناس يتصرفون بشكل مختلف في المجموعات عما هم عليه بمفردهم. فهم ديناميكيات المجموعة يكشف عن القوى الاجتماعية.</p>
+
+            <div class="pattern-grid">
+                <div class="pattern-card">
+                    <h3>التوافق الاجتماعي</h3>
+                    <p>الناس يتبعون المجموعة، حتى عندما تكون المجموعة مخطئة. الحاجة للانتماء تتفوق على الحكم الفردي. هذا هو السبب في أن <strong>قليلاً ما يتحدثون ضد الإجماع</strong>.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>تأثير المتفرج</h3>
+                    <p>في المجموعات، الناس يفترضون أن شخصاً آخر سيتخذ إجراءً. تنتشر المسؤولية. الأفراد يشعرون بمسؤولية أقل في الحشود.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>التفكير الجماعي</h3>
+                    <p>المجموعات تضغط من أجل التوافق. الخلاف يُعاقب. الموافقة تُكافأ. التفكير الجماعي يؤدي إلى قرارات سيئة لأن لا أحد يشكك في الافتراضات.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>هرميات المكانة</h3>
+                    <p>كل مجموعة لديها تسلسل هرمي—معلن أو غير معلن. الناس يتنافسون على المكانة من خلال الإشارات الدقيقة: من يتحدث أولاً، من يقاطع، من يستمع له.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>أدوار المجموعة</h3>
+                    <p>الناس يلعبون أدواراً في المجموعات—القائد، المهرج، الوسيط، الغريب. الأدوار تصبح ثابتة. تغيير الأدوار يتطلب الخروج من الديناميكية.</p>
+                </div>
+
+                <div class="pattern-card">
+                    <h3>الاستقطاب الجماعي</h3>
+                    <p>المجموعات تجعل الأفراد أكثر تطرفاً. الآراء المعتدلة تصبح متطرفة في المجموعات. القبيلة تعزز الاعتقاد وتعاقب الشك.</p>
+                </div>
+            </div>
+
+            <p>فهم ديناميكيات المجموعة يحميك من <strong>الضغط الاجتماعي والتأثير القبلي</strong>. يمكنك التنقل في المساحات الاجتماعية دون فقدان الاستقلالية.</p>
+        </div>
+    </section>
+
+    <!-- Section 9: Practical Observation Exercises -->
+    <section id="exercises">
+        <div class="container">
+            <div class="section-number">القسم التاسع</div>
+            <h2>تمارين الملاحظة العملية</h2>
+            <div class="section-divider"></div>
+            
+            <p>الوعي السلوكي يتطور من خلال الممارسة. هذه التمارين تدرب ملاحظتك.</p>
+
+            <div class="exercise-grid">
+                <div class="exercise-card">
+                    <div class="exercise-number">١</div>
+                    <h3>ملاحظة التناقضات</h3>
+                    <p>لمدة أسبوع، راقب التناقضات بين ما يقوله الناس وما يفعلونه. اكتب الأمثلة. لاحظ الفجوات بين الكلمات المعلنة والسلوك الفعلي.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-number">٢</div>
+                    <h3>تتبع الأنماط</h3>
+                    <p>اختر شخصاً واحداً. راقب كيف يتفاعل مع المواقف المختلفة على مدار شهر. ابحث عن الأنماط المتكررة. اسأل: ما السلوك الذي يتكرر؟</p>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-number">٣</div>
+                    <h3>تحليل ردود الفعل تحت الضغط</h3>
+                    <p>لاحظ كيف يتفاعل الناس عندما يشعرون بالتحدي، التوتر، أو التهديد. هل يصبحون دفاعيين؟ انسحابيين؟ عدوانيين؟ ردود الفعل تحت الضغط تكشف الشخصية.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-number">٤</div>
+                    <h3>تحديد الدوافع الخفية</h3>
+                    <p>عندما يفعل شخص ما شيئاً، اسأل: "ما الذي يستفيده من هذا؟" لا تأخذ التفسيرات السطحية. ابحث عن الحاجة النفسية الأعمق التي يتم تلبيتها.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-number">٥</div>
+                    <h3>رسم خريطة الديناميكيات الاجتماعية</h3>
+                    <p>في التجمع الاجتماعي التالي، راقب من يتحدث أكثر، من يقاطع، من يحصل على الاهتمام، من يُتجاهل. ارسم تسلسل المكانة غير المعلن للمجموعة.</p>
+                </div>
+
+                <div class="exercise-card">
+                    <div class="exercise-number">٦</div>
+                    <h3>اختبار التعاطف</h3>
+                    <p>عندما يتصرف شخص ما بطريقة لا تفهمها، اسأل: "ما الخوف أو الحاجة التي قد تحرك هذا؟" التعاطف لا يعني الموافقة—إنه يعني فهم الدافع.</p>
+                </div>
+            </div>
+
+            <p>الملاحظة المنتظمة تبني <strong>الحدس السلوكي</strong>. مع الوقت، تبدأ في رؤية الأنماط بشكل تلقائي.</p>
+        </div>
+    </section>
+
+    <!-- Section 10: Final Insight -->
+    <section id="final" class="final-insight reveal">
+        <div class="container">
+            <div class="section-number">القسم العاشر</div>
+            <h2>البصيرة النهائية</h2>
+            <div class="section-divider" style="margin: 3rem auto;"></div>
+            
+            <p class="final-quote">
+                فهم الناس ليس سلطة عليهم. إنه حماية لنفسك.
+            </p>
+
+            <p style="max-width: 60ch; margin: 0 auto;">
+                عندما تفهم السلوك البشري، تتخذ قرارات أفضل. تبني علاقات أقوى. تحمي نفسك من التلاعب. ترى ما وراء السطح.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                معظم الناس يتفاعلون بناءً على ما يرونه. أنت تستجيب بناءً على ما تفهمه.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                هذا الفرق يغير كل شيء.
+            </p>
+
+            <p style="max-width: 60ch; margin: 2rem auto 0;">
+                الناس ليسوا ألغازاً. إنهم أنماط. وأنت الآن تعرف كيف تقرأهم.
+            </p>
+
+            <div class="signature">VEXORIA</div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© ٢٠٢٤ VEXORIA — نظام فك شفرة السلوك البشري</p>
+        <p style="margin-top: 1rem; font-size: 0.8rem;">دليل نفسي فاخر لفهم الناس</p>
+    </footer>
+
+    <script>
+        // Reveal sections on scroll
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Smooth scroll for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

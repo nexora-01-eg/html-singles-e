@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEXORIA — منظومة التفكير الواضح</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #F7DC97;
+    --gold-deep: #C9A030;
+    --gold-dark: #7B5010;
+    --gold-dim: #3a2200;
+    --black: #030302;
+    --black2: #060504;
+    --black3: #0a0908;
+    --body: #c8aa72;
+    --muted: #5a3d18;
+    --faint: #2a1e0a;
+    --white-soft: #FFF8E0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--body);
+    font-family: 'Amiri Quran', 'Amiri', serif;
+    font-size: 21px;
+    line-height: 2.2;
+    overflow-x: hidden;
+    direction: rtl;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.28;
+  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black2); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+  h1,h2,h3,h4 { font-family: 'Amiri Quran','Amiri',serif; font-weight:700; line-height:1.7; }
+
+  .display-brand {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3.2rem,11vw,8rem);
+    font-weight: 600; letter-spacing: 0.28em; line-height: 1;
+    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 30%, var(--white-soft) 50%, var(--gold) 70%, var(--gold-dark) 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: shimmerText 5s ease-in-out infinite, breathe 4s ease-in-out infinite;
+  }
+
+  .section-num { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.45em; color:var(--gold-dim); text-transform:uppercase; display:block; margin-bottom:0.3rem; }
+  .section-label { font-family:'Amiri Quran',serif; font-size:0.9rem; color:var(--muted); margin-bottom:1rem; }
+  .section-title { font-family:'Amiri Quran','Amiri',serif; font-size:clamp(1.8rem,4.5vw,2.8rem); color:var(--gold-deep); font-weight:700; line-height:1.65; margin-bottom:1rem; }
+  .lead { font-family:'Amiri',serif; font-size:clamp(1.2rem,2.8vw,1.65rem); color:var(--gold); font-style:italic; line-height:2.1; margin-bottom:2rem; }
+  p { margin-bottom:1.6rem; font-size:1.08rem; line-height:2.2; }
+  strong { color:var(--gold-deep); font-weight:700; }
+  em { color:var(--gold); font-style:italic; }
+
+  .container      { max-width:840px;  margin:0 auto; padding:0 clamp(1.5rem,5vw,4rem); }
+  .container-wide { max-width:1120px; margin:0 auto; padding:0 clamp(1.5rem,5vw,4rem); }
+  section { padding:clamp(4rem,10vw,8rem) 0; position:relative; }
+  .bg-alt { background:linear-gradient(180deg,var(--black) 0%,var(--black3) 50%,var(--black) 100%); }
+
+  .divider { display:flex; align-items:center; gap:1.5rem; margin:3.5rem 0; }
+  .divider::before { content:''; flex:1; height:1px; background:linear-gradient(to left,transparent,var(--muted)); }
+  .divider::after  { content:''; flex:1; height:1px; background:linear-gradient(to right,transparent,var(--muted)); }
+  .divider-icon { color:var(--gold-dark); font-size:1rem; flex-shrink:0; }
+
+  /* HERO */
+  #hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:4rem 2rem; position:relative; overflow:hidden; }
+  #hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 80% 60% at 50% 40%,rgba(201,160,48,.07) 0%,transparent 70%), radial-gradient(ellipse 40% 40% at 50% 50%,rgba(247,220,151,.04) 0%,transparent 60%); }
+  .hero-eyebrow { font-family:'Amiri Quran',serif; font-size:0.95rem; color:var(--gold-dark); margin-bottom:2.5rem; opacity:0; animation:fadeUp 1s ease .3s forwards; }
+  .hero-brand-wrap { position:relative; margin-bottom:1.2rem; opacity:0; animation:fadeUp 1s ease .6s forwards; }
+  .hero-brand-glow { position:absolute; inset:-25px; background:radial-gradient(ellipse at center,rgba(201,160,48,.14) 0%,transparent 70%); animation:breatheGlow 4s ease-in-out infinite; pointer-events:none; }
+  .hero-subtitle-ar { font-family:'Amiri Quran','Amiri',serif; font-size:clamp(1.2rem,3.5vw,2rem); font-weight:700; color:var(--gold-deep); margin-bottom:3rem; opacity:0; animation:fadeUp 1s ease .9s forwards; }
+  .hero-ornament { color:var(--gold-dark); font-size:1.4rem; letter-spacing:0.8em; margin-bottom:2rem; opacity:0; animation:fadeUp 1s ease 1.1s forwards; }
+  .hero-quote { max-width:640px; font-family:'Amiri',serif; font-size:clamp(1.3rem,3.2vw,1.9rem); color:var(--gold); font-style:italic; line-height:2; margin:0 auto 3rem; opacity:0; animation:fadeUp 1s ease 1.3s forwards; }
+  .hero-line { width:1px; height:0; background:linear-gradient(to bottom,var(--gold-dark),transparent); margin:0 auto 2rem; animation:growLine 1.5s ease 1.7s forwards; }
+  .scroll-hint { font-family:'Amiri Quran',serif; font-size:.9rem; color:var(--muted); opacity:0; animation:fadeUp 1s ease 2.1s forwards,sPulse 2.5s ease 2.1s infinite; }
+
+  /* QUOTE BLOCK */
+  .quote-block { border-right:2px solid var(--gold-dark); padding:2rem 2.5rem; margin:3rem 0; background:linear-gradient(to left,rgba(42,30,10,.55),transparent); position:relative; }
+  .quote-block::before { content:'\201D'; position:absolute; top:-.5rem; right:1.5rem; font-family:'Amiri',serif; font-size:5rem; color:var(--gold-dark); opacity:.35; line-height:1; }
+  .quote-block p { font-family:'Amiri',serif; font-size:1.4rem; font-style:italic; color:var(--gold); margin-bottom:.5rem; line-height:2; }
+  .quote-attr { font-family:'Amiri Quran',serif; font-size:.88rem; color:var(--muted); }
+
+  /* HIGHLIGHT */
+  .highlight-box { background:linear-gradient(135deg,rgba(123,80,16,.15) 0%,rgba(42,30,10,.45) 100%); border:1px solid rgba(123,80,16,.38); border-radius:2px; padding:2.5rem; margin:2.5rem 0; position:relative; overflow:hidden; }
+  .highlight-box::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(to left,transparent,var(--gold-dark),transparent); }
+  .hb-title { font-family:'Amiri Quran',serif; font-size:1.05rem; color:var(--gold-dark); margin-bottom:1.5rem; font-weight:700; }
+
+  /* BIAS CARDS */
+  .bias-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.5rem; margin:3rem 0; }
+  .bias-card { background:linear-gradient(135deg,rgba(58,34,0,.45) 0%,rgba(6,5,4,.88) 100%); border:1px solid rgba(123,80,16,.3); border-radius:2px; padding:2rem 1.75rem; position:relative; overflow:hidden; transition:border-color .4s,transform .4s; }
+  .bias-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(to left,transparent,var(--gold-dark),transparent); opacity:0; transition:opacity .4s; }
+  .bias-card:hover { border-color:rgba(201,160,48,.42); transform:translateY(-3px); }
+  .bias-card:hover::before { opacity:1; }
+  .bias-number { font-family:'Cinzel',serif; font-size:2.5rem; color:rgba(123,80,16,.35); font-weight:600; line-height:1; margin-bottom:.75rem; }
+  .bias-name { font-family:'Amiri Quran','Amiri',serif; font-size:1.18rem; color:var(--gold-deep); margin-bottom:.6rem; font-weight:700; }
+  .bias-desc { font-size:1rem; color:var(--body); line-height:2; }
+
+  /* PILLARS */
+  .pillars { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:1px; background:var(--muted); border:1px solid var(--muted); margin:3rem 0; }
+  .pillar { background:var(--black2); padding:2.5rem 1.5rem; text-align:center; transition:background .3s; }
+  .pillar:hover { background:var(--faint); }
+  .pillar-icon { font-size:1.8rem; margin-bottom:1rem; display:block; }
+  .pillar-title { font-family:'Amiri Quran','Amiri',serif; font-size:1.1rem; color:var(--gold-deep); margin-bottom:.75rem; font-weight:700; }
+  .pillar-desc { font-size:.95rem; color:var(--muted); line-height:1.9; font-family:'Amiri',serif; }
+
+  /* STEPS */
+  .framework-steps { margin:3rem 0; position:relative; }
+  .framework-steps::before { content:''; position:absolute; right:2.2rem; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,var(--muted) 10%,var(--muted) 90%,transparent); }
+  .step { display:flex; flex-direction:row-reverse; gap:2.5rem; margin-bottom:3rem; padding-right:1rem; position:relative; }
+  .step-dot { flex-shrink:0; width:2.4rem; height:2.4rem; border-radius:50%; background:var(--black2); border:1px solid var(--gold-dark); display:flex; align-items:center; justify-content:center; font-family:'Cinzel',serif; font-size:.72rem; color:var(--gold-dark); margin-top:.3rem; position:relative; z-index:1; transition:border-color .3s,color .3s,background .3s; }
+  .step:hover .step-dot { border-color:var(--gold-deep); color:var(--gold-deep); background:rgba(123,80,16,.18); }
+  .step-content h3 { font-family:'Amiri Quran','Amiri',serif; font-size:1.2rem; color:var(--gold-deep); margin-bottom:.4rem; font-weight:700; }
+  .step-content p { font-size:1rem; margin-bottom:0; color:var(--body); }
+
+  /* EXERCISES */
+  .exercise-list { counter-reset:ex; list-style:none; margin:2.5rem 0; }
+  .exercise-list li { counter-increment:ex; padding:2rem 4.5rem 2rem 2rem; border-bottom:1px solid rgba(90,61,24,.3); position:relative; transition:background .3s; }
+  .exercise-list li:hover { background:rgba(42,30,10,.4); }
+  .exercise-list li::before { content:counter(ex,decimal-leading-zero); position:absolute; right:1.5rem; top:2.1rem; font-family:'Cinzel',serif; font-size:.7rem; color:var(--gold-dark); }
+  .ex-title { font-family:'Amiri Quran','Amiri',serif; font-size:1.2rem; color:var(--gold-deep); margin-bottom:.5rem; font-weight:700; }
+
+  /* APPLICATIONS */
+  .applications { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:2rem; margin:3rem 0; }
+  .app-card { padding:2rem; border-top:1px solid var(--muted); transition:border-color .3s; }
+  .app-card:hover { border-color:var(--gold-deep); }
+  .app-area { font-family:'Amiri Quran',serif; font-size:.88rem; color:var(--gold-dark); margin-bottom:.75rem; }
+  .app-title { font-family:'Amiri Quran','Amiri',serif; font-size:1.25rem; color:var(--gold-deep); margin-bottom:.75rem; font-weight:700; }
+
+  /* FOOTER */
+  footer { padding:5rem 0 3rem; text-align:center; border-top:1px solid var(--faint); }
+  .footer-brand { font-family:'Cinzel',serif; font-size:1.1rem; letter-spacing:.5em; color:var(--gold-dark); margin-bottom:.4rem; }
+  .footer-ar { font-family:'Amiri Quran',serif; font-size:1rem; color:var(--muted); margin-bottom:1rem; }
+  .footer-line { font-size:.88rem; color:var(--muted); }
+
+  #final { text-align:center; padding:clamp(6rem,14vw,12rem) 0; }
+
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .85s ease,transform .85s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  @keyframes shimmerText { 0%{background-position:100% 0} 50%{background-position:0% 0} 100%{background-position:100% 0} }
+  @keyframes breathe { 0%,100%{filter:drop-shadow(0 0 6px rgba(201,160,48,.3))} 50%{filter:drop-shadow(0 0 24px rgba(247,220,151,.45))} }
+  @keyframes breatheGlow { 0%,100%{opacity:.5;transform:scale(.95)} 50%{opacity:1;transform:scale(1.05)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes growLine { from{height:0} to{height:65px} }
+  @keyframes sPulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+  @media(max-width:600px){
+    .framework-steps::before{display:none}
+    .step{flex-direction:column;gap:.75rem;padding-right:0}
+    .pillars{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-eyebrow">منظومة معرفية من إعداد VEXORIA</p>
+  <div class="hero-brand-wrap">
+    <div class="hero-brand-glow"></div>
+    <h1 class="display-brand">VEXORIA</h1>
+  </div>
+  <p class="hero-subtitle-ar">مَنظومةُ التَّفكيرِ الواضح</p>
+  <div class="hero-ornament">❧ &nbsp;✦&nbsp; ❧</div>
+  <blockquote class="hero-quote">
+    "حياتُكَ تَصنَعُها قراراتُك،<br>وقراراتُكَ تَصنَعُها طريقةُ تفكيرِك."
+  </blockquote>
+  <div class="hero-line"></div>
+  <p class="scroll-hint">↓ &nbsp; ابدأ الرحلة</p>
+</section>
+
+<!-- INTRO -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">PREFACE</span>التمهيد</p>
+      <h2 class="section-title">أغلبُ الناسِ لم يُفكِّروا يومًا في طريقةِ تفكيرِهم</h2>
+      <p class="lead">العقلُ ليسَ مرآةً محايدة — إنَّه يُحوِّرُ كلَّ شيءٍ يمرُّ به، ويفعلُ ذلكَ في صمتٍ تام.</p>
+      <p>أنتَ تظنُّ أنَّكَ تُفكِّرُ بوضوح. تظنُّ أنَّكَ تزنُ الحقائقَ بموضوعية، وتَستخلصُ نتائجَ سليمة، وتتَّخذُ قراراتٍ عقلانية. غيرَ أنَّ تحتَ سطحِ كلِّ فكرةٍ تيَّارًا خفيًّا من القوى غيرِ المرئية: الحالاتُ الانفعالية، والتجاربُ الماضية، والافتراضاتُ الراسخة، والاختصاراتُ الذهنية، وضجيجُ عالمٍ لا يتوقَّفُ عن المطالبةِ بانتباهك.</p>
+      <p>يمضي أغلبُ الناسِ حياتَهم كاملةً دونَ أن يتوقَّفوا لفحصِ هذه العملية. يُفكِّرون، لكنَّهم لا يُفكِّرون في <em>كيفيَّةِ</em> تفكيرِهم. والنتيجةُ ضبابٌ هادئٌ ومستمرٌّ يُشكِّلُ قراراتِهم، ويُشوِّهُ رؤيتَهم، ويحدُّ ممَّا يستطيعون إدراكَه وفهمَه.</p>
+      <p>هذه المنظومةُ وُجدَت لتغييرِ ذلك. لا لتُخبِرَكَ <em>ماذا</em> تُفكِّر — بل لتُريَكَ <em>كيفَ</em> يعملُ التفكيرُ فعلًا، وكيفَ تُمارسُه بقدرٍ أعمقَ من الوضوحِ والدقَّةِ والثِّقة.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S1 -->
+<section class="bg-alt">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION I</span>لماذا يَضِلُّ التفكيرُ طريقَه</p>
+      <h2 class="section-title">العقلُ البشريُّ لم يُصمَّم لهذا العالَم</h2>
+      <p class="lead">تطوَّرَ جهازُنا المعرفيُّ على مدى مئاتِ الآلافِ من السنينَ في بيئاتٍ قوامُها الشُّحُّ والخطرُ الجسديُّ والمجموعاتُ الاجتماعيَّةُ الصغيرة.</p>
+      <p>بُنيَ العقلُ ليكونَ سريعًا وتفاعليًّا وكفؤًا — لا بطيئًا ومنهجيًّا ودقيقًا. وهذا التصميمُ لا يزالُ يَحكمُكَ اليوم.</p>
+      <p>حينَ تواجهُ قرارًا أو مشكلة، لا يبدأُ عقلُكَ بالتحليلِ الدقيق. يبدأُ بالاستجابةِ الانفعاليَّة. تصلُ المشاعرُ قبلَ الأفكار، وتُؤطِّرُ كلَّ ما يليها: أيَّ المعلوماتِ تلفتُ نظرَك، وأيَّ الخياراتِ تأخذُها بعينِ الاعتبار، وأيَّ الخلاصةِ تبدو صوابًا.</p>
+      <p>ليسَ هذا ضعفًا شخصيًّا — بل هو طبيعةُ التصميم. لكن في عالمٍ بالغِ التعقيد، يُنتجُ هذا التصميمُ أخطاءً متوقَّعةً وباهظةَ الثمن.</p>
+      <div class="highlight-box">
+        <p class="hb-title">ثلاثُ قوى تُفسدُ صفاءَ التفكير</p>
+        <p><strong>ردَّةُ الفعلِ الانفعاليَّة</strong> — حينَ ترتفعُ المشاعرُ يضعفُ التفكيرُ التحليليّ. تُقيِّمُ الحقائقَ من خلالِ ما تشعرُ به لا من خلالِ ما هو كائن. الغضبُ يُضيِّقُ الخيارات، والخوفُ يُضخِّمُ المخاطر، والحماسُ يُعمِيكَ عن العيوب.</p>
+        <p><strong>الاختصاراتُ الذهنيَّة</strong> — يلجأُ العقلُ باستمرارٍ إلى الاستدلالات: مختصراتٌ ذهنيَّةٌ تُقايضُ الدقَّةَ بالسرعة. تؤدِّي وظيفتَها جيِّدًا في المواقفِ المألوفةِ البسيطة، وتَخذلُكَ بشدَّةٍ في المواقفِ المعقَّدةِ البالغةِ الأهمِّية.</p>
+        <p style="margin-bottom:0"><strong>الإفراطُ في المعلومات</strong> — يُنتجُ العالمُ الحديثُ من المعلوماتِ ما يفوقُ طاقةَ أيِّ عقلٍ على معالجته. أمامَ هذا الفيض، يلتقطُ العقلُ الأنماطَ المألوفة، ويتَّبعُ أعلى الأصوات، ويُهملُ ما لا يستطيعُ تصنيفَه بسهولة.</p>
+      </div>
+      <p>الخطوةُ الأولى نحو التفكيرِ الواضحِ هي الاعترافُ بهذه الحقيقة: لعقلِكَ نمطٌ افتراضيّ، وهذا النمطُ لم يُصمَّم لأهمِّ المواقفِ التي تمرُّ بها.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S2 -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION II</span>الضجيجُ الذهنيّ</p>
+      <h2 class="section-title">قبلَ أن تُفكِّرَ بوضوح، يجبُ أن تعرفَ ما يحولُ دونَ ذلك</h2>
+      <p class="lead">الضجيجُ الذهنيُّ ليسَ مجرَّدَ تشتُّت. إنَّه الثِّقلُ المتراكمُ من الأفكارِ غيرِ المُحسومة، والأولوياتِ المتنافسة، والقلقِ المُضمَر.</p>
+      <p>الضجيجُ لا يمنعُ التفكيرَ — بل يُفسِدُه. يجعلُ الذهنَ يبدو مشغولًا دونَ أن يُنتجَ شيئًا ذا قيمة. تُفكِّرُ في نفسِ المشكلاتِ مرارًا دونَ أن تبلغَ حلًّا. تشعرُ بعدمِ اليقينِ لا لأنَّ الموقفَ غامض، بل لأنَّ العدسةَ التي تراهُ بها ضبابيَّة.</p>
+      <div class="quote-block">
+        <p>جودةُ تفكيرِكَ تعتمدُ على وضوحِ حالتِكَ الذهنيَّةِ لحظةَ التفكير، أكثرَ من اعتمادِها على ذكائك.</p>
+        <p class="quote-attr">منظومةُ التفكيرِ الواضح — المبدأُ الأساسيّ</p>
+      </div>
+      <p>يتغذَّى الضجيجُ الذهنيُّ من مصادرَ متعدِّدة. القراراتُ المعلَّقةُ تتراكمُ كثقلٍ في الخلفية. المطالبُ المتنافسةُ تُشتِّتُ انتباهَكَ قبلَ أن تنخرطَ بعمقٍ في أيِّ شيء. البقايا الانفعاليَّةُ لأحداثٍ ماضيةٍ تُلوِّنُ رؤيتَكَ للحاضر. وعادةُ التحفيزِ المستمرِّ — شاشاتٌ وإشعاراتٌ ومعلوماتٌ متواصلة — تُدرِّبُ العقلَ على مقاومةِ السَّكينة.</p>
+      <p>تخفيفُ الضجيجِ لا يتعلَّقُ بالإرادةِ أو الانضباط. يتعلَّقُ بفهمِ طبيعتِه وتطويرِ ممارساتٍ بسيطةٍ قابلةٍ للتكرارِ تُقلِّلُ أثرَه قبلَ أن تشرعَ في أيِّ تفكيرٍ جادّ.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S3 -->
+<section class="bg-alt">
+  <div class="container reveal">
+    <p class="section-label"><span class="section-num">SECTION III</span>التحيُّزاتُ المعرفيَّة</p>
+    <h2 class="section-title">أخطاءُ التفكيرِ التي لا تراها</h2>
+    <p class="lead">التحيُّزُ ليسَ رأيًا. إنَّه خطأٌ منهجيٌّ في التفكيرِ يقعُ تلقائيًّا، دونَ وعيٍ منك، وفي اتِّجاهاتٍ يمكنُ التنبُّؤُ بها.</p>
+    <p>التحيُّزاتُ ليسَت علامةً على محدوديَّةِ الذكاء — إنَّها تُصيبُ الجميع، بمن فيهم الخبراء. هي سماتٌ هيكليَّةٌ في الجهازِ المعرفيّ، اختصاراتٌ أعانَت البشرَ على البقاء، وباتَت اليومَ تُنتجُ تشويهاتٍ ثابتةً وقابلةً للقياسِ في التفكير.</p>
+  </div>
+  <div class="container-wide">
+    <div class="bias-grid reveal">
+      <div class="bias-card">
+        <div class="bias-number">٠١</div>
+        <div class="bias-name">تحيُّزُ التأكيد</div>
+        <p class="bias-desc">تبحثُ لا شعوريًّا عن المعلوماتِ التي تُؤكِّدُ ما تُؤمنُ به، وتُفسِّرُها وتتذكَّرُها، بينَما تتجاهلُ أو تُهملُ ما يتعارضُ معها.</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-number">٠٢</div>
+        <div class="bias-name">اختصارُ التوافر</div>
+        <p class="bias-desc">تَحكمُ على احتماليَّةِ الشيءِ بمدى سهولةِ تذكُّرِ مثالٍ عليه. الأحداثُ الأخيرةُ والحيَّةُ والمثيرةُ للعاطفةِ تبدو أكثرَ احتمالًا ممَّا هي عليه إحصائيًّا.</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-number">٠٣</div>
+        <div class="bias-name">التثبيتُ على الأوَّل</div>
+        <p class="bias-desc">تُؤثِّرُ المعلومةُ الأولى التي تصلُكَ حولَ موضوعٍ ما في جميعِ أحكامِكَ اللاحقةِ تأثيرًا غيرَ متناسب، حتَّى وإن كانَت عشوائيَّةً أو لا صلةَ لها.</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-number">٠٤</div>
+        <div class="bias-name">مغالطةُ التكلفةِ الغارقة</div>
+        <p class="bias-desc">يجعلُكَ ما استثمرتَه من وقتٍ ومالٍ وجهدٍ في الماضي تتمسَّكُ بمساراتٍ فاشلة؛ لأنَّ التخلِّيَ عنها يبدو خسارةً — حتَّى حينَ يكونُ الاستمرارُ هو الخيارَ الأسوأ.</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-number">٠٥</div>
+        <div class="bias-name">أثرُ دانينج-كروغر</div>
+        <p class="bias-desc">المعرفةُ المحدودةُ بمجالٍ ما تُنتجُ ثقةً عالية. والمعرفةُ العميقةُ تُنتجُ يقينًا مُعايَرًا. الأقلُّ درايةً هم في الغالبِ الأكثرُ ثقة.</p>
+      </div>
+      <div class="bias-card">
+        <div class="bias-number">٠٦</div>
+        <div class="bias-name">خطأُ الإسنادِ الأساسيّ</div>
+        <p class="bias-desc">تُفسِّرُ إخفاقاتِكَ بالظروفِ وإخفاقاتِ الآخرينَ بشخصيَّاتِهم. وتُفسِّرُ نجاحاتِكَ بقدراتِكَ ونجاحاتِ الآخرينَ بالحظ.</p>
+      </div>
+    </div>
+  </div>
+  <div class="container reveal">
+    <p>هذه الستَّةُ جزءٌ يسيرٌ من قائمةِ أخطاءِ التفكيرِ البشريِّ الموثَّقة. المهمُّ ليسَ حفظَ القائمة، بل تطويرَ عادةِ التساؤل: <em>أيُّ افتراضاتي هنا قد تكونُ خاطئة، ولماذا؟</em></p>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S4 -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION IV</span>نموذجُ التفكيرِ الواضح</p>
+      <h2 class="section-title">التفكيرُ الواضحُ ليسَ غيابَ المشاعر — بل تكاملُها المنظَّم</h2>
+      <p class="lead">يعملُ العقلُ في نمطَينِ أساسيَّين. الأوَّلُ سريعٌ وتلقائيٌّ وحدسيّ، يُحرِّكُه التعرُّفُ على الأنماطِ والانفعال. والثاني بطيءٌ ومتعمَّدٌ وتحليليّ، يُحرِّكُه التفكيرُ المنظَّمُ والانتباهُ الواعي.</p>
+      <p>لا نمطَ منهما أفضلُ في جميعِ السياقات. الخطأُ يكمنُ في توظيفِ النمطِ السريعِ حينَ يُستدعى النمطُ البطيء.</p>
+      <p>تقومُ منظومةُ التفكيرِ الواضحِ على بصيرةٍ جوهرية: <strong>أغلبُ إشكاليَّاتِ التفكيرِ ليسَت إشكاليَّاتِ ذكاءٍ بل إشكاليَّاتُ بنية.</strong> لا يُخفقُ الناسُ في التفكيرِ لنقصِ القدرة، بل لغيابِ منهجٍ موثوقٍ يُنظِّمُ ما يُلاحَظُ وما يُفترضُ وما يُستخلَص.</p>
+    </div>
+    <div class="pillars reveal">
+      <div class="pillar"><span class="pillar-icon">◉</span><div class="pillar-title">الملاحظة</div><div class="pillar-desc">رؤيةُ ما هو موجودٌ فعلًا، لا ما تتوقَّعُ أو تخشى إيجادَه</div></div>
+      <div class="pillar"><span class="pillar-icon">◎</span><div class="pillar-title">الفصل</div><div class="pillar-desc">التمييزُ بينَ الحقائقِ والتفسيرات، وبينَ البياناتِ والمشاعر</div></div>
+      <div class="pillar"><span class="pillar-icon">◈</span><div class="pillar-title">التساؤل</div><div class="pillar-desc">مساءلةُ افتراضاتِكَ الخاصَّةِ قبلَ القبولِ بخلاصاتك</div></div>
+      <div class="pillar"><span class="pillar-icon">◇</span><div class="pillar-title">التركيب</div><div class="pillar-desc">بناءُ صورةٍ متماسكةٍ من مدخلاتٍ متعدِّدة، أحيانًا متناقضة</div></div>
+      <div class="pillar"><span class="pillar-icon">◆</span><div class="pillar-title">القرار</div><div class="pillar-desc">الالتزامُ بمسارٍ واضحٍ بمعاييرَ محدَّدةٍ وقبولٍ حقيقيٍّ للغموض</div></div>
+    </div>
+    <div class="reveal">
+      <p>لا تَعِدُ هذه المنظومةُ باليقين — فلا منظومةَ تفكيرٍ تستطيعُ ذلك. ما تُقدِّمُه بنيةٌ قابلةٌ للتكرارِ تُقلِّصُ تأثيرَ الضجيجِ والتحيُّزِ والانفعالِ تقليصًا ملموسًا، وتُنتجُ باستمرارٍ نتائجَ أفضلَ من التفكيرِ غيرِ المنظَّم.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S5 -->
+<section class="bg-alt">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION V</span>إطارُ التفكير</p>
+      <h2 class="section-title">سبعُ خطواتٍ نحو الوضوحِ الكامل</h2>
+      <p class="lead">الإطارُ ليسَ معادلةً — بل سلسلةٌ من الأسئلةِ المتعمَّدةِ التي تُرشدُ الانتباهَ عبرَ أرجاءِ المشكلة.</p>
+    </div>
+    <div class="framework-steps reveal">
+      <div class="step">
+        <div class="step-dot">I</div>
+        <div class="step-content">
+          <h3>حدِّدِ المشكلةَ الحقيقيَّة</h3>
+          <p>اذكُر بوضوحٍ ما الخطأُ أو الناقصُ أو الغامض. أغلبُ أخطاءِ التفكيرِ تبدأُ هنا — يحلُّ الناسُ مشكلةً خاطئةً لأنَّهم لم يفحصوا المشكلةَ الحقيقيَّةَ قطّ. عبِّر عنها في جملةٍ واحدة. إن لم تستطع، فأنتَ لم تفهمْها بعد.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">II</div>
+        <div class="step-content">
+          <h3>افصِلِ الحقائقَ عن التفسيرات</h3>
+          <p>اسرُد ما تعلمُه يقينًا. ثمَّ اسرُد ما تُؤمنُ به أو تفترضُه أو تستنتجُه. هذا أهمُّ تمييزٍ في التفكيرِ الواضح. الحقائقُ قابلةٌ للملاحظةِ والتحقُّق. كلُّ ما سوى ذلكَ تفسيرٌ — والتفسيراتُ تُخطئ.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">III</div>
+        <div class="step-content">
+          <h3>تعرَّف على حالتِكَ الانفعاليَّة</h3>
+          <p>اسأل نفسَك: ما المشاعرُ الحاضرةُ الآن، وما الذي تفعلُه بتفكيرك؟ الخوفُ يُضيِّقُ الخيارات، والغضبُ يُضيِّقُ المنظور، والأملُ يُعميكَ عن المخاطرِ الحقيقية. لستَ بحاجةٍ إلى استئصالِ المشاعر — بل إلى رؤيةِ أثرِها بوضوحٍ حتَّى لا تعملَ في الخفاء.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">IV</div>
+        <div class="step-content">
+          <h3>تأمَّلِ الرأيَ المعاكس</h3>
+          <p>ابنِ عمدًا أقوى حجَّةٍ ممكنةٍ ضدَّ موقفِكَ الراهن. ليسَت نسخةً ضعيفةً منها — بل أمتنَها. إن عجزتَ عن ذلك، فأنتَ لا تفهمُ الموضوعَ بما يكفي لتمتلكَ رأيًا واثقًا فيه.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">V</div>
+        <div class="step-content">
+          <h3>افحَص افتراضاتِك</h3>
+          <p>أحصِ الافتراضاتِ التي يرتكزُ عليها تفكيرُكَ الحالي. اسأل: ما الذي يجبُ أن يكونَ صحيحًا كي تكونَ خلاصتي خاطئة؟ أيٌّ من تلكَ الافتراضاتِ قد يكونُ صحيحًا فعلًا؟ الافتراضاتُ تبقى خفيَّةً حتَّى تُسمَّى؛ فمجرَّدُ التسميةِ يجعلُها قابلةً للاختبار.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">VI</div>
+        <div class="step-content">
+          <h3>اصنَع بدائلَ حقيقيَّة</h3>
+          <p>أجبِر نفسَكَ على توليدِ ثلاثةِ مساراتٍ أو تفسيراتٍ مختلفةٍ على الأقل. أغلبُ الناسِ لا يأخذونَ في الحسبانِ سوى خيارَين، أحدُهما في الغالبِ الوضعُ الراهن. العقلُ الذي يُنتجُ بدائلَ أكثرَ يتَّخذُ قراراتٍ أفضل.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-dot">VII</div>
+        <div class="step-content">
+          <h3>اتَّخِذِ القرارَ بمعاييرَ واضحة</h3>
+          <p>حدِّد مسبقًا كيفَ يبدو الناتجُ الجيِّدُ وما الذي تُحسِّنُه. ثمَّ قيِّم الخياراتِ وفقَ هذه المعاييرِ لا وفقَ ما تُحدثُه في مشاعرك. وثِّق منطقَكَ حتَّى تتمكَّنَ من مراجعتِه لاحقًا.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S6 -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION VI</span>وضوحُ القرار</p>
+      <h2 class="section-title">القرارُ ليسَ تخمينًا — بل التزامٌ منظَّمٌ في ظلِّ الغموض</h2>
+      <p class="lead">يتعاملُ أغلبُ الناسِ مع القراراتِ كأنَّها شيءٌ يحدثُ لهم لا شيءٌ يصنعونَه.</p>
+      <p>ينتظرونَ اليقينَ قبلَ الاختيار — لكنَّ اليقينَ نادرًا ما يصل. يُسوِّفونَ القراراتِ ريثَما "يشعرونَ بالجاهزية" — وكثيرًا ما تكونُ الجاهزيَّةُ قناعًا للتهرُّب.</p>
+      <div class="highlight-box reveal">
+        <p class="hb-title">الأسئلةُ الثلاثةُ لصنعِ القرارِ الواضح</p>
+        <p><strong>ما الذي أُقرِّرُ فعلًا؟</strong> تُتَّخذُ أغلبُ القراراتِ دونَ تسميةِ ما يُختارُ بدقَّة. سمِّ القرارَ بحدودٍ واضحة؛ فالحدودُ تصنعُ الفارق.</p>
+        <p><strong>ما الذي أُحسِّنُه؟</strong> كلُّ قرارٍ ينطوي على مقايضات. معرفةُ ما تُقدِّرُه أكثرَ وما تقبلُ التضحيَةَ به تُحوِّلُ العمليَّةَ من ارتباكٍ إلى وضوح.</p>
+        <p style="margin-bottom:0"><strong>ما الذي يجعلُني أُراجعُ هذا القرار؟</strong> تحديدُ معاييرِ التراجعِ مسبقًا يحميكَ من فخِّ التكلفةِ الغارقة، ويُبقي القراراتِ قابلةً للمراجعةِ حيثُ ينبغي ذلك.</p>
+      </div>
+      <p>وضوحُ القرارِ لا يعني الثقةَ بأنَّكَ ستكونُ على حقّ. بل يعني الثقةَ بأنَّ عمليَّتَكَ في صنعِ القرارِ كانَت سليمة — وهو الشيءُ الوحيدُ الذي تستطيعُ التحكُّمَ فيه فعلًا.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S7 -->
+<section class="bg-alt">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION VII</span>التطبيقاتُ الحياتيَّة</p>
+      <h2 class="section-title">منظومةُ تفكيرٍ لا قيمةَ لها إن ظلَّت نظريَّة</h2>
+      <p class="lead">مقياسُها الوحيدُ هو جودةُ النتائجِ التي تُحدثُها في الظروفِ الحقيقيَّةِ لحياتك.</p>
+    </div>
+  </div>
+  <div class="container-wide">
+    <div class="applications reveal">
+      <div class="app-card">
+        <p class="app-area">المجالُ الأوَّل</p>
+        <p class="app-title">القراراتُ المصيريَّة</p>
+        <p>يُحوِّلُ التفكيرُ الواضحُ صنعَ القرارِ من حدثٍ تفاعليٍّ مشاعريٍّ إلى عمليَّةٍ منظَّمةٍ بمدخلاتٍ ومعاييرَ ومراجعة. الاختياراتُ الكبرى في الحياة — المسارُ المهنيُّ والعلاقاتُ والموقعُ والاستثمار — تتحسَّنُ تحسُّنًا قابلًا للقياسِ حينَ تُفحَصُ عبرَ الإطار.</p>
+      </div>
+      <div class="app-card">
+        <p class="app-area">المجالُ الثاني</p>
+        <p class="app-title">حلُّ المشكلات</p>
+        <p>أغلبُ المشكلاتِ التي تبدو عسيرةً إنَّما هي كذلكَ لأنَّها لم تُحدَّد بوضوح. يُجبرُكَ الإطارُ على الفصلِ بينَ المشكلةِ الفعليَّةِ وأعراضِها، وبينَ الحقائقِ والتفسيرات، وبينَ الخياراتِ والمسارِ الذي كنتَ سالكًا فيه بالفعل.</p>
+      </div>
+      <div class="app-card">
+        <p class="app-area">المجالُ الثالث</p>
+        <p class="app-title">العلاقات</p>
+        <p>النزاعُ بينَ الأشخاصِ في أغلبِه مشكلةُ تفكيرٍ قبلَ أن يكونَ مشكلةَ علاقة. الإطارُ المُطبَّقُ على الخلافات — فصلُ الحقائقِ عن التفسيرات، وتحديدُ الحالةِ الانفعاليَّة، وتأمُّلُ وجهةِ نظرِ الطرفِ الآخر — يُحوِّلُ الصراعاتِ من شخصيَّةٍ إلى قابلةٍ للحلّ.</p>
+      </div>
+      <div class="app-card">
+        <p class="app-area">المجالُ الرابع</p>
+        <p class="app-title">المسارُ المهنيّ</p>
+        <p>البيئاتُ المهنيَّةُ تُنتجُ ضجيجًا متواصلًا: أولوياتٌ متنافسة، وأهدافٌ ضبابيَّة، وديناميكيَّاتٌ اجتماعيَّة، وخشيةٌ من الحكم. التفكيرُ الواضحُ يَخلقُ بنيةً في الغموض — يُفرزُ ما يهمُّ ممَّا يشعرُ بالإلحاحِ فحسب.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S8 -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION VIII</span>التمارينُ العمليَّة</p>
+      <h2 class="section-title">التفكيرُ الواضحُ قدرةٌ تُدرَّبُ لا موهبةٌ تُورَث</h2>
+      <p class="lead">هذه التمارينُ لا تُعلِّمُ معلومات — بل تُنمِّي العاداتِ الذهنيَّةَ التي تجعلُ التفكيرَ الواضحَ تلقائيًّا.</p>
+    </div>
+    <ul class="exercise-list reveal">
+      <li>
+        <p class="ex-title">تدقيقُ الافتراضاتِ اليوميّ</p>
+        <p>في كلِّ صباح، حدِّد معتقدًا أو افتراضًا واحدًا تحملُه حولَ موقفٍ راهن. اكتبْه. ثمَّ اسأل: على ماذا يرتكزُ هذا الافتراض؟ ما الذي يجبُ أن يكونَ صحيحًا كي يكونَ خاطئًا؟ احتفظ بالإجابةِ في وعيكَ طوالَ اليوم، ولاحظ ما تُلاحظه.</p>
+      </li>
+      <li>
+        <p class="ex-title">الحجَّةُ المعاكسة</p>
+        <p>اختَر موقفًا تحملُه بقوَّة. أمضِ عشرَ دقائقَ في كتابةِ أصدقِ حجَّةٍ وأكثرِها تفكيرًا في الموقفِ المعاكس. ليسَت نسخةً ضعيفةً منه — بل الحجَّةَ الفعليَّةَ الحقيقيَّة. لاحِظِ المقاومةَ التي تشعرُ بها. في تلكَ المقاومةِ يكمنُ التعلُّم.</p>
+      </li>
+      <li>
+        <p class="ex-title">فصلُ الانفعالِ عن الحقيقة</p>
+        <p>حينَ تواجهُ موقفًا يُثيرُ ردَّةَ فعلٍ انفعاليَّةً قويَّة، خصِّص خمسَ دقائقَ للكتابةِ في عمودَين: ما تعلمُه يقينًا (الحقائق)، وما تشعرُ به أو تُؤمنُ به (التفسيرات). فعلُ الكتابةِ يَخلقُ مسافةً بينَ المشاعرِ وعمليَّةِ التفكير.</p>
+      </li>
+      <li>
+        <p class="ex-title">مراجعةُ القرارات</p>
+        <p>راجِع قرارًا هامًّا من الماضي أسبوعيًّا. اسأل: ما الذي كنتُ أعلمُه حينَ اتَّخذتُه؟ ما الذي افترضتُه؟ ما الذي كنتُ أشعرُ به؟ ما الذي حدثَ فعلًا؟ ما الذي كنتُ سأفعلُه بصورةٍ مختلفة؟ التعرُّفُ على الأنماطِ مع الوقتِ أحدُ أقوى الأدواتِ لتحسينِ الحكمِ المستقبليّ.</p>
+      </li>
+      <li>
+        <p class="ex-title">تمرينُ الصمت</p>
+        <p>أمضِ خمسَ عشرةَ دقيقةً يوميًّا بلا مدخلات: لا شاشات، ولا صوت، ولا قراءة. فقط اجلِس وراقِبِ الحركةَ الطبيعيَّةَ لأفكارِكَ دونَ الانجرارِ إليها. هذا ليسَ تأمُّلًا. إنَّه تدريبُ العقلِ على تحمُّلِ السكينة — الشرطُ الأوَّلُ للتفكيرِ العميقِ الواضح.</p>
+      </li>
+      <li>
+        <p class="ex-title">ما قبلَ التحليلِ بالنتيجة</p>
+        <p>قبلَ أيِّ قرارٍ مهمّ، تخيَّل أنَّكَ بعدَ اثني عشرَ شهرًا وقد أفضى القرارُ إلى أسوأِ نتيجةٍ ممكنة. اكتُب سردًا مُفصَّلًا لكيفيَّةِ حدوثِ ذلك. يكشفُ هذا التمرينُ المخاطرَ وعواملَ الفشلِ التي يميلُ التفاؤلُ إلى إخفائها.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S9 -->
+<section class="bg-alt">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label"><span class="section-num">SECTION IX</span>بناءُ عادةِ التفكير</p>
+      <h2 class="section-title">منظومةٌ تستخدمُها مرَّةً واحدةً مثيرةٌ للاهتمام — أمَّا منظومةٌ تُمارسُها يوميًّا فمُحوِّلة</h2>
+      <p class="lead">التحدِّي في بناءِ عادةِ التفكيرِ ليسَ فكريًّا — بل سلوكيّ.</p>
+      <p>أنتَ تفهمُ الإطار، وتستطيعُ اتِّباعَه. لكنَّ الفهمَ والممارسةَ المتَّسقةَ يفصلُ بينَهما هوَّةٌ لا تستطيعُ الإرادةُ وحدَها ردمَها.</p>
+      <p>المفتاحُ هو تصميمُ البيئة. ينبغي أن يكونَ التفكيرُ الواضحُ مُفعَّلًا بالسياقِ لا بالإرادة. اربُط لحظاتٍ بعينِها — قهوةَ الصباح، وبدايةَ يومِ العمل، والدقائقَ الأولى من محادثةٍ صعبة — بممارساتِ تفكيرٍ محدَّدة.</p>
+      <div class="highlight-box">
+        <p class="hb-title">أربعةُ عناصرَ لممارسةِ تفكيرٍ مستدامة</p>
+        <p><strong>وقتٌ ثابت.</strong> التفكيرُ الذي يحدثُ باندفاعٍ هو تفكيرٌ يحدثُ بصورةٍ سيِّئة. احجُز نافذةً منتظمة — ولو خمسَ عشرةَ دقيقة — لا تستجيبُ فيها للعالَمِ بل تتأمَّلُ فيه.</p>
+        <p><strong>أداةٌ بسيطة.</strong> دفترُ ملاحظات. مستندٌ واحد. سؤالٌ بعينِه تعودُ إليه. التفكيرُ يحتاجُ إلى موضوعٍ خارجيٍّ يحملُ مخرجاتِ التأمُّلِ ويجعلُها مرئيَّة.</p>
+        <p><strong>عتبةُ دخولٍ منخفضة.</strong> يجبُ أن تكونَ العادةُ سهلةَ البدء. ليسَت مريحةَ الإتمام — بل سهلةَ الشروع. قلِّلِ العائقَ حتَّى تكونَ ممارستُها أيسرَ من قرارِ التخلِّي عنها.</p>
+        <p style="margin-bottom:0"><strong>دورةُ مراجعة.</strong> عُد إلى تفكيرِكَ الماضي بانتظام. منظومةُ تفكيرٍ لا تُراجعُ نفسَها هي في الحقيقةِ منظومةُ معتقداتٍ — لا منظومةُ تفكير.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider container"><span class="divider-icon">✦</span></div>
+
+<!-- S10 FINAL -->
+<section id="final">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label" style="text-align:center"><span class="section-num" style="display:block;text-align:center">SECTION X</span>الخلاصةُ الأخيرة</p>
+      <h2 class="section-title" style="text-align:center;max-width:740px;margin:0 auto 2rem">
+        التفكيرُ الواضحُ ليسَ تقنيَّة —<br>بل ميزةٌ دائمةٌ لا تتآكل
+      </h2>
+      <p class="lead" style="text-align:center;max-width:640px;margin:0 auto 2.5rem">
+        في عالمٍ يزدادُ تعقيدًا وضجيجًا ومطالبةً بالاستجابةِ السريعة — يمتلكُ مَن يستطيعُ التوقُّفَ والملاحظةَ والفصلَ والتفكيرَ ميزةً تتضاعفُ مع الزمن.
+      </p>
+    </div>
+    <div class="reveal" style="max-width:720px;margin:0 auto">
+      <p>سيظلُّ أغلبُ الناسِ يُفكِّرونَ باندفاع. سيظلُّهم يُشكِّلُ تحيُّزاتٌ لم يفحصوها، ومشاعرُ لم يُسمُّوها، وافتراضاتٌ لم يُساءلوها. ليسَ لنقصِ الذكاء — بل لغيابِ البنيَّةِ والممارسة.</p>
+      <p>ما بينَ يديكَ في هذه المنظومةِ أساسٌ — لا محطَّةً نهائيَّةً بل نقطةَ انطلاق. سيتطوَّرُ الإطارُ كلَّما تعمَّقَ فهمُك. ستتحوَّلُ التمارينُ إلى عادات. وستتحوَّلُ العاداتُ إلى غرائز. وتلكَ الغرائزُ ستُصبحُ مع الوقتِ طبيعتَكَ في التفكير.</p>
+      <p>الاستثمارُ في تعلُّمِ التفكيرِ الواضحِ يُسدِّدُ عوائدَه في كلِّ مجالٍ من مجالاتِ الحياة، باستمرارٍ وبلا تراجعٍ في العائد. كلُّ قرارٍ تتَّخذُه، وكلُّ مشكلةٍ تواجهُها، وكلُّ علاقةٍ تتعاملُ معها، وكلُّ فرصةٍ تُقيِّمُها — كلُّ هذه في جوهرِها مشكلاتُ تفكيرٍ قبلَ أن تكونَ أيَّ شيءٍ آخر.</p>
+      <div class="quote-block" style="margin-top:3rem">
+        <p>العقلُ الذي يعرفُ كيفَ يعملُ لا يمكنُ لنفسِه أن يَخدعَه. وهذا هو مطلعُ الحرِّيَّةِ الحقيقيَّة.</p>
+        <p class="quote-attr">VEXORIA — منظومةُ التفكيرِ الواضح</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="reveal">
+      <p class="footer-brand">VEXORIA</p>
+      <p class="footer-ar">مَنظومةُ التَّفكيرِ الواضح</p>
+      <div class="divider" style="max-width:300px;margin:1.5rem auto"><span class="divider-icon">✦</span></div>
+      <p class="footer-line">إطارُ الوضوحِ المعرفيّ &nbsp;·&nbsp; منتجٌ معرفيٌّ فاخرٌ من VEXORIA</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), 80); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  window.addEventListener('scroll', () => {
+    const hero = document.getElementById('hero');
+    const y = window.scrollY;
+    if (y < window.innerHeight * 1.2) hero.style.transform = `translateY(${y * 0.16}px)`;
+  }, { passive: true });
+</script>
+</body>
+</html>
