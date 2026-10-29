@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lava Station v5 - نظام الإدارة</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ═══════════════════════════════════════════
+           ROOT VARIABLES & APPLE-STYLE DESIGN TOKENS
+           ═══════════════════════════════════════════ */
+        :root {
+            /* Colors - Apple-inspired Dark Mode */
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --bg-hover: #3a3a3a;
+            
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-tertiary: #86868b;
+            
+            --accent-primary: #ff9500;
+            --accent-secondary: #ff6b35;
+            --accent-light: #ffb84d;
+            
+            --status-success: #34c759;
+            --status-warning: #ff9500;
+            --status-danger: #ff3b30;
+            --status-info: #00b4d8;
+            
+            --border-color: #424245;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
+            
+            /* Typography */
+            --font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 13px;
+            --font-size-base: 15px;
+            --font-size-lg: 17px;
+            --font-size-xl: 20px;
+            --font-size-2xl: 24px;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 24px;
+            --spacing-2xl: 32px;
+            
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-full: 9999px;
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease-in-out;
+            --transition-normal: 0.3s ease-in-out;
+        }
+
+        /* ═══════════════════════════════════════════
+           GLOBAL STYLES
+           ═══════════════════════════════════════════ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ═══════════════════════════════════════════
+           LAYOUT
+           ═══════════════════════════════════════════ */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .brand-text h1 {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .brand-text p {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            margin: 2px 0 0 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: background-color var(--transition-fast);
+        }
+
+        .user-menu:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* ═══════════════════════════════════════════
+           NAVIGATION
+           ═══════════════════════════════════════════ */
+        .app-nav {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 var(--spacing-xl);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-container {
+            display: flex;
+            gap: var(--spacing-lg);
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .nav-item {
+            padding: var(--spacing-md) 0;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-family: var(--font-family);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: color var(--transition-fast);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .nav-item:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            color: var(--accent-primary);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--accent-primary);
+        }
+
+        /* ═══════════════════════════════════════════
+           MAIN CONTENT
+           ═══════════════════════════════════════════ */
+        .app-main {
+            flex: 1;
+            padding: var(--spacing-xl);
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn var(--transition-normal);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* ═══════════════════════════════════════════
+           DASHBOARD
+           ═══════════════════════════════════════════ */
+        .dashboard-header {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .dashboard-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .dashboard-title-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .stat-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent-primary);
+            background-color: var(--bg-tertiary);
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .stat-value {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-change {
+            font-size: var(--font-size-xs);
+            color: var(--status-success);
+        }
+
+        .stat-change.negative {
+            color: var(--status-danger);
+        }
+
+        /* ═══════════════════════════════════════════
+           BUTTONS
+           ═══════════════════════════════════════════ */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--font-family);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--status-danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.9;
+        }
+
+        .btn-sm {
+            padding: var(--spacing-xs) var(--spacing-md);
+            font-size: var(--font-size-xs);
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+        }
+
+        /* ═══════════════════════════════════════════
+           TABLES
+           ═══════════════════════════════════════════ */
+        .table-wrapper {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            padding: var(--spacing-md) var(--spacing-lg);
+            text-align: right;
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color var(--transition-fast);
+        }
+
+        tbody tr:hover {
+            background-color: var(--bg-tertiary);
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+        }
+
+        td.text-secondary {
+            color: var(--text-secondary);
+        }
+
+        td.text-success {
+            color: var(--status-success);
+        }
+
+        td.text-warning {
+            color: var(--status-warning);
+        }
+
+        td.text-danger {
+            color: var(--status-danger);
+        }
+
+        /* ═══════════════════════════════════════════
+           BADGES
+           ═══════════════════════════════════════════ */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(52, 199, 89, 0.15);
+            color: var(--status-success);
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 149, 0, 0.15);
+            color: var(--status-warning);
+        }
+
+        .badge-danger {
+            background-color: rgba(255, 59, 48, 0.15);
+            color: var(--status-danger);
+        }
+
+        .badge-info {
+            background-color: rgba(0, 180, 216, 0.15);
+            color: var(--status-info);
+        }
+
+        /* ═══════════════════════════════════════════
+           FORMS
+           ═══════════════════════════════════════════ */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            background-color: var(--bg-secondary);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        /* ═══════════════════════════════════════════
+           MODALS
+           ═══════════════════════════════════════════ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-2xl);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp var(--transition-normal);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .modal-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .modal-title-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-xl);
+            justify-content: flex-end;
+        }
+
+        /* ═══════════════════════════════════════════
+           TOAST NOTIFICATIONS
+           ═══════════════════════════════════════════ */
+        .toast {
+            position: fixed;
+            bottom: var(--spacing-xl);
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            transition: transform var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--status-success);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--status-danger);
+        }
+
+        .toast-warning .toast-icon {
+            color: var(--status-warning);
+        }
+
+        /* ═══════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: var(--spacing-md) var(--spacing-lg);
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .app-main {
+                padding: var(--spacing-lg);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .modal {
+                width: 95%;
+                padding: var(--spacing-xl);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            th, td {
+                padding: var(--spacing-md);
+                font-size: var(--font-size-xs);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-nav {
+                padding: 0 var(--spacing-lg);
+            }
+
+            .nav-container {
+                gap: var(--spacing-md);
+            }
+
+            .dashboard-title {
+                font-size: var(--font-size-xl);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: var(--spacing-lg);
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+           UTILITY CLASSES
+           ═══════════════════════════════════════════ */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .mt-0 { margin-top: 0; }
+        .mt-1 { margin-top: var(--spacing-sm); }
+        .mt-2 { margin-top: var(--spacing-md); }
+        .mt-3 { margin-top: var(--spacing-lg); }
+        .mt-4 { margin-top: var(--spacing-xl); }
+
+        .mb-0 { margin-bottom: 0; }
+        .mb-1 { margin-bottom: var(--spacing-sm); }
+        .mb-2 { margin-bottom: var(--spacing-md); }
+        .mb-3 { margin-bottom: var(--spacing-lg); }
+        .mb-4 { margin-bottom: var(--spacing-xl); }
+
+        .gap-1 { gap: var(--spacing-sm); }
+        .gap-2 { gap: var(--spacing-md); }
+        .gap-3 { gap: var(--spacing-lg); }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ═══════════════════════════════════════════
+           SEARCH & FILTER
+           ═══════════════════════════════════════════ */
+        .search-box {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: var(--font-family);
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+            transition: border-color var(--transition-fast);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* ═══════════════════════════════════════════
+           CHARTS & STATISTICS
+           ═══════════════════════════════════════════ */
+        .chart-container {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .chart-title {
+            font-size: var(--font-size-lg);
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .chart-bar-label {
+            min-width: 100px;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .chart-bar-fill {
+            flex: 1;
+            height: 24px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: var(--radius-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            right: var(--spacing-md);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: var(--font-size-xs);
+            font-weight: 700;
+            color: white;
+        }
+
+        /* ═══════════════════════════════════════════
+           EXPORT & ACTIONS
+           ═══════════════════════════════════════════ */
+        .page-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .action-group {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-content">
+                <a href="#" class="brand">
+                    <div class="brand-icon">🔥</div>
+                    <div class="brand-text">
+                        <h1>Lava Station</h1>
+                        <p>نظام الإدارة المتقدم</p>
+                    </div>
+                </a>
+                <div class="header-actions">
+                    <div class="user-menu">
+                        <div class="user-avatar">م</div>
+                        <span>مدير النظام</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- NAVIGATION -->
+        <nav class="app-nav">
+            <div class="nav-container">
+                <button class="nav-item active" onclick="switchPage('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    لوحة التحكم
+                </button>
+                <button class="nav-item" onclick="switchPage('employees')">
+                    <i class="fas fa-users"></i>
+                    الموظفون
+                </button>
+                <button class="nav-item" onclick="switchPage('attendance')">
+                    <i class="fas fa-calendar-check"></i>
+                    الحضور والغياب
+                </button>
+                <button class="nav-item" onclick="switchPage('salaries')">
+                    <i class="fas fa-money-bill"></i>
+                    الرواتب والخصومات
+                </button>
+                <button class="nav-item" onclick="switchPage('inventory')">
+                    <i class="fas fa-boxes"></i>
+                    المخزون
+                </button>
+                <button class="nav-item" onclick="switchPage('equipment')">
+                    <i class="fas fa-tools"></i>
+                    المعدات
+                </button>
+                <button class="nav-item" onclick="switchPage('reports')">
+                    <i class="fas fa-file-chart-line"></i>
+                    التقارير
+                </button>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="app-main">
+            <!-- DASHBOARD PAGE -->
+            <div class="page active" id="page-dashboard">
+                <div class="page-container">
+                    <div class="dashboard-header">
+                        <div class="dashboard-title">
+                            <div class="dashboard-title-icon">📊</div>
+                            <div>
+                                <div>لوحة التحكم</div>
+                                <div class="dashboard-subtitle">ملخص شامل لعمليات المحطة</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card" onclick="switchPage('employees')">
+                            <div class="stat-label">
+                                <i class="fas fa-users"></i>
+                                إجمالي الموظفين
+                            </div>
+                            <div class="stat-value" id="stat-total-employees">0</div>
+                            <div class="stat-change">↑ نشط اليوم</div>
+                        </div>
+
+                        <div class="stat-card" onclick="switchPage('attendance')">
+                            <div class="stat-label">
+                                <i class="fas fa-check-circle"></i>
+                                الحاضرون اليوم
+                            </div>
+                            <div class="stat-value" id="stat-present-today">0</div>
+                            <div class="stat-change">من إجمالي الموظفين</div>
+                        </div>
+
+                        <div class="stat-card" onclick="switchPage('salaries')">
+                            <div class="stat-label">
+                                <i class="fas fa-money-bill"></i>
+                                إجمالي الرواتب
+                            </div>
+                            <div class="stat-value" id="stat-total-salaries">0</div>
+                            <div class="stat-change">للشهر الحالي</div>
+                        </div>
+
+                        <div class="stat-card" onclick="switchPage('inventory')">
+                            <div class="stat-label">
+                                <i class="fas fa-boxes"></i>
+                                أصناف المخزون
+                            </div>
+                            <div class="stat-value" id="stat-inventory-items">0</div>
+                            <div class="stat-change">قيد الاستخدام</div>
+                        </div>
+
+                        <div class="stat-card" onclick="switchPage('equipment')">
+                            <div class="stat-label">
+                                <i class="fas fa-tools"></i>
+                                المعدات النشطة
+                            </div>
+                            <div class="stat-value" id="stat-equipment-active">0</div>
+                            <div class="stat-change">في حالة جيدة</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                <i class="fas fa-calendar"></i>
+                                التاريخ الحالي
+                            </div>
+                            <div class="stat-value" id="stat-current-date" style="font-size: var(--font-size-lg);">-</div>
+                            <div class="stat-change">تحديث فوري</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMPLOYEES PAGE -->
+            <div class="page" id="page-employees">
+                <div class="page-container">
+                    <div class="flex-between mb-4">
+                        <div class="dashboard-title">
+                            <div class="dashboard-title-icon">👥</div>
+                            <div>
+                                <div>إدارة الموظفين</div>
+                                <div class="dashboard-subtitle">إضافة وتعديل بيانات الموظفين</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openEmployeeModal()">
+                            <i class="fas fa-plus"></i>
+                            إضافة موظف
+                        </button>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="employees-search" placeholder="ابحث عن موظف..." onkeyup="filterEmployees()">
+                        <button class="btn btn-secondary" onclick="exportEmployees()">
+                            <i class="fas fa-download"></i>
+                            تصدير
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>الوظيفة</th>
+                                    <th>الراتب الأساسي</th>
+                                    <th>تاريخ التعيين</th>
+                                    <th>رقم الهاتف</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-tbody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-secondary">لا توجد بيانات</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATTENDANCE PAGE -->
+            <div class="page" id="page-attendance">
+                <div class="page-container">
+                    <div class="dashboard-title mb-4">
+                        <div class="dashboard-title-icon">📅</div>
+                        <div>
+                            <div>الحضور والغياب</div>
+                            <div class="dashboard-subtitle">تتبع حضور الموظفين</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label>اختر التاريخ</label>
+                        <input type="date" id="attendance-date" onchange="updateAttendanceView()">
+                    </div>
+
+                    <div class="page-actions mb-4">
+                        <button class="btn btn-secondary" onclick="markAllPresent()">
+                            <i class="fas fa-check-double"></i>
+                            تحديد الكل حاضر
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportAttendance()">
+                            <i class="fas fa-download"></i>
+                            تصدير
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>الوظيفة</th>
+                                    <th>الحالة</th>
+                                    <th>وقت الدخول</th>
+                                    <th>وقت الخروج</th>
+                                    <th>الملاحظات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-tbody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-secondary">لا توجد بيانات</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SALARIES PAGE -->
+            <div class="page" id="page-salaries">
+                <div class="page-container">
+                    <div class="dashboard-title mb-4">
+                        <div class="dashboard-title-icon">💰</div>
+                        <div>
+                            <div>الرواتب والخصومات</div>
+                            <div class="dashboard-subtitle">إدارة الرواتب والمكافآت والخصومات</div>
+                        </div>
+                    </div>
+
+                    <div class="page-actions mb-4">
+                        <button class="btn btn-secondary" onclick="exportSalaries()">
+                            <i class="fas fa-download"></i>
+                            تصدير الرواتب
+                        </button>
+                        <button class="btn btn-secondary" onclick="printSalaries()">
+                            <i class="fas fa-print"></i>
+                            طباعة
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>الراتب الأساسي</th>
+                                    <th>الخصومات</th>
+                                    <th>المكافآت</th>
+                                    <th>الراتب النهائي</th>
+                                    <th>الملاحظات</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salaries-tbody">
+                                <tr>
+                                    <td colspan="8" class="text-center text-secondary">لا توجد بيانات</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" style="font-weight: 700;">الإجمالي</td>
+                                    <td id="total-salary" style="font-weight: 700; color: var(--accent-primary);">0</td>
+                                    <td id="total-deductions" style="font-weight: 700; color: var(--status-danger);">0</td>
+                                    <td id="total-bonuses" style="font-weight: 700; color: var(--status-success);">0</td>
+                                    <td id="total-net" style="font-weight: 700; color: var(--accent-primary);">0</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INVENTORY PAGE -->
+            <div class="page" id="page-inventory">
+                <div class="page-container">
+                    <div class="flex-between mb-4">
+                        <div class="dashboard-title">
+                            <div class="dashboard-title-icon">📦</div>
+                            <div>
+                                <div>إدارة المخزون</div>
+                                <div class="dashboard-subtitle">تتبع الأصناف والمستهلكات</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openInventoryModal()">
+                            <i class="fas fa-plus"></i>
+                            إضافة صنف
+                        </button>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="inventory-search" placeholder="ابحث عن صنف..." onkeyup="filterInventory()">
+                        <button class="btn btn-secondary" onclick="exportInventory()">
+                            <i class="fas fa-download"></i>
+                            تصدير
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>اسم الصنف</th>
+                                    <th>التصنيف</th>
+                                    <th>الوحدة</th>
+                                    <th>الكمية</th>
+                                    <th>الحد الأدنى</th>
+                                    <th>سعر الوحدة</th>
+                                    <th>الإجمالي</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-tbody">
+                                <tr>
+                                    <td colspan="10" class="text-center text-secondary">لا توجد بيانات</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="7" style="font-weight: 700;">إجمالي قيمة المخزون</td>
+                                    <td id="inventory-total" style="font-weight: 700; color: var(--accent-primary);">0</td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EQUIPMENT PAGE -->
+            <div class="page" id="page-equipment">
+                <div class="page-container">
+                    <div class="flex-between mb-4">
+                        <div class="dashboard-title">
+                            <div class="dashboard-title-icon">🔧</div>
+                            <div>
+                                <div>إدارة المعدات</div>
+                                <div class="dashboard-subtitle">تتبع حالة المعدات والأدوات</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="openEquipmentModal()">
+                            <i class="fas fa-plus"></i>
+                            إضافة معدة
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>اسم المعدة</th>
+                                    <th>النوع</th>
+                                    <th>الكمية</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الشراء</th>
+                                    <th>السعر</th>
+                                    <th>الضمان</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipment-tbody">
+                                <tr>
+                                    <td colspan="9" class="text-center text-secondary">لا توجد بيانات</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REPORTS PAGE -->
+            <div class="page" id="page-reports">
+                <div class="page-container">
+                    <div class="dashboard-title mb-4">
+                        <div class="dashboard-title-icon">📊</div>
+                        <div>
+                            <div>التقارير والإحصائيات</div>
+                            <div class="dashboard-subtitle">تحليل شامل لعمليات المحطة</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                <i class="fas fa-users"></i>
+                                إجمالي الموظفين
+                            </div>
+                            <div class="stat-value" id="report-total-employees">0</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                <i class="fas fa-check"></i>
+                                معدل الحضور
+                            </div>
+                            <div class="stat-value" id="report-attendance-rate">0%</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                <i class="fas fa-money-bill"></i>
+                                إجمالي الرواتب
+                            </div>
+                            <div class="stat-value" id="report-total-salaries">0</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">
+                                <i class="fas fa-boxes"></i>
+                                قيمة المخزون
+                            </div>
+                            <div class="stat-value" id="report-inventory-value">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- EMPLOYEE MODAL -->
+    <div class="modal-overlay" id="employee-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="modal-title-icon">👤</div>
+                    <span id="employee-modal-title">إضافة موظف جديد</span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>الاسم *</label>
+                    <input type="text" id="employee-name" placeholder="الاسم الكامل">
+                </div>
+                <div class="form-group">
+                    <label>الوظيفة *</label>
+                    <select id="employee-role">
+                        <option value="">اختر...</option>
+                        <option>كاشير</option>
+                        <option>بريستا</option>
+                        <option>ويتر</option>
+                        <option>طباخ</option>
+                        <option>مساعد طباخ</option>
+                        <option>مدير وردية</option>
+                        <option>أمن</option>
+                        <option>نظافة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الراتب الأساسي (ج.م) *</label>
+                    <input type="number" id="employee-salary" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>تاريخ التعيين</label>
+                    <input type="date" id="employee-start-date">
+                </div>
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" id="employee-phone" placeholder="01x...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('employee-modal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveEmployee()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVENTORY MODAL -->
+    <div class="modal-overlay" id="inventory-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="modal-title-icon">📦</div>
+                    <span>إضافة صنف جديد</span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>اسم الصنف *</label>
+                    <input type="text" id="inventory-name" placeholder="مثال: بن مطحون">
+                </div>
+                <div class="form-group">
+                    <label>التصنيف</label>
+                    <select id="inventory-category">
+                        <option>مشروبات</option>
+                        <option>مأكولات</option>
+                        <option>خامات</option>
+                        <option>تغليف</option>
+                        <option>نظافة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الوحدة</label>
+                    <input type="text" id="inventory-unit" placeholder="كيلو / لتر / قطعة">
+                </div>
+                <div class="form-group">
+                    <label>الكمية الحالية</label>
+                    <input type="number" id="inventory-quantity" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>الحد الأدنى</label>
+                    <input type="number" id="inventory-min-qty" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>سعر الوحدة (ج.م)</label>
+                    <input type="number" id="inventory-price" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>المورد</label>
+                    <input type="text" id="inventory-supplier" placeholder="اسم المورد">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('inventory-modal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveInventory()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EQUIPMENT MODAL -->
+    <div class="modal-overlay" id="equipment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="modal-title-icon">🔧</div>
+                    <span>إضافة معدة جديدة</span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>اسم المعدة *</label>
+                    <input type="text" id="equipment-name" placeholder="مثال: ماكينة قهوة">
+                </div>
+                <div class="form-group">
+                    <label>النوع</label>
+                    <input type="text" id="equipment-type" placeholder="نوع المعدة">
+                </div>
+                <div class="form-group">
+                    <label>الكمية</label>
+                    <input type="number" id="equipment-quantity" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select id="equipment-condition">
+                        <option>ممتازة</option>
+                        <option>جيدة</option>
+                        <option>تحتاج صيانة</option>
+                        <option>معطلة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ الشراء</label>
+                    <input type="date" id="equipment-purchase-date">
+                </div>
+                <div class="form-group">
+                    <label>السعر (ج.م)</label>
+                    <input type="number" id="equipment-price" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>المورد</label>
+                    <input type="text" id="equipment-supplier" placeholder="اسم المورد">
+                </div>
+                <div class="form-group">
+                    <label>الضمان حتى</label>
+                    <input type="date" id="equipment-warranty">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('equipment-modal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveEquipment()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">✓</div>
+        <span id="toast-message">تم الحفظ بنجاح</span>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════
+        // DATA MANAGEMENT
+        // ═══════════════════════════════════════════
+        let employees = JSON.parse(localStorage.getItem('lava_employees')) || [];
+        let inventory = JSON.parse(localStorage.getItem('lava_inventory')) || [];
+        let equipment = JSON.parse(localStorage.getItem('lava_equipment')) || [];
+        let attendance = JSON.parse(localStorage.getItem('lava_attendance')) || {};
+
+        // ═══════════════════════════════════════════
+        // PAGE NAVIGATION
+        // ═══════════════════════════════════════════
+        function switchPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(`page-${pageName}`).classList.add('active');
+
+            // Add active class to nav item
+            event.target.closest('.nav-item').classList.add('active');
+
+            // Update page content
+            if (pageName === 'employees') {
+                renderEmployees();
+            } else if (pageName === 'attendance') {
+                initAttendanceView();
+            } else if (pageName === 'salaries') {
+                renderSalaries();
+            } else if (pageName === 'inventory') {
+                renderInventory();
+            } else if (pageName === 'equipment') {
+                renderEquipment();
+            } else if (pageName === 'reports') {
+                renderReports();
+            } else if (pageName === 'dashboard') {
+                updateDashboard();
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // DASHBOARD
+        // ═══════════════════════════════════════════
+        function updateDashboard() {
+            document.getElementById('stat-total-employees').textContent = employees.length;
+            document.getElementById('stat-present-today').textContent = Object.values(attendance).filter(a => a === 'حاضر').length;
+            
+            const totalSalary = employees.reduce((sum, emp) => sum + (emp.salary || 0), 0);
+            document.getElementById('stat-total-salaries').textContent = totalSalary.toLocaleString('ar-EG') + ' ج.م';
+            
+            document.getElementById('stat-inventory-items').textContent = inventory.length;
+            document.getElementById('stat-equipment-active').textContent = equipment.filter(e => e.condition !== 'معطلة').length;
+            
+            const today = new Date().toLocaleDateString('ar-EG');
+            document.getElementById('stat-current-date').textContent = today;
+        }
+
+        // ═══════════════════════════════════════════
+        // EMPLOYEES
+        // ═══════════════════════════════════════════
+        function openEmployeeModal() {
+            document.getElementById('employee-modal-title').textContent = 'إضافة موظف جديد';
+            document.getElementById('employee-name').value = '';
+            document.getElementById('employee-role').value = '';
+            document.getElementById('employee-salary').value = '';
+            document.getElementById('employee-start-date').value = '';
+            document.getElementById('employee-phone').value = '';
+            document.getElementById('employee-modal').classList.add('open');
+        }
+
+        function saveEmployee() {
+            const name = document.getElementById('employee-name').value.trim();
+            const role = document.getElementById('employee-role').value;
+            const salary = parseFloat(document.getElementById('employee-salary').value) || 0;
+            const startDate = document.getElementById('employee-start-date').value;
+            const phone = document.getElementById('employee-phone').value;
+
+            if (!name || !role || salary <= 0) {
+                showToast('⚠️ الرجاء ملء جميع الحقول المطلوبة', 'warning');
+                return;
+            }
+
+            employees.push({
+                id: Date.now(),
+                name,
+                role,
+                salary,
+                startDate,
+                phone,
+                deductions: 0,
+                bonuses: 0,
+                notes: ''
+            });
+
+            localStorage.setItem('lava_employees', JSON.stringify(employees));
+            closeModal('employee-modal');
+            renderEmployees();
+            showToast('✅ تم إضافة الموظف بنجاح');
+            updateDashboard();
+        }
+
+        function renderEmployees() {
+            const tbody = document.getElementById('employees-tbody');
+            tbody.innerHTML = '';
+
+            if (employees.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            employees.forEach((emp, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.role}</td>
+                    <td>${emp.salary.toLocaleString('ar-EG')} ج.م</td>
+                    <td>${emp.startDate || '-'}</td>
+                    <td>${emp.phone || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editEmployee(${emp.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteEmployee(${emp.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteEmployee(id) {
+            if (confirm('هل تريد حذف هذا الموظف؟')) {
+                employees = employees.filter(emp => emp.id !== id);
+                localStorage.setItem('lava_employees', JSON.stringify(employees));
+                renderEmployees();
+                showToast('🗑️ تم حذف الموظف');
+                updateDashboard();
+            }
+        }
+
+        function editEmployee(id) {
+            const emp = employees.find(e => e.id === id);
+            if (!emp) return;
+
+            document.getElementById('employee-modal-title').textContent = 'تعديل بيانات الموظف';
+            document.getElementById('employee-name').value = emp.name;
+            document.getElementById('employee-role').value = emp.role;
+            document.getElementById('employee-salary').value = emp.salary;
+            document.getElementById('employee-start-date').value = emp.startDate;
+            document.getElementById('employee-phone').value = emp.phone;
+            document.getElementById('employee-modal').classList.add('open');
+
+            // TODO: Implement update logic
+        }
+
+        // ═══════════════════════════════════════════
+        // ATTENDANCE
+        // ═══════════════════════════════════════════
+        function initAttendanceView() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendance-date').value = today;
+            updateAttendanceView();
+        }
+
+        function updateAttendanceView() {
+            const date = document.getElementById('attendance-date').value;
+            const tbody = document.getElementById('attendance-tbody');
+            tbody.innerHTML = '';
+
+            if (employees.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            employees.forEach((emp, index) => {
+                const status = attendance[`${emp.id}-${date}`] || '-';
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.role}</td>
+                    <td>
+                        <select onchange="updateAttendance(${emp.id}, '${date}', this.value)">
+                            <option value="-" ${status === '-' ? 'selected' : ''}>-</option>
+                            <option value="حاضر" ${status === 'حاضر' ? 'selected' : ''}>حاضر</option>
+                            <option value="غائب" ${status === 'غائب' ? 'selected' : ''}>غائب</option>
+                            <option value="إجازة" ${status === 'إجازة' ? 'selected' : ''}>إجازة</option>
+                            <option value="تأخير" ${status === 'تأخير' ? 'selected' : ''}>تأخير</option>
+                        </select>
+                    </td>
+                    <td><input type="time" id="in-${emp.id}" placeholder="--:--"></td>
+                    <td><input type="time" id="out-${emp.id}" placeholder="--:--"></td>
+                    <td><input type="text" placeholder="ملاحظات..."></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateAttendance(empId, date, status) {
+            attendance[`${empId}-${date}`] = status;
+            localStorage.setItem('lava_attendance', JSON.stringify(attendance));
+            showToast('✅ تم تحديث الحضور');
+            updateDashboard();
+        }
+
+        // ═══════════════════════════════════════════
+        // SALARIES
+        // ═══════════════════════════════════════════
+        function renderSalaries() {
+            const tbody = document.getElementById('salaries-tbody');
+            tbody.innerHTML = '';
+
+            if (employees.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-secondary">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            let totalSalary = 0, totalDeductions = 0, totalBonuses = 0;
+
+            employees.forEach((emp, index) => {
+                const netSalary = emp.salary - emp.deductions + emp.bonuses;
+                totalSalary += emp.salary;
+                totalDeductions += emp.deductions;
+                totalBonuses += emp.bonuses;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.salary.toLocaleString('ar-EG')} ج.م</td>
+                    <td class="text-danger">${emp.deductions.toLocaleString('ar-EG')}</td>
+                    <td class="text-success">${emp.bonuses.toLocaleString('ar-EG')}</td>
+                    <td class="text-success" style="font-weight: 700;">${netSalary.toLocaleString('ar-EG')} ج.م</td>
+                    <td>${emp.notes || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editSalary(${emp.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('total-salary').textContent = totalSalary.toLocaleString('ar-EG') + ' ج.م';
+            document.getElementById('total-deductions').textContent = totalDeductions.toLocaleString('ar-EG');
+            document.getElementById('total-bonuses').textContent = totalBonuses.toLocaleString('ar-EG');
+            document.getElementById('total-net').textContent = (totalSalary - totalDeductions + totalBonuses).toLocaleString('ar-EG') + ' ج.م';
+        }
+
+        function editSalary(empId) {
+            const emp = employees.find(e => e.id === empId);
+            if (!emp) return;
+
+            const deductions = prompt(`خصومات ${emp.name} (الحالي: ${emp.deductions}):`, emp.deductions);
+            if (deductions !== null) {
+                emp.deductions = parseFloat(deductions) || 0;
+            }
+
+            const bonuses = prompt(`مكافآت ${emp.name} (الحالي: ${emp.bonuses}):`, emp.bonuses);
+            if (bonuses !== null) {
+                emp.bonuses = parseFloat(bonuses) || 0;
+            }
+
+            localStorage.setItem('lava_employees', JSON.stringify(employees));
+            renderSalaries();
+            showToast('✅ تم تحديث الراتب');
+        }
+
+        // ═══════════════════════════════════════════
+        // INVENTORY
+        // ═══════════════════════════════════════════
+        function openInventoryModal() {
+            document.getElementById('inventory-name').value = '';
+            document.getElementById('inventory-category').value = 'مشروبات';
+            document.getElementById('inventory-unit').value = '';
+            document.getElementById('inventory-quantity').value = '';
+            document.getElementById('inventory-min-qty').value = '';
+            document.getElementById('inventory-price').value = '';
+            document.getElementById('inventory-supplier').value = '';
+            document.getElementById('inventory-modal').classList.add('open');
+        }
+
+        function saveInventory() {
+            const name = document.getElementById('inventory-name').value.trim();
+            const category = document.getElementById('inventory-category').value;
+            const unit = document.getElementById('inventory-unit').value;
+            const quantity = parseFloat(document.getElementById('inventory-quantity').value) || 0;
+            const minQty = parseFloat(document.getElementById('inventory-min-qty').value) || 0;
+            const price = parseFloat(document.getElementById('inventory-price').value) || 0;
+            const supplier = document.getElementById('inventory-supplier').value;
+
+            if (!name) {
+                showToast('⚠️ الرجاء إدخال اسم الصنف', 'warning');
+                return;
+            }
+
+            inventory.push({
+                id: Date.now(),
+                name,
+                category,
+                unit,
+                quantity,
+                minQty,
+                price,
+                supplier,
+                lastUpdated: new Date().toLocaleDateString('ar-EG')
+            });
+
+            localStorage.setItem('lava_inventory', JSON.stringify(inventory));
+            closeModal('inventory-modal');
+            renderInventory();
+            showToast('✅ تم إضافة الصنف بنجاح');
+            updateDashboard();
+        }
+
+        function renderInventory() {
+            const tbody = document.getElementById('inventory-tbody');
+            tbody.innerHTML = '';
+
+            if (inventory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-secondary">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            let totalValue = 0;
+
+            inventory.forEach((item, index) => {
+                const itemTotal = item.quantity * item.price;
+                totalValue += itemTotal;
+                const isLow = item.quantity <= item.minQty && item.minQty > 0;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.category}</td>
+                    <td>${item.unit}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.minQty}</td>
+                    <td>${item.price.toLocaleString('ar-EG')} ج.م</td>
+                    <td class="text-success" style="font-weight: 700;">${itemTotal.toLocaleString('ar-EG')} ج.م</td>
+                    <td>
+                        <span class="badge ${isLow ? 'badge-danger' : 'badge-success'}">
+                            ${isLow ? '⚠️ منخفض' : '✓ كافي'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteInventory(${item.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('inventory-total').textContent = totalValue.toLocaleString('ar-EG') + ' ج.م';
+        }
+
+        function deleteInventory(id) {
+            if (confirm('هل تريد حذف هذا الصنف؟')) {
+                inventory = inventory.filter(item => item.id !== id);
+                localStorage.setItem('lava_inventory', JSON.stringify(inventory));
+                renderInventory();
+                showToast('🗑️ تم حذف الصنف');
+                updateDashboard();
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // EQUIPMENT
+        // ═══════════════════════════════════════════
+        function openEquipmentModal() {
+            document.getElementById('equipment-name').value = '';
+            document.getElementById('equipment-type').value = '';
+            document.getElementById('equipment-quantity').value = '1';
+            document.getElementById('equipment-condition').value = 'جيدة';
+            document.getElementById('equipment-purchase-date').value = '';
+            document.getElementById('equipment-price').value = '';
+            document.getElementById('equipment-supplier').value = '';
+            document.getElementById('equipment-warranty').value = '';
+            document.getElementById('equipment-modal').classList.add('open');
+        }
+
+        function saveEquipment() {
+            const name = document.getElementById('equipment-name').value.trim();
+            const type = document.getElementById('equipment-type').value;
+            const quantity = parseFloat(document.getElementById('equipment-quantity').value) || 1;
+            const condition = document.getElementById('equipment-condition').value;
+            const purchaseDate = document.getElementById('equipment-purchase-date').value;
+            const price = parseFloat(document.getElementById('equipment-price').value) || 0;
+            const supplier = document.getElementById('equipment-supplier').value;
+            const warranty = document.getElementById('equipment-warranty').value;
+
+            if (!name) {
+                showToast('⚠️ الرجاء إدخال اسم المعدة', 'warning');
+                return;
+            }
+
+            equipment.push({
+                id: Date.now(),
+                name,
+                type,
+                quantity,
+                condition,
+                purchaseDate,
+                price,
+                supplier,
+                warranty
+            });
+
+            localStorage.setItem('lava_equipment', JSON.stringify(equipment));
+            closeModal('equipment-modal');
+            renderEquipment();
+            showToast('✅ تم إضافة المعدة بنجاح');
+            updateDashboard();
+        }
+
+        function renderEquipment() {
+            const tbody = document.getElementById('equipment-tbody');
+            tbody.innerHTML = '';
+
+            if (equipment.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-secondary">لا توجد بيانات</td></tr>';
+                return;
+            }
+
+            equipment.forEach((item, index) => {
+                const conditionColor = {
+                    'ممتازة': 'badge-success',
+                    'جيدة': 'badge-success',
+                    'تحتاج صيانة': 'badge-warning',
+                    'معطلة': 'badge-danger'
+                }[item.condition] || 'badge-info';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.type || '-'}</td>
+                    <td>${item.quantity}</td>
+                    <td><span class="badge ${conditionColor}">${item.condition}</span></td>
+                    <td>${item.purchaseDate || '-'}</td>
+                    <td>${item.price.toLocaleString('ar-EG')} ج.م</td>
+                    <td>${item.warranty || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger" onclick="deleteEquipment(${item.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function deleteEquipment(id) {
+            if (confirm('هل تريد حذف هذه المعدة؟')) {
+                equipment = equipment.filter(item => item.id !== id);
+                localStorage.setItem('lava_equipment', JSON.stringify(equipment));
+                renderEquipment();
+                showToast('🗑️ تم حذف المعدة');
+                updateDashboard();
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // REPORTS
+        // ═══════════════════════════════════════════
+        function renderReports() {
+            const totalEmployees = employees.length;
+            const presentToday = Object.values(attendance).filter(a => a === 'حاضر').length;
+            const attendanceRate = totalEmployees > 0 ? Math.round((presentToday / totalEmployees) * 100) : 0;
+            const totalSalaries = employees.reduce((sum, emp) => sum + emp.salary, 0);
+            const inventoryValue = inventory.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+
+            document.getElementById('report-total-employees').textContent = totalEmployees;
+            document.getElementById('report-attendance-rate').textContent = attendanceRate + '%';
+            document.getElementById('report-total-salaries').textContent = totalSalaries.toLocaleString('ar-EG') + ' ج.م';
+            document.getElementById('report-inventory-value').textContent = inventoryValue.toLocaleString('ar-EG') + ' ج.م';
+        }
+
+        // ═══════════════════════════════════════════
+        // UTILITIES
+        // ═══════════════════════════════════════════
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('open');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = toast.querySelector('.toast-icon');
+
+            toastMessage.textContent = message;
+            toast.className = `toast ${type === 'success' ? 'toast-success' : type === 'error' ? 'toast-error' : 'toast-warning'} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('open');
+                }
+            });
+        });
+
+        // ═══════════════════════════════════════════
+        // SEARCH & FILTER
+        // ═══════════════════════════════════════════
+        function filterEmployees() {
+            const searchTerm = document.getElementById('employees-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#employees-tbody tr');
+            
+            rows.forEach(row => {
+                const name = row.cells[1]?.textContent.toLowerCase() || '';
+                const role = row.cells[2]?.textContent.toLowerCase() || '';
+                const match = name.includes(searchTerm) || role.includes(searchTerm);
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        function filterInventory() {
+            const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#inventory-tbody tr');
+            
+            rows.forEach(row => {
+                const name = row.cells[1]?.textContent.toLowerCase() || '';
+                const category = row.cells[2]?.textContent.toLowerCase() || '';
+                const match = name.includes(searchTerm) || category.includes(searchTerm);
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        // ═══════════════════════════════════════════
+        // EXPORT FUNCTIONS
+        // ═══════════════════════════════════════════
+        function exportToCSV(data, filename) {
+            let csv = '';
+            
+            if (Array.isArray(data) && data.length > 0) {
+                const headers = Object.keys(data[0]);
+                csv = headers.join(',') + '\n';
+                
+                data.forEach(row => {
+                    const values = headers.map(header => {
+                        const value = row[header];
+                        return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
+                    });
+                    csv += values.join(',') + '\n';
+                });
+            }
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportEmployees() {
+            const data = employees.map((emp, idx) => ({
+                'الرقم': idx + 1,
+                'الاسم': emp.name,
+                'الوظيفة': emp.role,
+                'الراتب': emp.salary,
+                'تاريخ التعيين': emp.startDate,
+                'الهاتف': emp.phone
+            }));
+            exportToCSV(data, 'الموظفين.csv');
+            showToast('✅ تم تصدير البيانات بنجاح');
+        }
+
+        function exportSalaries() {
+            const data = employees.map((emp, idx) => ({
+                'الرقم': idx + 1,
+                'الاسم': emp.name,
+                'الراتب الأساسي': emp.salary,
+                'الخصومات': emp.deductions,
+                'المكافآت': emp.bonuses,
+                'الراتب النهائي': emp.salary - emp.deductions + emp.bonuses
+            }));
+            exportToCSV(data, 'الرواتب.csv');
+            showToast('✅ تم تصدير الرواتب بنجاح');
+        }
+
+        function exportAttendance() {
+            const date = document.getElementById('attendance-date').value;
+            const data = employees.map((emp, idx) => ({
+                'الرقم': idx + 1,
+                'الاسم': emp.name,
+                'الوظيفة': emp.role,
+                'الحالة': attendance[`${emp.id}-${date}`] || '-'
+            }));
+            exportToCSV(data, `الحضور_${date}.csv`);
+            showToast('✅ تم تصدير الحضور بنجاح');
+        }
+
+        function exportInventory() {
+            const data = inventory.map((item, idx) => ({
+                'الرقم': idx + 1,
+                'اسم الصنف': item.name,
+                'التصنيف': item.category,
+                'الوحدة': item.unit,
+                'الكمية': item.quantity,
+                'الحد الأدنى': item.minQty,
+                'سعر الوحدة': item.price,
+                'الإجمالي': item.quantity * item.price
+            }));
+            exportToCSV(data, 'المخزون.csv');
+            showToast('✅ تم تصدير المخزون بنجاح');
+        }
+
+        function printSalaries() {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            let html = '<html><head><title>الرواتب</title><style>body{font-family:Arial;direction:rtl;}</style></head><body>';
+            html += '<h1>كشف الرواتب</h1>';
+            html += '<table border="1" cellpadding="10" style="width:100%;border-collapse:collapse;">';
+            html += '<tr><th>الاسم</th><th>الراتب الأساسي</th><th>الخصومات</th><th>المكافآت</th><th>الراتب النهائي</th></tr>';
+            
+            employees.forEach(emp => {
+                const net = emp.salary - emp.deductions + emp.bonuses;
+                html += `<tr><td>${emp.name}</td><td>${emp.salary}</td><td>${emp.deductions}</td><td>${emp.bonuses}</td><td>${net}</td></tr>`;
+            });
+            
+            html += '</table></body></html>';
+            printWindow.document.write(html);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // ═══════════════════════════════════════════
+        // ATTENDANCE HELPERS
+        // ═══════════════════════════════════════════
+        function markAllPresent() {
+            const date = document.getElementById('attendance-date').value;
+            employees.forEach(emp => {
+                attendance[`${emp.id}-${date}`] = 'حاضر';
+            });
+            localStorage.setItem('lava_attendance', JSON.stringify(attendance));
+            updateAttendanceView();
+            showToast('✅ تم تحديد الكل كحاضر');
+        }
+
+        // ═══════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboard();
+        });
+    </script>
+</body>
+</html>

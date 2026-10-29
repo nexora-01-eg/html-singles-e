@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXORA — منظومة النمو المتكاملة | هوية فاخرة • موقع يحوّل • نظام مبيعات</title>
+<meta name="description" content="NEXORA تبني لك هوية فاخرة، موقع يحوّل الزائر لعميل، ونظام مبيعات بأتمتة وذكاء اصطناعي. من الفكرة إلى النمو المستدام — شريك نمو مش مزود خدمة.">
+<meta property="og:title" content="NEXORA — منظومة النمو المتكاملة">
+<meta property="og:description" content="هوية فاخرة • موقع يحول • نظام مبيعات • أتمتة AI">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&family=Noto+Naskh+Arabic:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root{--b0:#020202;--b2:#080808;--b5:#151515;--gold:#D6C3A5;--gold-d:#b8a275;--white:#F7F4EF;--silver:#ADADAD;--muted:#666;--line-g:rgba(214,195,165,.18);--ease:cubic-bezier(.16,1,.3,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html,body{overflow-x:hidden; max-width:100vw} body{font-family:'Alexandria',system-ui,sans-serif; background:var(--b0); color:var(--white); line-height:1.7}
+a{color:inherit; text-decoration:none}
+.gold-text{background:linear-gradient(135deg,#F7F4EF 15%,#D6C3A5 55%,#b8a275 100%); -webkit-background-clip:text; color:transparent}
+.glass{background:rgba(21,21,21,.55); border:1px solid var(--line-g); backdrop-filter:blur(12px); border-radius:20px}
+.glow{position:absolute; inset:auto; width:min(900px,100vw); height:600px; left:50%; top:-10%; transform:translateX(-50%); background:radial-gradient(ellipse at center, rgba(59,130,246,.18) 0%, rgba(59,130,246,.06) 40%, transparent 70%); pointer-events:none; filter:blur(10px); max-width:100vw}
+.nav{position:fixed; top:0; inset-inline:0; z-index:40; background:rgba(2,2,2,.6); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,.06)}
+.hero{position:relative; overflow:hidden; padding:110px 0 60px}
+.hero-grid{position:absolute; inset:0; background-image:linear-gradient(to right, rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.03) 1px, transparent 1px); background-size:72px 72px; mask-image:radial-gradient(ellipse at 50% 0%, black 60%, transparent 82%); opacity:.6}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-d)); color:#0a0a0a; font-weight:800}
+.btn-ghost{border:1px solid var(--line-g); background:rgba(255,255,255,.04); backdrop-filter:blur(8px)}
+.card-hover{transition:transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease)}
+.card-hover:hover{transform:translateY(-4px); border-color:rgba(214,195,165,.32); box-shadow:0 20px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(214,195,165,.08) inset}
+.reveal{opacity:0; transform:translateY(24px); transition:all .8s var(--ease)}
+.reveal.in{opacity:1; transform:none}
+.line-gold{height:2px; background:linear-gradient(90deg, transparent, var(--gold), transparent); opacity:.5}
+.step-line{position:absolute; top:28px; inset-inline:0; height:1px; background:linear-gradient(90deg, transparent 5%, var(--line-g) 50%, transparent 95%); z-index:0}
+.faq details{border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); border-radius:16px; padding:16px 18px}
+.faq details[open]{border-color:var(--line-g); background:rgba(214,195,165,.04)}
+.faq summary{cursor:pointer; list-style:none; display:flex; align-items:center; justify-content:space-between; font-weight:700}
+.faq summary::-webkit-details-marker{display:none}
+.whatsapp{position:fixed; bottom:18px; left:18px; z-index:50; width:56px; height:56px; border-radius:50%; background:#25D366; display:grid; place-items:center; color:white; box-shadow:0 12px 30px rgba(37,211,102,.45); border:2px solid rgba(255,255,255,.15)}
+@media(max-width:768px){.hero{padding-top:90px} .whatsapp{left:14px; bottom:14px; width:52px; height:52px} #heroMock{grid-template-columns:1fr !important} #services>div:nth-of-type(2), #services>div:nth-of-type(3){grid-template-columns:1fr !important} #process>div:last-child{grid-template-columns:1fr 1fr !important} #pricing>div:last-child{grid-template-columns:1fr !important} section div[style*="grid-template-columns:repeat(6"]{grid-template-columns:repeat(3,1fr) !important} section div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}}
+@media(max-width:480px){#process>div:last-child{grid-template-columns:1fr !important} section div[style*="grid-template-columns:repeat(6"]{grid-template-columns:repeat(2,1fr) !important} section div[style*="grid-template-columns:repeat(4"]{grid-template-columns:1fr 1fr !important}}
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px; height:62px; display:flex; align-items:center; justify-content:space-between; gap:16px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="width:36px; height:36px; border-radius:12px; background:linear-gradient(135deg,var(--gold),var(--gold-d)); display:grid; place-items:center; color:#0a0a0a; font-weight:900; font-size:13px">N</span>
+      <span style="font-weight:800; letter-spacing:-0.03em; font-size:18px">NEXORA</span>
+      <span style="font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line-g); color:var(--silver); display:none" class="hide-m">منظومة النمو • 10/10 Luxury</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:18px; font-size:13px; color:var(--silver)" class="hide-m">
+      <a href="#services" style="color:var(--white)">الخدمات</a>
+      <a href="#process">كيف نعمل</a>
+      <a href="#pricing">الباقات</a>
+      <a href="#faq">الأسئلة</a>
+      <a href="https://wa.me/201000000000" class="btn-gold" style="padding:8px 16px; border-radius:999px; font-size:13px">احجز استشارة مجانية — 30 دقيقة</a>
+    </div>
+    <a href="https://wa.me/201000000000" class="btn-gold" style="padding:8px 14px; border-radius:999px; font-size:12px; display:none" id="navCtaMobile">استشارة</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div style="max-width:1200px; margin:0 auto; padding:0 24px; position:relative">
+    <div style="display:flex; justify-content:center">
+      <span style="display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; border:1px solid var(--line-g); background:rgba(255,255,255,.04); font-size:12px; color:var(--silver)">
+        <span style="width:7px; height:7px; border-radius:50%; background:#22c55e; box-shadow:0 0 10px #22c55e"></span>
+        نفتح 3 مشاريع جديدة هذا الشهر — متبقي مقعدان
+        <span style="padding:2px 6px; border-radius:999px; background:var(--gold); color:#0a0a0a; font-weight:800; font-size:10px">NEW • 2026</span>
+      </span>
+    </div>
+    <h1 style="text-align:center; font-weight:800; letter-spacing:-0.04em; line-height:.95; margin-top:18px; font-size:clamp(36px,6vw,72px)">
+      <span style="display:block; color:var(--white)">منظومة</span>
+      <span style="display:block" class="gold-text">تُحوّل مشروعك</span>
+      <span style="display:block; color:var(--silver); font-weight:600; font-size:.62em; margin-top:6px">من فكرة → إلى نمو مستدام</span>
+    </h1>
+    <p style="text-align:center; color:var(--silver); max-width:680px; margin:16px auto 0; font-size:15px; line-height:1.9; font-family:'Noto Naskh Arabic',serif">
+      لسنا شركة تسويق عادية. نبني <b style="color:var(--white)">هوية فاخرة + موقع يحوّل + نظام مبيعات بأتمتة و AI</b> — في منظومة واحدة تعمل 24/7. مستوحاة من Linear و Stripe و Dezinet Luxury.
+    </p>
+    <div style="display:flex; justify-content:center; gap:12px; margin-top:22px; flex-wrap:wrap">
+      <a href="#pricing" class="btn-gold" style="padding:14px 22px; border-radius:999px; display:flex; align-items:center; gap:8px; font-size:14px">ابدأ منظومتك <i data-lucide="arrow-left" style="width:16px; height:16px"></i></a>
+      <a href="../gsap-3d-scroll/index.html" class="btn-ghost" style="padding:14px 22px; border-radius:999px; display:flex; align-items:center; gap:8px; font-size:14px"><i data-lucide="play" style="width:16px; height:16px"></i> شوف الـ 3D Scroll GSAP</a>
+    </div>
+
+    <!-- HERO MOCK / STATS -->
+    <div style="margin-top:38px; display:grid; grid-template-columns:1.15fr .85fr; gap:16px" id="heroMock">
+      <div class="glass" style="padding:18px; overflow:hidden; position:relative">
+        <div style="position:absolute; inset:0; background:radial-gradient(600px 300px at 30% 0%, rgba(214,195,165,.10), transparent 60%); pointer-events:none"></div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--silver)"><span style="width:8px; height:8px; border-radius:50%; background:var(--gold)"></span> NEXORA OS — لوحة نمو مباشرة <span style="margin-inline-start:auto; padding:4px 8px; border-radius:999px; background:var(--white); color:#0a0a0a; font-weight:700; font-size:11px">Live • الآن</span></div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px">
+          <div style="padding:14px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); text-align:center"><div style="font-weight:900; font-size:22px">+214%</div><div style="font-size:11px; color:var(--silver)">تحويل الموقع</div><div style="margin-top:8px; height:4px; border-radius:999px; background:rgba(255,255,255,.08); overflow:hidden"><div style="width:78%; height:100%; background:var(--gold)"></div></div></div>
+          <div style="padding:14px; border-radius:16px; background:var(--white); color:#0a0a0a; text-align:center"><div style="font-weight:900; font-size:22px">1.1s</div><div style="font-size:11px; opacity:.6">سرعة تحميل</div><div style="margin-top:6px; font-size:11px; padding:4px 8px; border-radius:999px; background:#0a0a0a; color:var(--white); display:inline-block">-62%</div></div>
+          <div style="padding:14px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); text-align:center"><div style="font-weight:900; font-size:22px">4.9/5</div><div style="font-size:11px; color:var(--silver)">تقييم العملاء</div><div style="margin-top:6px; font-size:11px; color:var(--gold)">★★★★★ 127 تقييم</div></div>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:12px; font-size:11px; font-family:'Inter',monospace; color:var(--silver); flex-wrap:wrap"><span style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04)">Next.js 16</span><span style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04)">GSAP ScrollTrigger</span><span style="padding:6px 10px; border-radius:999px; background:var(--gold); color:#0a0a0a; font-weight:700">Lenis smooth</span></div>
+      </div>
+      <div class="glass" style="padding:18px">
+        <div style="font-size:12px; letter-spacing:.14em; color:var(--silver); font-weight:700">ماذا نبني لك</div>
+        <div style="margin-top:12px; display:grid; gap:10px">
+          <div style="display:flex; gap:10px; align-items:center; padding:12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)"><span style="width:32px; height:32px; border-radius:10px; background:rgba(214,195,165,.15); display:grid; place-items:center; color:var(--gold)"><i data-lucide="palette" style="width:16px; height:16px"></i></span><div><div style="font-weight:700; font-size:13px">هوية فاخرة</div><div style="font-size:12px; color:var(--silver)">شعار + ألوان #D6C3A5 + دليل كامل</div></div><span style="margin-inline-start:auto; color:var(--silver)"><i data-lucide="check" style="width:14px; height:14px"></i></span></div>
+          <div style="display:flex; gap:10px; align-items:center; padding:12px; border-radius:14px; background:var(--white); color:#0a0a0a"><span style="width:32px; height:32px; border-radius:10px; background:#0a0a0a; display:grid; place-items:center; color:var(--gold)"><i data-lucide="monitor" style="width:16px; height:16px"></i></span><div><div style="font-weight:800; font-size:13px">موقع يحول</div><div style="font-size:12px; opacity:.6">Single-file • 1.1s • Mobile-first</div></div><span style="margin-inline-start:auto; padding:4px 8px; border-radius:999px; background:#0a0a0a; color:white; font-size:11px; font-weight:700">1.1s</span></div>
+          <div style="display:flex; gap:10px; align-items:center; padding:12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)"><span style="width:32px; height:32px; border-radius:10px; background:rgba(59,130,246,.15); display:grid; place-items:center; color:#60a5fa"><i data-lucide="bot" style="width:16px; height:16px"></i></span><div><div style="font-weight:700; font-size:13px">نظام مبيعات + AI</div><div style="font-size:12px; color:var(--silver)">CRM + متابعة أوتوماتيك 24/7</div></div><span style="margin-inline-start:auto; color:var(--silver)"><i data-lucide="zap" style="width:14px; height:14px"></i></span></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center; font-size:11px; color:var(--muted); margin-top:8px; font-family:'Inter',monospace">Single-file HTML • يفتح بدبل كليك • بدون build • جاهز للرفع على Vercel/Cloudflare</div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section style="border-top:1px solid rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.01)">
+  <div style="max-width:1200px; margin:0 auto; padding:18px 24px">
+    <div style="text-align:center; font-size:11px; letter-spacing:.16em; color:var(--muted); font-weight:700">يثق بنا من يبني للمستقبل</div>
+    <div style="display:flex; gap:28px; overflow:hidden; margin-top:12px; white-space:nowrap; opacity:.55; justify-content:center; flex-wrap:wrap; font-size:12px; letter-spacing:.14em; font-weight:700">
+      <span>OPENAI</span> <span>• RETOOL</span> <span>VERCEL</span> <span>PERPLEXITY</span> <span>STRIPE</span> <span>LINEAR</span> <span>SUPABASE</span> <span>NEXORA</span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:16px; text-align:center">
+      <div class="reveal"><div style="font-weight:900; font-size:22px" class="gold-text">+127</div><div style="font-size:11px; color:var(--silver)">مشروع مُسلّم</div></div>
+      <div class="reveal"><div style="font-weight:900; font-size:22px" class="gold-text">4.9/5</div><div style="font-size:11px; color:var(--silver)">متوسط التقييم</div></div>
+      <div class="reveal"><div style="font-weight:900; font-size:22px" class="gold-text">1.1s</div><div style="font-size:11px; color:var(--silver)">متوسط سرعة المواقع</div></div>
+      <div class="reveal"><div style="font-weight:900; font-size:22px" class="gold-text">24/7</div><div style="font-size:11px; color:var(--silver)">نظام المبيعات</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" style="max-width:1200px; margin:0 auto; padding:40px 24px">
+  <div style="text-align:center; max-width:700px; margin:0 auto">
+    <div style="display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; border:1px solid var(--line-g); background:rgba(255,255,255,.04); font-size:12px; color:var(--silver)"><span style="width:6px; height:6px; border-radius:50%; background:var(--gold)"></span> المنظومة الكاملة</div>
+    <h2 style="font-weight:800; letter-spacing:-0.03em; font-size:clamp(26px,4vw,44px); line-height:1; margin-top:10px">ثلاثة أنظمة.<br><span class="gold-text">منظومة واحدة.</span></h2>
+    <p style="color:var(--silver); margin-top:10px; font-size:14px">هوية + موقع + مبيعات — كل طبقة تغذي الأخرى. بدون منظومة = كل قناة لحالها.</p>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:22px">
+    <div class="glass card-hover reveal" style="padding:20px">
+      <div style="width:36px; height:36px; border-radius:12px; background:rgba(214,195,165,.14); display:grid; place-items:center; color:var(--gold)"><i data-lucide="sparkles" style="width:18px; height:18px"></i></div>
+      <h3 style="font-weight:800; margin-top:12px">01 — الهوية الفاخرة</h3>
+      <p style="color:var(--silver); font-size:13px; line-height:1.9; margin-top:6px">شعار، لوحة ألوان #D6C3A5/#020202، خطوط Alexandria، دليل استخدام كامل. ثقة من أول 3 ثواني.</p>
+      <div style="margin-top:14px; padding:12px; border-radius:14px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.06); display:flex; gap:8px; align-items:center; font-size:12px">
+        <span style="width:22px; height:22px; border-radius:50%; background:var(--gold)"></span> <span style="width:22px; height:22px; border-radius:50%; background:#0a0a0a; border:1px solid rgba(255,255,255,.1)"></span> <span style="width:22px; height:22px; border-radius:50%; background:var(--b5); border:1px solid var(--line-g)"></span>
+        <span style="margin-inline-start:auto; font-family:'Inter',monospace; font-size:11px; color:var(--silver)">Tokens • 100% consistent</span>
+      </div>
+    </div>
+    <div class="glass card-hover reveal" style="padding:20px; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border-color:rgba(214,195,165,.22)">
+      <div style="width:36px; height:36px; border-radius:12px; background:var(--white); display:grid; place-items:center; color:#0a0a0a"><i data-lucide="monitor-smartphone" style="width:18px; height:18px"></i></div>
+      <h3 style="font-weight:800; margin-top:12px">02 — الموقع الذي يحوّل</h3>
+      <p style="color:var(--silver); font-size:13px; line-height:1.9; margin-top:6px">Single-file HTML، سريع 1.1s، Mobile-first، SEO + Open Graph، يفتح بدون build.</p>
+      <div style="margin-top:14px; display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center">
+        <div style="padding:10px; border-radius:12px; background:var(--white); color:#0a0a0a"><div style="font-weight:900">100</div><div style="font-size:10px; opacity:.6">Lighthouse</div></div>
+        <div style="padding:10px; border-radius:12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)"><div style="font-weight:900">1.1s</div><div style="font-size:10px; color:var(--silver)">Load</div></div>
+        <div style="padding:10px; border-radius:12px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)"><div style="font-weight:900">RTL</div><div style="font-size:10px; color:var(--silver)">جاهز</div></div>
+      </div>
+    </div>
+    <div class="glass card-hover reveal" style="padding:20px">
+      <div style="width:36px; height:36px; border-radius:12px; background:rgba(59,130,246,.14); display:grid; place-items:center; color:#60a5fa"><i data-lucide="workflow" style="width:18px; height:18px"></i></div>
+      <h3 style="font-weight:800; margin-top:12px">03 — نظام المبيعات</h3>
+      <p style="color:var(--silver); font-size:13px; line-height:1.9; margin-top:6px">CRM + متابعة أوتوماتيك + واتساب + تقارير. لا Leads تضيع حتى الساعة 3 صباحاً.</p>
+      <div style="margin-top:14px; display:flex; gap:8px; font-size:11px; font-family:'Inter',monospace; flex-wrap:wrap"><span style="padding:6px 10px; border-radius:999px; background:#25D366; color:white; font-weight:700">WhatsApp 24/7</span><span style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04)">CRM</span><span style="padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04)">Automation</span></div>
+    </div>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px">
+    <div class="glass reveal" style="padding:18px"><h4 style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px"><i data-lucide="search" style="width:14px; height:14px; color:var(--gold)"></i> SEO & سرعة</h4><p style="color:var(--silver); font-size:12px; margin-top:6px">بنية دلالية + meta + OG + Lighthouse 100. صور مضغوطة و lazy.</p></div>
+    <div class="glass reveal" style="padding:18px"><h4 style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px"><i data-lucide="smartphone" style="width:14px; height:14px; color:var(--gold)"></i> Mobile-first</h4><p style="color:var(--silver); font-size:12px; margin-top:6px">ثلاث نقاط 1200/768/480. لا horizontal scroll على 375px.</p></div>
+    <div class="glass reveal" style="padding:18px"><h4 style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px"><i data-lucide="shield-check" style="width:14px; height:14px; color:var(--gold)"></i> تسليم single-file</h4><p style="color:var(--silver); font-size:12px; margin-top:6px">ملف واحد HTML يشتغل بدبل كليك ويُرفع كما هو على أي استضافة.</p></div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" style="max-width:1200px; margin:0 auto; padding:0 24px 30px">
+  <div style="text-align:center">
+    <h3 style="font-weight:800; font-size:clamp(22px,3.5vw,34px); letter-spacing:-0.02em">كيف نعمل — 4 خطوات واضحة</h3>
+    <p style="color:var(--silver); font-size:13px; margin-top:6px">من الاستشارة إلى التسليم — كل خطوة لها وقت ومخرجات.</p>
+  </div>
+  <div style="position:relative; display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:20px">
+    <div class="step-line"></div>
+    <div class="glass reveal" style="padding:18px; position:relative; z-index:1; text-align:center"><div style="width:36px; height:36px; border-radius:50%; background:var(--gold); color:#0a0a0a; display:grid; place-items:center; font-weight:900; margin:0 auto">1</div><div style="font-weight:800; margin-top:10px; font-size:14px">استشارة مجانية</div><div style="font-size:12px; color:var(--silver); margin-top:4px">30 دقيقة • نفهم مشروعك والسوق</div><div style="margin-top:8px; font-size:11px; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); display:inline-block">مخرجات: خطة 1 صفحة</div></div>
+    <div class="glass reveal" style="padding:18px; position:relative; z-index:1; text-align:center"><div style="width:36px; height:36px; border-radius:50%; background:var(--white); color:#0a0a0a; display:grid; place-items:center; font-weight:900; margin:0 auto">2</div><div style="font-weight:800; margin-top:10px; font-size:14px">هوية + وايرفريم</div><div style="font-size:12px; color:var(--silver); margin-top:4px">ألوان وخطوط وتجربة • 3 أيام</div><div style="margin-top:8px; font-size:11px; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06); display:inline-block">Tokens + Figma</div></div>
+    <div class="glass reveal" style="padding:18px; position:relative; z-index:1; text-align:center"><div style="width:36px; height:36px; border-radius:50%; background:var(--white); color:#0a0a0a; display:grid; place-items:center; font-weight:900; margin:0 auto">3</div><div style="font-weight:800; margin-top:10px; font-size:14px">بناء single-file</div><div style="font-size:12px; color:var(--silver); margin-top:4px">كود نظيف + GSAP خفيف • 5 أيام</div><div style="margin-top:8px; font-size:11px; padding:4px 8px; border-radius:999px; background:var(--gold); color:#0a0a0a; font-weight:700; display:inline-block">HTML واحد</div></div>
+    <div class="glass reveal" style="padding:18px; position:relative; z-index:1; text-align:center"><div style="width:36px; height:36px; border-radius:50%; background:var(--gold); color:#0a0a0a; display:grid; place-items:center; font-weight:900; margin:0 auto">4</div><div style="font-weight:800; margin-top:10px; font-size:14px">إطلاق + أتمتة</div><div style="font-size:12px; color:var(--silver); margin-top:4px">نشر + CRM + متابعة • يوم واحد</div><div style="margin-top:8px; font-size:11px; padding:4px 8px; border-radius:999px; background:#25D366; color:white; display:inline-block">Live 24/7</div></div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section style="max-width:1200px; margin:0 auto; padding:10px 24px 0">
+  <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:10px">
+    <div class="glass" style="padding:14px; text-align:center"><i data-lucide="building-2" style="width:18px; height:18px; color:var(--gold)"></i><div style="font-size:12px; font-weight:700; margin-top:6px">عقارات</div></div>
+    <div class="glass" style="padding:14px; text-align:center"><i data-lucide="stethoscope" style="width:18px; height:18px; color:var(--gold)"></i><div style="font-size:12px; font-weight:700; margin-top:6px">عيادات</div></div>
+    <div class="glass" style="padding:14px; text-align:center"><i data-lucide="graduation-cap" style="width:18px; height:18px; color:var(--gold)"></i><div style="font-size:12px; font-weight:700; margin-top:6px">تعليم</div></div>
+    <div class="glass" style="padding:14px; text-align:center"><i data-lucide="utensils" style="width:18px; height:18px; color:var(--gold)"></i><div style="font-size:12px; font-weight:700; margin-top:6px">مطاعم</div></div>
+    <div class="glass" style="padding:14px; text-align:center"><i data-lucide="shopping-bag" style="width:18px; height:18px; color:var(--gold)"></i><div style="font-size:12px; font-weight:700; margin-top:6px">متاجر</div></div>
+    <div class="glass" style="padding:14px; text-align:center"><i data-lucide="scale" style="width:18px; height:18px; color:var(--gold)"></i><div style="font-size:12px; font-weight:700; margin-top:6px">مكاتب قانونية</div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" style="max-width:1200px; margin:0 auto; padding:36px 24px">
+  <div style="text-align:center">
+    <h3 style="font-weight:800; font-size:clamp(22px,3.5vw,34px); letter-spacing:-0.02em">باقات تنمو معك</h3>
+    <p style="color:var(--silver); font-size:13px; margin-top:6px">ابدأ صغيراً وكبّر — نفس المنظومة، مستويات مختلفة.</p>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:18px">
+    <div class="glass" style="padding:20px">
+      <div style="font-size:12px; letter-spacing:.14em; color:var(--silver); font-weight:700">SPARK — البداية</div>
+      <div style="font-weight:900; font-size:28px; margin-top:6px">$900 <span style="font-size:13px; color:var(--silver); font-weight:600">/ لمرة واحدة</span></div>
+      <ul style="list-style:none; margin-top:12px; display:grid; gap:8px; font-size:13px; color:var(--silver)"><li>• هوية أساسية + صفحة واحدة</li><li>• Single-file + نشر</li><li>• نموذج تواصل → واتساب</li></ul>
+      <a href="https://wa.me/201000000000" style="display:block; text-align:center; margin-top:16px; padding:12px; border-radius:999px; border:1px solid var(--line-g); background:rgba(255,255,255,.04); font-weight:700">ابدأ بـ SPARK</a>
+    </div>
+    <div class="glass" style="padding:20px; border-color:rgba(214,195,165,.35); background:linear-gradient(180deg, rgba(214,195,165,.08), rgba(255,255,255,.02)); position:relative; transform:translateY(-4px); box-shadow:0 24px 50px rgba(0,0,0,.4)">
+      <div style="position:absolute; top:-10px; inset-inline:50%; transform:translateX(-50%); padding:4px 10px; border-radius:999px; background:var(--gold); color:#0a0a0a; font-size:11px; font-weight:900">الأكثر طلباً — GOLD</div>
+      <div style="font-size:12px; letter-spacing:.14em; color:var(--gold); font-weight:800; margin-top:6px">GOLD — المنظومة الكاملة</div>
+      <div style="font-weight:900; font-size:28px; margin-top:6px">$3,200 <span style="font-size:13px; color:var(--silver); font-weight:600">/ منظومة</span></div>
+      <ul style="list-style:none; margin-top:12px; display:grid; gap:8px; font-size:13px; color:var(--silver)"><li>• هوية كاملة + موقع متكامل</li><li>• نظام مبيعات + CRM + أتمتة</li><li>• لوحة تحكم + تقارير</li><li>• مدير حساب مخصص</li></ul>
+      <a href="https://wa.me/201000000000" class="btn-gold" style="display:block; text-align:center; margin-top:16px; padding:12px; border-radius:999px; font-weight:800">ابدأ باقة GOLD →</a>
+    </div>
+    <div class="glass" style="padding:20px">
+      <div style="font-size:12px; letter-spacing:.14em; color:var(--silver); font-weight:700">APEX — التوسع</div>
+      <div style="font-weight:900; font-size:28px; margin-top:6px">$6,500 <span style="font-size:13px; color:var(--silver); font-weight:600">/ توسع</span></div>
+      <ul style="list-style:none; margin-top:12px; display:grid; gap:8px; font-size:13px; color:var(--silver)"><li>• كل ما في GOLD + متجر/حجوزات</li><li>• أتمتة AI + Chatbot 24/7</li><li>• حملات إعلانية مدارة</li></ul>
+      <a href="https://wa.me/201000000000" style="display:block; text-align:center; margin-top:16px; padding:12px; border-radius:999px; border:1px solid var(--line-g); background:rgba(255,255,255,.04); font-weight:700">تحدث عن APEX</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section style="max-width:1200px; margin:0 auto; padding:0 24px">
+  <div class="glass" style="padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:center">
+    <div>
+      <div style="color:var(--gold)">★★★★★</div>
+      <div style="font-weight:700; margin-top:6px">“التغيير البسيط ده رفع المبيعات 40% — الهوية الجديدة خلّت العميل يثق من أول نظرة.”</div>
+      <div style="font-size:12px; color:var(--silver); margin-top:6px">— عميل NEXORA • متجر إلكتروني • 2026</div>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; text-align:center">
+      <div style="padding:12px; border-radius:14px; background:var(--white); color:#0a0a0a"><div style="font-weight:900; font-size:20px">+40%</div><div style="font-size:11px; opacity:.6">مبيعات</div></div>
+      <div style="padding:12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)"><div style="font-weight:900; font-size:20px">1.1s</div><div style="font-size:11px; color:var(--silver)">سرعة</div></div>
+      <div style="padding:12px; border-radius:14px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.06)"><div style="font-weight:900; font-size:20px">127</div><div style="font-size:11px; color:var(--silver)">تقييم</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="faq" style="max-width:900px; margin:0 auto; padding:36px 24px; display:grid; gap:10px">
+  <h3 style="text-align:center; font-weight:800; font-size:20px">الأسئلة الشائعة</h3>
+  <details open><summary>هل الموقع فعلاً ملف واحد؟ <span style="color:var(--silver)"><i data-lucide="chevron-down" style="width:16px; height:16px"></i></span></summary><p style="color:var(--silver); font-size:13px; margin-top:10px; line-height:1.9">نعم — CSS و JS داخل نفس الـ HTML. يفتح بدبل كليك بدون build ويُرفع كما هو على Vercel/Netlify/Cloudflare Pages.</p></details>
+  <details><summary>ماذا عن الـ GSAP والـ 3D؟ <span style="color:var(--silver)"><i data-lucide="chevron-down" style="width:16px; height:16px"></i></span></summary><p style="color:var(--silver); font-size:13px; margin-top:10px">نستخدم GSAP ScrollTrigger + Lenis فقط عند الحاجة (مثل صفحة الـ 3D Scroll). باقي المواقع animation خفيف بـ IntersectionObserver فقط — بدون مكتبات ثقيلة.</p></details>
+  <details><summary>هل تدعمون الإنجليزية؟ <span style="color:var(--silver)"><i data-lucide="chevron-down" style="width:16px; height:16px"></i></span></summary><p style="color:var(--silver); font-size:13px; margin-top:10px">الافتراضي عربي RTL، ونسلّم نسخة EN عند الطلب بنفس الهوية.</p></details>
+  <details><summary>كم مدة التسليم؟ <span style="color:var(--silver)"><i data-lucide="chevron-down" style="width:16px; height:16px"></i></span></summary><p style="color:var(--silver); font-size:13px; margin-top:10px">SPARK 5 أيام، GOLD 10-12 يوم، APEX 18-22 يوم — مع متابعة يومية.</p></details>
+</section>
+
+<!-- FINAL CTA -->
+<section style="max-width:1200px; margin:0 auto; padding:0 24px 30px">
+  <div style="border-radius:28px; background:var(--white); color:#0a0a0a; padding:28px; display:flex; flex-direction:column; gap:16px; align-items:center; text-align:center">
+    <h3 style="font-weight:900; letter-spacing:-0.03em; font-size:clamp(22px,3.5vw,36px); line-height:1">جاهز تبني منظومتك؟</h3>
+    <p style="color:rgba(0,0,0,.6); font-size:14px; max-width:620px">احجز استشارة مجانية 30 دقيقة — نحلل مشروعك ونقترح الباقة المناسبة بدون أي التزام.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center">
+      <a href="https://wa.me/201000000000" style="padding:14px 22px; border-radius:999px; background:#0a0a0a; color:white; font-weight:800; display:flex; align-items:center; gap:8px">احجز على واتساب <i data-lucide="message-circle" style="width:16px; height:16px"></i></a>
+      <a href="../gsap-3d-scroll/index.html" style="padding:14px 22px; border-radius:999px; border:1px solid rgba(0,0,0,.1); font-weight:700">شوف الـ 3D Scroll</a>
+      <a href="../stripe-clone-luxury/index.html" style="padding:14px 22px; border-radius:999px; border:1px solid rgba(0,0,0,.1); font-weight:700">افتح Stripe Luxury</a>
+    </div>
+  </div>
+  <div style="text-align:center; font-size:11px; color:var(--muted); margin-top:10px; font-family:'Inter',monospace">NEXORA • منظومة النمو المتكاملة • Single-file • GSAP • Lenis • Dezinet Luxury level • 2026</div>
+</section>
+
+<footer style="border-top:1px solid rgba(255,255,255,.06); padding:18px 24px; text-align:center; font-size:12px; color:var(--muted)">© 2026 NEXORA — هوية فاخرة • موقع يحوّل • نظام مبيعات • صنع بحب في القاهرة</footer>
+
+<a class="whatsapp" href="https://wa.me/201000000000" aria-label="WhatsApp"><i data-lucide="message-circle" style="width:24px; height:24px"></i></a>
+
+<script>
+lucide.createIcons();
+const io=new IntersectionObserver(ents=>ents.forEach(e=>{if(e.isIntersecting) e.target.classList.add('in')}),{threshold:.14});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+document.getElementById('navCtaMobile')?.style && (window.innerWidth<768 && (document.getElementById('navCtaMobile').style.display='inline-flex'));
+</script>
+</body>
+</html>
