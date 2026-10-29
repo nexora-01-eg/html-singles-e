@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script type="application/json" data-od-external-dependencies>["https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"]</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northwind Metrics — product usage analytics for engineering managers</title>
+<meta name="description" content="Northwind Metrics turns raw product events into the usage picture an engineering manager can act on: retention, funnels, and adoption per release.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Northwind Metrics — design tokens
+   Dark instrument-panel direction: ink canvas, cool neutral
+   text ramp, one acid-lime signal colour for data and actions.
+   ============================================================ */
+:root {
+  /* surface + ink */
+  --surface-base: #0B0E11;
+  --surface-raised: #12171B;
+  --surface-sunken: #080A0C;
+  --border-subtle: #232B31;
+  --border-strong: #364149;
+
+  /* text ramp */
+  --text-primary: #F2F5F7;
+  --text-secondary: #A7B3BB;
+  --text-muted: #7C8992;
+
+  /* single signal colour */
+  --signal: #C8F751;
+  --signal-ink: #0B0E11;
+  --signal-dim: rgba(200, 247, 81, 0.14);
+  --signal-line: rgba(200, 247, 81, 0.42);
+
+  /* type */
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --fs-display: clamp(2.5rem, 1.4rem + 4.2vw, 4.25rem);
+  --fs-h2: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+  --fs-h3: 1.125rem;
+  --fs-lead: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem);
+  --fs-body: 1rem;
+  --fs-small: 0.8125rem;
+
+  /* 4px rhythm */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-24: 96px;
+
+  /* geometry — small and disciplined */
+  --radius-control: 6px;
+  --radius-panel: 10px;
+
+  /* motion — restrained, state feedback only */
+  --t-fast: 180ms;
+  --t-section: 320ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  --measure: 68ch;
+  --header-h: 64px;
+  --shell-max: 1160px;
+  --safe-x: clamp(20px, 5vw, 48px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--header-h) + var(--sp-6));
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.od-wrap {
+  width: 100%;
+  max-width: var(--shell-max);
+  margin-inline: auto;
+  padding-inline: var(--safe-x);
+}
+
+.od-section { padding-block: clamp(var(--sp-12), 8vw, var(--sp-24)); }
+.od-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--signal);
+  margin: 0 0 var(--sp-4);
+}
+.od-eyebrow--muted { color: var(--text-muted); }
+.od-lead {
+  color: var(--text-secondary);
+  font-size: var(--fs-lead);
+  max-width: var(--measure);
+}
+
+/* ---------- header ---------- */
+.od-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(11, 14, 17, 0.88);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.od-header__inner {
+  min-height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+.od-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  margin-right: auto;
+}
+.od-brand__mark {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  color: var(--signal);
+}
+.od-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.od-nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--sp-3);
+  border-radius: var(--radius-control);
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  transition: color var(--t-fast) var(--ease-out),
+              background-color var(--t-fast) var(--ease-out);
+}
+.od-nav__link:hover { color: var(--text-primary); background: var(--surface-raised); }
+.od-nav__link[aria-current="true"] { color: var(--text-primary); }
+
+.od-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding: 0 var(--sp-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color var(--t-fast) var(--ease-out),
+              border-color var(--t-fast) var(--ease-out),
+              color var(--t-fast) var(--ease-out),
+              transform var(--t-fast) var(--ease-out);
+}
+.od-btn--primary { background: var(--signal); color: var(--signal-ink); font-weight: 600; }
+.od-btn--primary:hover { background: #D6FF6B; }
+.od-btn--primary:active { transform: translateY(1px); }
+.od-btn--ghost { background: transparent; color: var(--text-primary); border-color: var(--border-strong); }
+.od-btn--ghost:hover { border-color: var(--text-secondary); background: var(--surface-raised); }
+.od-btn--lg { min-height: 52px; padding-inline: var(--sp-6); font-size: var(--fs-body); }
+
+.od-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.od-toggle__bars { position: relative; width: 16px; height: 12px; }
+.od-toggle__bars span {
+  position: absolute;
+  left: 0;
+  width: 16px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform var(--t-fast) var(--ease-out), opacity var(--t-fast) var(--ease-out);
+}
+.od-toggle__bars span:nth-child(1) { top: 0; }
+.od-toggle__bars span:nth-child(2) { top: 5.25px; }
+.od-toggle__bars span:nth-child(3) { top: 10.5px; }
+.od-toggle[aria-expanded="true"] .od-toggle__bars span:nth-child(1) { transform: translateY(5.25px) rotate(45deg); }
+.od-toggle[aria-expanded="true"] .od-toggle__bars span:nth-child(2) { opacity: 0; }
+.od-toggle[aria-expanded="true"] .od-toggle__bars span:nth-child(3) { transform: translateY(-5.25px) rotate(-45deg); }
+
+/* ---------- hero ---------- */
+.od-hero {
+  position: relative;
+  padding-top: clamp(var(--sp-16), 9vw, 136px);
+  padding-bottom: clamp(var(--sp-16), 8vw, var(--sp-24));
+}
+.od-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(var(--sp-12), 5vw, var(--sp-24));
+  align-items: center;
+}
+.od-hero__copy { max-width: 40rem; }
+.od-hero h1 { font-size: var(--fs-display); margin-bottom: var(--sp-6); }
+.od-hero h1 em { font-style: normal; color: var(--signal); }
+.od-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-8);
+}
+.od-hero__note {
+  margin-top: var(--sp-4);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* ---------- product mock ---------- */
+.od-panel {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-panel);
+}
+.od-mock { width: 100%; }
+.od-mock__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.od-mock__dots { display: flex; gap: 6px; }
+.od-mock__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+.od-mock__title {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-right: auto;
+}
+.od-mock__range {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  padding: 3px var(--sp-2);
+}
+.od-mock__body { padding: var(--sp-4); }
+.od-mock__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+}
+.od-mock__metric {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.od-mock__metric-sub {
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-top: var(--sp-1);
+}
+.od-mock__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-small);
+  color: var(--signal);
+  background: var(--signal-dim);
+  border-radius: var(--radius-control);
+  padding: 3px var(--sp-2);
+}
+.od-mock__tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--signal);
+}
+.od-mock__chart { display: block; width: 100%; height: auto; }
+.od-mock__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-4);
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px solid var(--border-subtle);
+  list-style: none;
+  padding-inline: 0;
+  padding-bottom: 0;
+}
+.od-mock__legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+}
+.od-mock__swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.od-mock__disclaimer {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+
+/* ---------- features ---------- */
+.od-features__intro { max-width: 46rem; margin-bottom: clamp(var(--sp-8), 5vw, var(--sp-16)); }
+.od-features h2 { font-size: var(--fs-h2); margin-bottom: var(--sp-4); }
+.od-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 288px), 1fr));
+  gap: var(--sp-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.od-card { padding: var(--sp-6); }
+.od-card__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--signal);
+  margin-bottom: var(--sp-4);
+}
+.od-card h3 { font-size: var(--fs-h3); margin-bottom: var(--sp-2); }
+.od-card p { color: var(--text-secondary); font-size: 0.9375rem; }
+
+/* ---------- closing cta ---------- */
+.od-cta {
+  background: var(--surface-sunken);
+  border-block: 1px solid var(--border-subtle);
+}
+.od-cta__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-8);
+  align-items: center;
+}
+.od-cta h2 { font-size: var(--fs-h2); margin-bottom: var(--sp-3); }
+.od-cta__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+
+/* ---------- footer ---------- */
+.od-footer {
+  padding-block: var(--sp-12);
+  border-top: 1px solid var(--border-subtle);
+}
+.od-footer__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-6);
+}
+.od-footer__meta {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  margin-left: auto;
+}
+.od-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.od-footer__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--sp-3);
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  border-radius: var(--radius-control);
+}
+.od-footer__links a:hover { color: var(--text-primary); }
+
+/* ---------- entrance motion (transform + opacity only) ---------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--t-section) var(--ease-out),
+              transform var(--t-section) var(--ease-out);
+}
+[data-reveal].is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] { opacity: 1; transform: none; }
+}
+
+/* ---------- breakpoints: 1440 / 1024 / 768 / 375 ---------- */
+@media (min-width: 1024px) {
+  .od-hero__grid { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); }
+  .od-cta__inner { grid-template-columns: minmax(0, 1fr) auto; }
+}
+
+@media (max-width: 767px) {
+  :root { --header-h: 60px; }
+  .od-toggle { display: inline-flex; }
+  .od-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-1);
+    padding: var(--sp-3) var(--safe-x) var(--sp-4);
+    background: var(--surface-base);
+    border-bottom: 1px solid var(--border-subtle);
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--t-fast) var(--ease-out),
+                transform var(--t-fast) var(--ease-out),
+                visibility 0s linear var(--t-fast);
+  }
+  .od-nav.is-open {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .od-nav__link { min-height: 48px; }
+  .od-nav .od-btn { margin-top: var(--sp-2); justify-content: center; }
+  .od-hero__actions .od-btn { flex: 1 1 100%; }
+  .od-footer__meta { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<header class="od-header">
+  <div class="od-wrap od-header__inner">
+    <a class="od-brand" href="#top">
+      <svg class="od-brand__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+        <path d="M3 19h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M4 15l4.5-5.5 3.5 3.5L20 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="20" cy="5" r="2" fill="currentColor"/>
+      </svg>
+      <span>Northwind Metrics</span>
+    </a>
+
+    <button class="od-toggle" type="button" aria-expanded="false" aria-controls="od-primary-nav">
+      <span class="od-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="od-sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Open navigation</span>
+    </button>
+
+    <nav class="od-nav" id="od-primary-nav" aria-label="Primary">
+      <a class="od-nav__link" href="#features">Features</a>
+      <a class="od-nav__link" href="#how">How it works</a>
+      <a class="od-nav__link" href="#start">Pricing</a>
+      <a class="od-btn od-btn--primary" href="#start">Start free</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="od-hero">
+    <div class="od-wrap od-hero__grid">
+      <div class="od-hero__copy">
+        <p class="od-eyebrow">Product usage analytics</p>
+        <h1>Know what your product is <em>actually</em> used for.</h1>
+        <p class="od-lead">Northwind Metrics turns raw event streams into the one question an engineering manager has to answer every planning cycle: which features land, which get abandoned, and where users drop off.</p>
+        <div class="od-hero__actions">
+          <a class="od-btn od-btn--primary od-btn--lg" href="#start">Start free</a>
+          <a class="od-btn od-btn--ghost od-btn--lg" href="#features">See what you get</a>
+        </div>
+        <p class="od-hero__note">Sample workspace below — figures are illustrative, not customer results.</p>
+      </div>
+
+      <div class="od-panel od-mock" data-reveal>
+        <div class="od-mock__bar">
+          <div class="od-mock__dots" aria-hidden="true">
+            <span class="od-mock__dot"></span><span class="od-mock__dot"></span><span class="od-mock__dot"></span>
+          </div>
+          <span class="od-mock__title">northwind / usage-overview</span>
+          <span class="od-mock__range">Last 30 days</span>
+        </div>
+        <div class="od-mock__body">
+          <div class="od-mock__head">
+            <div>
+              <p class="od-mock__metric">Retention by release</p>
+              <p class="od-mock__metric-sub">Cohort week 1 &rarr; week 8 &middot; sample data</p>
+            </div>
+            <span class="od-mock__tag">Adoption climbing</span>
+          </div>
+
+          <svg class="od-mock__chart" viewBox="0 0 520 240" role="img" aria-label="Illustrative line chart showing illustrative retention curves rising over eight cohort weeks, with the newest release tracking highest.">
+            <g stroke="#232B31" stroke-width="1">
+              <line x1="40" y1="20"  x2="512" y2="20"/>
+              <line x1="40" y1="68"  x2="512" y2="68"/>
+              <line x1="40" y1="116" x2="512" y2="116"/>
+              <line x1="40" y1="164" x2="512" y2="164"/>
+              <line x1="40" y1="212" x2="512" y2="212"/>
+            </g>
+            <g fill="#7C8992" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="end">
+              <text x="32" y="24">100%</text>
+              <text x="32" y="120">50%</text>
+              <text x="32" y="216">0%</text>
+            </g>
+            <g fill="#7C8992" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">
+              <text x="40"  y="232">W1</text>
+              <text x="123" y="232">W2</text>
+              <text x="206" y="232">W3</text>
+              <text x="289" y="232">W4</text>
+              <text x="372" y="232">W5</text>
+              <text x="455" y="232">W6</text>
+              <text x="512" y="232">W7</text>
+            </g>
+            <path d="M40 60 L123 78 L206 92 L289 104 L372 112 L455 118 L512 121" fill="none" stroke="#364149" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M40 84 L123 108 L206 124 L289 136 L372 146 L455 152 L512 155" fill="none" stroke="#5E6C74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M40 44 L123 58 L206 70 L289 80 L372 88 L455 94 L512 97" fill="none" stroke="#C8F751" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="512" cy="97" r="4" fill="#C8F751"/>
+          </svg>
+
+          <ul class="od-mock__legend">
+            <li><span class="od-mock__swatch" style="background:#C8F751" aria-hidden="true"></span>Release 4.2</li>
+            <li><span class="od-mock__swatch" style="background:#5E6C74" aria-hidden="true"></span>Release 4.1</li>
+            <li><span class="od-mock__swatch" style="background:#364149" aria-hidden="true"></span>Release 4.0</li>
+          </ul>
+          <p class="od-mock__disclaimer">Placeholder workspace. Numbers are illustrative placeholders, not measured results.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="od-section od-features" id="features">
+    <div class="od-wrap">
+      <div class="od-features__intro" data-reveal>
+        <p class="od-eyebrow od-eyebrow--muted">What you get</p>
+        <h2>Three views your planning cycle actually needs</h2>
+        <p class="od-lead">No dashboard gallery. Each of these answers a decision you have to make, and each one is built on events you already emit.</p>
+      </div>
+
+      <ul class="od-cards">
+        <li class="od-panel od-card" data-reveal>
+          <svg class="od-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M3 20h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M5 16V9M10 16V5M15 16v-4M20 16V7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3>Adoption per release</h3>
+          <p>Track how quickly each shipped feature reaches your active base, and compare releases side by side without rebuilding the query.</p>
+        </li>
+
+        <li class="od-panel od-card" data-reveal>
+          <svg class="od-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M3 5h7l4 5h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 19h-7l-4-5H3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Funnels that match reality</h3>
+          <p>Define a flow from the events your product truly fires. Where a step collapses, the drop-off and the affected segment surface together.</p>
+        </li>
+
+        <li class="od-panel od-card" data-reveal>
+          <svg class="od-card__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M12 7.5V12l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3>Retention you can defend</h3>
+          <p>Cohort views grouped by signup period, exportable with the filters you used, so the number in your deck matches the number in the tool.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="od-section" id="how">
+    <div class="od-wrap">
+      <div class="od-features__intro" data-reveal>
+        <p class="od-eyebrow od-eyebrow--muted">How it works</p>
+        <h2>Three steps, no replatforming</h2>
+        <p class="od-lead">If your product already emits events, you are most of the way there.</p>
+      </div>
+
+      <ol class="od-cards" style="list-style:none">
+        <li class="od-panel od-card" data-reveal>
+          <p class="od-eyebrow od-eyebrow--muted" style="margin-bottom:var(--sp-3)">Step 01</p>
+          <h3>Point at your stream</h3>
+          <p>Send your existing web and mobile events through, or read from the warehouse you already pay for.</p>
+        </li>
+        <li class="od-panel od-card" data-reveal>
+          <p class="od-eyebrow od-eyebrow--muted" style="margin-bottom:var(--sp-3)">Step 02</p>
+          <h3>Name the events</h3>
+          <p>Map the events that matter to products, features, and flows. Northwind handles the cohort maths from there.</p>
+        </li>
+        <li class="od-panel od-card" data-reveal>
+          <p class="od-eyebrow od-eyebrow--muted" style="margin-bottom:var(--sp-3)">Step 03</p>
+          <h3>Read it in planning</h3>
+          <p>Walk into the planning review with the current numbers and a saved view behind them, not a screenshot from last quarter.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="od-cta" id="start">
+    <div class="od-wrap od-cta__inner">
+      <div>
+        <h2>Start with one release, not a data migration</h2>
+        <p class="od-lead">Connect a stream, look at one feature, and decide whether the rest is worth the work.</p>
+      </div>
+      <div class="od-cta__actions">
+        <a class="od-btn od-btn--primary od-btn--lg" href="#top">Start free</a>
+        <a class="od-btn od-btn--ghost od-btn--lg" href="#features">Back to features</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="od-footer">
+  <div class="od-wrap od-footer__row">
+    <p class="od-hero__note" style="margin:0">Northwind Metrics</p>
+    <ul class="od-footer__links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#start">Pricing</a></li>
+      <li><a href="#top">Back to top</a></li>
+    </ul>
+    <p class="od-footer__meta">Prototype copy and figures are illustrative.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var toggle = document.querySelector('.od-toggle');
+  var nav = document.getElementById('od-primary-nav');
+  var label = toggle ? toggle.querySelector('.od-toggle__bars').parentNode.querySelector('span:last-child') : null;
+
+  function setOpen(open) {
+    if (!toggle || !nav) return;
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    nav.classList.toggle('is-open', open);
+    if (label) label.textContent = open ? 'Close navigation' : 'Open navigation';
+  }
+
+  if (toggle && nav) {
+    toggle.addEventListener('click', function () {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+    });
+
+    nav.addEventListener('click', function (event) {
+      if (event.target.closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 767) setOpen(false);
+    });
+  }
+
+  var sections = document.querySelectorAll('main section[id]');
+  var navLinks = document.querySelectorAll('.od-nav__link');
+  if ('IntersectionObserver' in window && sections.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(function (link) {
+          var current = link.getAttribute('href') === '#' + entry.target.id;
+          if (current) link.setAttribute('aria-current', 'true');
+          else link.removeAttribute('aria-current');
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach(function (section) { spy.observe(section); });
+  }
+
+  var revealTargets = document.querySelectorAll('[data-reveal]');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || !('IntersectionObserver' in window)) {
+    revealTargets.forEach(function (el) { el.classList.add('is-visible'); });
+  } else {
+    var revealer = new IntersectionObserver(function (entries, obs) {
+      entries.forEach(function (entry, index) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        el.style.transitionDelay = Math.min(index * 40, 120) + 'ms';
+        el.classList.add('is-visible');
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.12 });
+    revealTargets.forEach(function (el) { revealer.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
