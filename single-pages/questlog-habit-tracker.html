@@ -1,0 +1,1911 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Questlog — gamified habit tracker · hi-fi mobile prototype</title>
+  <meta name="description" content="Questlog turns daily habits into quests: XP, levels, streaks. Three moments of one journey — cover poster, today's quests, quest detail." />
+
+  <style>
+    /* OD-LAYOUT-PRIMITIVES v1 — structure only: display, flex/grid, overflow, wrapping, ratio.
+       Put this @layer first; product CSS outside the layer always wins. */
+    @layer od-layout {
+      :where(.od-stack,.od-row,.od-row-top,.od-cluster,.od-grid,.od-field,.od-stat,.od-cell,.od-tile) > :where(*) { min-width: 0; }
+
+      /* containers */
+      .od-stack   { display: flex; flex-direction: column; gap: var(--od-gap, 8px); }
+      .od-row     { display: flex; align-items: center; gap: var(--od-gap, 8px); }
+      .od-row-top { display: flex; align-items: flex-start; gap: var(--od-gap, 8px); }
+      .od-cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--od-gap, 8px); }
+      .od-fill    { flex: 1 1 0; min-width: 0; }
+      .od-fixed   { flex: none; }
+      .od-grid    { display: grid; gap: var(--od-gap, 12px); grid-template-columns: repeat(var(--od-cols, 3), minmax(0, 1fr)); }
+
+      /* stacked information: each piece is its own line — never sibling inline spans */
+      .od-stat, .od-field, .od-cell { display: grid; gap: var(--od-gap, 2px); }
+      :where(.od-stat,.od-field,.od-cell) > :where(*) { display: block; }
+      .od-tile { display: grid; grid-template-rows: auto 1fr; }
+      :where(.od-tile) > :where(*) { display: block; }
+
+      /* media keeps its intrinsic ratio by default; never a distorted or cropped
+         cover by accident. height:auto lets the ratio win over an <img height="…">
+         attribute. Cropping to a uniform box is an explicit opt-in: set --od-ratio
+         AND add .od-media-cover together (per the core rule, only where a crop is
+         deliberate — tile thumbs, decorative fills — never on full-frame content). */
+      .od-media { display: block; width: 100%; height: auto; aspect-ratio: var(--od-ratio, auto); }
+      .od-media-cover { object-fit: cover; }
+
+      /* data text only — authored copy is rewritten to its budget instead */
+      .od-truncate { display: block; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+      .od-clamp-2, .od-clamp-3 { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+      .od-clamp-2 { -webkit-line-clamp: 2; }
+      .od-clamp-3 { -webkit-line-clamp: 3; }
+      .od-lines-2 { min-height: calc(2 * 1.4em); }   /* block-level reservation for a shared baseline */
+      .od-nowrap  { white-space: nowrap; }           /* 数字+单位 · 价格+起 · 日期+星期 */
+      .od-keep    { word-break: keep-all; overflow-wrap: anywhere; } /* CJK labels break at spaces / <wbr> first */
+
+      /* screen skeleton (optional): bars take their own space, the middle scrolls — no padding guessed for chrome */
+      .od-screen { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; height: 100%; }
+      .od-scroll { overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+
+      /* horizontal rail: the next item peeks at the edge; trailing room survives overflow */
+      .od-rail { display: flex; gap: var(--od-gap, 8px); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
+                 padding-inline: var(--od-rail-pad, 16px); scroll-padding-inline: var(--od-rail-pad, 16px); }
+      .od-rail::-webkit-scrollbar { display: none; }
+      :where(.od-rail) > :where(*) { flex: none; scroll-snap-align: start; }
+      :where(.od-rail) > :where(:last-child) { margin-inline-end: var(--od-rail-pad, 16px); }
+
+      .od-spacer { flex: none; visibility: hidden; pointer-events: none; }
+      .od-touch  { min-width: 44px; min-height: 44px; }
+    }
+    /* /OD-LAYOUT-PRIMITIVES v1 */
+
+    /* ─────────────────────────────────────────────────────────────
+     * PostHog design-system tokens — pasted verbatim from tokens.css
+     * (light reference surface). The phone UI binds a dark theme in
+     * the next block; these stay the source of the font families,
+     * the type scale, spacing, radius and motion values.
+     * ───────────────────────────────────────────────────────────── */
+    :root {
+      --bg: #fdfdf8;
+      --surface: #eeefe9;
+      --surface-warm: #e5e7e0;
+
+      --fg: #4d4f46;
+      --fg-2: #23251d;
+      --muted: #65675e;
+      --meta: #9ea096;
+
+      --border: #bfc1b7;
+      --border-soft: color-mix(in oklab, var(--border), var(--bg) 50%);
+
+      --accent: #F54E00;
+      --accent-on: #ffffff;
+      --accent-hover: color-mix(in oklab, var(--accent), black 8%);
+      --accent-active: color-mix(in oklab, var(--accent), black 14%);
+
+      --success: #16a34a;
+      --warn: #F7A501;
+      --danger: #dc2626;
+
+      --font-display: "IBM Plex Sans Variable", "IBM Plex Sans", -apple-system, system-ui, "Avenir Next", Avenir, "Segoe UI", "Helvetica Neue", Helvetica, Ubuntu, Roboto, Noto, Arial, sans-serif;
+      --font-body: "IBM Plex Sans Variable", "IBM Plex Sans", -apple-system, system-ui, "Avenir Next", Avenir, "Segoe UI", "Helvetica Neue", Helvetica, Ubuntu, Roboto, Noto, Arial, sans-serif;
+      --font-mono: "Source Code Pro", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      --text-xs: 12px;
+      --text-sm: 14px;
+      --text-base: 16px;
+      --text-lg: 20px;
+      --text-xl: 24px;
+      --text-2xl: 30px;
+      --text-3xl: 36px;
+      --text-4xl: 44px;
+
+      --leading-body: 1.5;
+      --leading-tight: 1.2;
+      --tracking-display: -0.025em;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-8: 32px;
+      --space-12: 48px;
+
+      --section-y-desktop: 48px;
+      --section-y-tablet: 32px;
+      --section-y-phone: 24px;
+
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-pill: 9999px;
+
+      --elev-flat: none;
+      --elev-ring: 0 0 0 1px var(--border);
+      --elev-raised: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+      --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.5);
+
+      --motion-fast: 150ms;
+      --motion-base: 200ms;
+      --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+      --container-max: 1280px;
+      --container-gutter-desktop: 24px;
+      --container-gutter-tablet: 16px;
+      --container-gutter-phone: 12px;
+
+      /* ── Chosen direction: "ember arcade" — a near-black deck lit by one
+         PostHog Orange, quest accents as small pools of colour. Derived
+         from the active PostHog system (IBM Plex Sans, flat surfaces,
+         border-contained depth) re-pitched for the dark showcase the
+         gamified-app skill asks for. The light tokens above stay the
+         reference; the bindings below are what the artifact renders. ── */
+      --stage-bg: #0e0d0c;
+      --ds-bg: #141312;
+      --ds-surface: #1d1b19;
+      --ds-surface-2: #272421;
+      --ds-fg: #f4f2ec;
+      --ds-fg-2: #fffef9;
+      --ds-muted: #a8a49a;
+      --ds-meta: #9c978d;
+      --ds-border: rgba(255, 255, 255, 0.12);
+      --ds-border-2: #3a3733;
+      --ds-accent: #F54E00;
+      --ds-accent-on: #ffffff;
+      --ds-warn: #F7A501;
+      --ds-good: #46b07f;
+      --ds-scroll: rgba(255, 255, 255, 0.07);
+      --font-hero: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      --ring: 0 0 0 3px rgba(59, 130, 246, 0.55);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--stage-bg);
+      color: var(--ds-fg);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: var(--ds-accent); text-decoration: none; }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+
+    /* ── Showcase stage ───────────────────────────────────────────── */
+    .stage {
+      min-height: 100dvh;
+      padding: 40px 24px 64px;
+      background:
+        radial-gradient(900px 460px at 50% -6%, rgba(245, 78, 0, 0.16), transparent 62%),
+        radial-gradient(760px 420px at 82% 4%, rgba(247, 165, 1, 0.07), transparent 60%),
+        var(--stage-bg);
+    }
+    .stage-inner { max-width: var(--container-max); margin-inline: auto; }
+
+    .caption-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-3) var(--space-6);
+      max-width: 1280px;
+      margin: 0 auto var(--space-8);
+      padding-inline: 4px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ds-muted);
+    }
+    .caption-row .wordmark {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ds-fg-2);
+      font-weight: 600;
+      letter-spacing: 0.2em;
+    }
+    .caption-row .wordmark svg { display: block; width: 16px; height: 16px; color: var(--ds-accent); }
+
+    .devices {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, max-content));
+      justify-content: center;
+      gap: 40px 32px;
+    }
+    @media (max-width: 1319px) { .devices { grid-template-columns: repeat(2, minmax(0, max-content)); } }
+    @media (max-width: 879px)  { .devices { grid-template-columns: minmax(0, max-content); } }
+
+    .device-caption {
+      max-width: 410px;
+      margin: 14px auto 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ds-meta);
+      text-align: center;
+    }
+    .device-cell { display: flex; flex-direction: column; align-items: center; }
+
+    /* Handset shell overrides — hardware stays, chrome follows the dark stage. */
+    .phone-frame { --phone-screen-bg: #141312; --phone-system-fg: #f4f2ec; }
+    .phone-screen { background: var(--phone-screen-bg); }
+    .phone-content { background: var(--phone-screen-bg); }
+    .phone-frame { box-shadow: inset 0 0 0 1px rgba(255,255,255,.10), inset 0 0 0 2px rgba(0,0,0,.85), 0 40px 80px -24px rgba(0,0,0,.85); }
+    @media (max-width: 879px) { .phone-frame { zoom: 1; } }
+
+    /* ── App frame inside the shell ───────────────────────────────── */
+    .app {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 100%;
+      background: var(--ds-bg);
+      color: var(--ds-fg);
+      font-size: var(--text-base);
+      line-height: var(--leading-body);
+      --od-gap: 10px;
+    }
+    .app-scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+      padding: 6px 18px 22px;
+    }
+    .app-scroll::-webkit-scrollbar { display: none; }
+
+    .app-top {
+      flex: none;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) 44px;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 10px;
+    }
+    .app-top .title {
+      margin: 0;
+      text-align: center;
+      font-size: var(--text-base);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--ds-fg-2);
+    }
+    .icon-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--ds-fg);
+      cursor: pointer;
+      transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
+    }
+    .icon-btn svg { display: block; width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    @media (hover: hover) { .icon-btn:hover { background: var(--ds-surface-2); color: var(--ds-accent); } }
+    .icon-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+
+    .eyebrow {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ds-muted);
+    }
+    .muted { color: var(--ds-muted); }
+    .meta-line { font-size: var(--text-xs); color: var(--ds-meta); line-height: 1.45; }
+
+    /* ── Shared controls ──────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      line-height: 1.3;
+      cursor: pointer;
+      transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard),
+                  opacity var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard),
+                  border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
+    }
+    .btn svg { display: block; width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .btn:focus-visible { outline: none; box-shadow: var(--ring); }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary { background: var(--ds-accent); color: var(--ds-accent-on); }
+    @media (hover: hover) { .btn-primary:hover { background: var(--accent-hover); } }
+    .btn-primary[aria-disabled="true"] { background: var(--ds-surface-2); color: var(--ds-muted); cursor: default; }
+    .btn-primary[aria-disabled="true"]:active { transform: none; }
+    .btn-primary[data-pending="true"] { opacity: 0.72; cursor: progress; }
+
+    .btn-quiet { background: var(--ds-surface); color: var(--ds-fg); border-color: var(--ds-border); }
+    @media (hover: hover) { .btn-quiet:hover { background: var(--ds-surface-2); color: var(--ds-accent); } }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-pill);
+      background: var(--ds-surface);
+      color: var(--ds-fg);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .chip .dot { width: 6px; height: 6px; border-radius: var(--radius-pill); background: currentColor; }
+    .chip-accent { border-color: color-mix(in oklab, var(--qa, var(--ds-accent)), transparent 62%); background: color-mix(in oklab, var(--qa, var(--ds-accent)), transparent 90%); color: var(--qa, var(--ds-accent)); }
+    .chip-done { border-color: color-mix(in oklab, var(--ds-good), transparent 58%); background: color-mix(in oklab, var(--ds-good), transparent 90%); color: var(--ds-good); }
+    .screen { flex: 1 1 auto; min-height: 0; }
+
+    /* ── Screen 1 — cover poster ──────────────────────────────────── */
+    .poster { padding: 8px 22px 0; display: flex; flex-direction: column; }
+    .poster > * { flex: 0 0 auto; }
+    .poster-headline {
+      margin: 18px 0 0;
+      font-family: var(--font-hero);
+      font-size: 40px;
+      font-weight: 600;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      color: var(--ds-fg-2);
+    }
+    .poster-headline em { font-style: italic; color: var(--ds-accent); }
+    .poster-body {
+      margin: 16px 0 0;
+      max-width: 34ch;
+      font-size: 15px;
+      line-height: 1.62;
+      color: var(--ds-muted);
+    }
+    .poster-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 22px;
+      padding: 14px 4px;
+      border-block: 1px solid var(--ds-border);
+    }
+    .poster-stats .od-stat { gap: 3px; }
+    .poster-stats .n {
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ds-fg-2);
+      font-variant-numeric: tabular-nums;
+    }
+    .poster-stats .k {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ds-meta);
+    }
+    .poster-tip {
+      margin: 18px 0 0;
+      padding: 11px 13px;
+      border-left: 2px solid var(--ds-accent);
+      background: var(--ds-surface);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.6;
+      color: var(--ds-muted);
+    }
+    .poster-cta { width: 100%; margin-top: 18px; justify-content: space-between; }
+    .teaser { margin-top: auto; padding-top: 22px; }
+    .teaser-peek {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 14px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(to bottom, var(--ds-surface), #191817);
+      transform: translateY(14px);
+      opacity: 0.85;
+    }
+    .teaser-peek .body { display: grid; gap: 2px; min-width: 0; }
+    .teaser-peek .cat { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--qa); }
+    .teaser-peek .name { font-size: var(--text-sm); font-weight: 650; color: var(--ds-fg-2); }
+
+    /* ── Screen 2 — today's quests ────────────────────────────────── */
+    .greet { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 4px 2px 14px; }
+    .greet h1 {
+      margin: 6px 0 0;
+      font-size: 24px;
+      font-weight: 750;
+      line-height: 1.14;
+      letter-spacing: -0.02em;
+      color: var(--ds-fg-2);
+    }
+    .bell-badge { position: absolute; top: 3px; right: 4px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: var(--radius-pill); background: var(--ds-accent); color: var(--ds-accent-on); font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
+    .bell-ring { animation: bell 4.5s var(--ease-standard) infinite; transform-origin: 50% 4%; }
+    @keyframes bell {
+      0%, 88%, 100% { transform: rotate(0deg); }
+      90% { transform: rotate(-9deg); }
+      92% { transform: rotate(8deg); }
+      94% { transform: rotate(-5deg); }
+      96% { transform: rotate(3deg); }
+    }
+
+    .ribbon {
+      padding: 13px 15px 14px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      backdrop-filter: blur(10px);
+    }
+    .ribbon-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .ribbon-lv {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ds-fg-2);
+    }
+    .ribbon-lv .num { color: var(--ds-accent); }
+    .ribbon-name { font-size: var(--text-sm); font-weight: 650; color: var(--ds-fg); text-align: right; }
+    .ribbon-bar {
+      position: relative;
+      height: 7px;
+      margin-top: 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.10);
+      overflow: hidden;
+    }
+    .ribbon-fill {
+      height: 100%;
+      width: 66.6%;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(to right, var(--ds-warn), var(--ds-accent));
+      transition: width var(--motion-base) var(--ease-standard);
+    }
+    .ribbon-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 9px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--ds-muted);
+    }
+    .ribbon-foot b { color: var(--ds-fg-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    .subline { margin: 14px 2px 12px; font-size: var(--text-sm); color: var(--ds-muted); }
+    .subline b { color: var(--ds-fg); font-weight: 650; }
+
+    .quest-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; --od-gap: 0; }
+    .quest-tile {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 12px;
+      min-height: 146px;
+      padding: 12px 12px 11px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(160deg, color-mix(in oklab, var(--qa) 13%, var(--ds-surface)), var(--ds-surface) 68%);
+      color: var(--ds-fg);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard),
+                  box-shadow var(--motion-fast) var(--ease-standard);
+    }
+    .quest-tile:hover { border-color: color-mix(in oklab, var(--qa), transparent 45%); }
+    .quest-tile:active { transform: scale(0.985); }
+    .quest-tile:focus-visible { outline: none; box-shadow: var(--ring); }
+    .quest-tile[data-state="claimed"] { background: var(--ds-surface); border-color: var(--ds-border-2); }
+    .quest-tile-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .glyph {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      flex: none;
+      border: 1px solid color-mix(in oklab, var(--qa), transparent 62%);
+      border-radius: var(--radius-sm);
+      background: color-mix(in oklab, var(--qa), transparent 86%);
+      color: var(--qa);
+    }
+    .glyph svg { display: block; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .xp-pill {
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: color-mix(in oklab, var(--qa), transparent 82%);
+      color: var(--qa);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .quest-tile-body { display: grid; gap: 5px; align-content: start; }
+    .quest-cat, .quest-name, .quest-meta { display: block; }
+    .quest-cat {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--qa);
+    }
+    .quest-name { font-size: var(--text-sm); font-weight: 650; line-height: 1.28; letter-spacing: -0.005em; color: var(--ds-fg-2); }
+    .quest-meta { font-size: var(--text-xs); color: var(--ds-meta); }
+    .quest-tile[data-state="claimed"] .quest-name { color: var(--ds-muted); }
+
+    /* ── Screen 3 — quest detail ──────────────────────────────────── */
+    .detail-hero {
+      position: relative;
+      padding: 20px 18px 22px;
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(120% 90% at 12% 0%, color-mix(in oklab, var(--qa) 34%, transparent), transparent 62%),
+        linear-gradient(165deg, color-mix(in oklab, var(--qa) 16%, var(--ds-surface)), var(--ds-surface));
+      border: 1px solid color-mix(in oklab, var(--qa), transparent 70%);
+      overflow: hidden;
+    }
+    .detail-hero .quest-cat { color: var(--qa); }
+    .detail-title {
+      margin: 10px 0 0;
+      font-family: var(--font-hero);
+      font-size: 31px;
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--ds-fg-2);
+    }
+    .detail-copy {
+      margin: 11px 0 0;
+      max-width: 30ch;
+      font-size: var(--text-sm);
+      line-height: 1.6;
+      color: #d9d5cb;
+    }
+    .stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 16px;
+      padding: 6px 11px;
+      border: 1px solid color-mix(in oklab, var(--qa), transparent 52%);
+      border-radius: var(--radius-sm);
+      background: color-mix(in oklab, var(--qa), transparent 88%);
+      color: var(--qa);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      transform: rotate(-1.4deg);
+    }
+    .stamp svg { display: block; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 20px 2px 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ds-muted);
+    }
+    .section-label b { color: var(--qa); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+    .step {
+      display: grid;
+      grid-template-columns: 26px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 11px;
+      width: 100%;
+      min-height: 44px;
+      padding: 11px 12px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-md);
+      background: var(--ds-surface);
+      color: var(--ds-fg);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard);
+    }
+    .step:hover { border-color: var(--ds-border-2); }
+    .step:focus-visible { outline: none; box-shadow: var(--ring); }
+    .step-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      margin-top: 1px;
+      border: 1.5px solid var(--ds-border-2);
+      border-radius: var(--radius-sm);
+      color: transparent;
+      transition: background-color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
+    }
+    .step-box svg { display: block; width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .step-text { display: grid; gap: 3px; }
+    .step-title { font-size: var(--text-sm); font-weight: 600; line-height: 1.35; color: var(--ds-fg); }
+    .step-meta { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-meta); }
+    .step.is-done { background: color-mix(in oklab, var(--ds-good), transparent 92%); border-color: color-mix(in oklab, var(--ds-good), transparent 62%); }
+    .step.is-done .step-box { background: var(--ds-good); border-color: var(--ds-good); color: #0d1a14; }
+    .step.is-done .step-title { color: var(--ds-muted); text-decoration: line-through; text-decoration-color: color-mix(in oklab, var(--ds-good), transparent 40%); }
+
+    .empty-note {
+      display: grid;
+      gap: 6px;
+      padding: 15px;
+      border: 1px dashed var(--ds-border-2);
+      border-radius: var(--radius-md);
+      background: var(--ds-surface);
+    }
+    .empty-note p { margin: 0; font-size: var(--text-sm); line-height: 1.5; color: var(--ds-muted); }
+
+    .add-step { display: grid; gap: 8px; margin-top: 10px; padding: 13px; border: 1px solid var(--ds-border); border-radius: var(--radius-md); background: var(--ds-surface); }
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: var(--text-xs); font-weight: 650; letter-spacing: 0.02em; color: var(--ds-fg); }
+    .field .req { color: var(--ds-accent); }
+    .field input[type="text"], .field select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--ds-border-2);
+      border-radius: var(--radius-sm);
+      background: #121110;
+      color: var(--ds-fg-2);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      outline: none;
+      transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard);
+    }
+    .field input::placeholder { color: var(--ds-meta); }
+    .field input:focus-visible, .field select:focus-visible { border-color: var(--ds-fg); box-shadow: var(--ring); }
+    .field-error { display: none; font-size: var(--text-xs); line-height: 1.4; color: #ff9d7a; }
+    .field-error.is-on { display: block; }
+    .field input[aria-invalid="true"] { border-color: #ff7a45; }
+    .field-help { font-size: var(--text-xs); line-height: 1.45; color: var(--ds-meta); }
+
+    .detail-foot {
+      flex: none;
+      padding: 12px 18px 6px;
+      border-top: 1px solid var(--ds-border);
+      background: linear-gradient(to top, var(--ds-bg) 62%, rgba(20,19,18,0));
+    }
+    .cta-block { display: grid; gap: 8px; }
+    .cta-block .btn { width: 100%; min-height: 52px; font-size: var(--text-base); font-weight: 700; border-radius: var(--radius-pill); }
+    .cta-note { margin: 0; text-align: center; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ds-meta); }
+    .shake { animation: shake 320ms var(--ease-standard); }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      22% { transform: translateX(-6px); }
+      46% { transform: translateX(5px); }
+      70% { transform: translateX(-3px); }
+    }
+
+    /* ── Tab bar ──────────────────────────────────────────────────── */
+    .tabbar {
+      flex: none;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: center;
+      gap: 2px;
+      padding: 7px 8px 8px;
+      border-top: 1px solid var(--ds-border);
+      background: rgba(20, 19, 18, 0.9);
+      backdrop-filter: blur(14px);
+    }
+    .tab {
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 3px;
+      min-height: 46px;
+      padding: 5px 2px 4px;
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--ds-meta);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color var(--motion-fast) var(--ease-standard);
+    }
+    .tab svg { display: block; width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .tab:focus-visible { outline: none; box-shadow: var(--ring); }
+    @media (hover: hover) { .tab:hover { color: var(--ds-fg); } }
+    .tab[aria-selected="true"] { color: var(--ds-accent); }
+    .tab[aria-selected="true"] .tab-label { color: var(--ds-accent); }
+    .tab-fab {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      justify-self: center;
+      border: 0;
+      border-radius: var(--radius-pill);
+      background: var(--ds-accent);
+      color: var(--ds-accent-on);
+      cursor: pointer;
+      transition: background-color var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+    }
+    .tab-fab svg { display: block; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; }
+    .tab-fab:focus-visible { outline: none; box-shadow: var(--ring); }
+    .tab-fab:active { transform: scale(0.94); }
+
+    /* ── Library rows ─────────────────────────────────────────────── */
+    .lib-list { display: grid; gap: 8px; margin-top: 4px; }
+    .lib-row {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      min-height: 56px;
+      padding: 11px 12px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-md);
+      background: var(--ds-surface);
+      color: var(--ds-fg);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard);
+    }
+    .lib-row:hover { border-color: color-mix(in oklab, var(--qa), transparent 55%); }
+    .lib-row:focus-visible { outline: none; box-shadow: var(--ring); }
+    .lib-row .body { display: grid; gap: 2px; min-width: 0; }
+    .lib-row .cat { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--qa); }
+    .lib-row .name { font-size: var(--text-sm); font-weight: 620; color: var(--ds-fg-2); }
+    .lib-row .state { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--ds-meta); white-space: nowrap; }
+
+    /* ── Stats screen ─────────────────────────────────────────────── */
+    .stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .stat-card {
+      display: grid;
+      gap: 4px;
+      padding: 13px 14px;
+      border: 1px solid var(--ds-border);
+      border-radius: var(--radius-md);
+      background: var(--ds-surface);
+    }
+    .stat-card .n { font-size: 25px; font-weight: 750; line-height: 1.05; letter-spacing: -0.02em; color: var(--ds-fg-2); font-variant-numeric: tabular-nums; }
+    .stat-card .n .u { font-size: 14px; font-weight: 650; color: var(--ds-muted); }
+    .stat-card .k { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ds-meta); }
+
+    .week-bars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 7px; align-items: end; margin-top: 2px; }
+    .week-bar { display: grid; gap: 6px; justify-items: center; }
+    .week-bar .col { display: flex; align-items: flex-end; justify-content: center; width: 100%; height: 76px; }
+    .week-bar .fill { width: 100%; border-radius: 3px 3px 0 0; background: linear-gradient(to top, color-mix(in oklab, var(--ds-accent) 55%, transparent), var(--ds-accent)); }
+    .week-bar .day { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ds-meta); }
+    .week-bar[data-today="true"] .day { color: var(--ds-accent); font-weight: 700; }
+    .week-bar[data-today="true"] .fill { box-shadow: 0 0 0 1px color-mix(in oklab, var(--ds-accent), transparent 40%); }
+
+    .bal-list { display: grid; gap: 9px; margin-top: 2px; }
+    .bal-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) 46px; align-items: center; gap: 10px; }
+    .bal-row .name { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ds-muted); }
+    .bal-row .track { height: 6px; border-radius: var(--radius-pill); background: rgba(255, 255, 255, 0.09); overflow: hidden; }
+    .bal-row .bar { height: 100%; border-radius: var(--radius-pill); background: var(--qa); transition: width var(--motion-base) var(--ease-standard); }
+    .bal-row .val { font-family: var(--font-mono); font-size: 10.5px; color: var(--ds-fg); text-align: right; font-variant-numeric: tabular-nums; }
+
+    /* ── Sheet + toast ────────────────────────────────────────────── */
+    .scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      background: rgba(8, 7, 6, 0.68);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--motion-base) var(--ease-standard);
+    }
+    .sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 7;
+      display: grid;
+      gap: 0;
+      padding: 8px 18px 22px;
+      border-top: 1px solid var(--ds-border-2);
+      border-radius: 18px 18px 0 0;
+      background: #171614;
+      box-shadow: var(--elev-raised);
+      transform: translateY(101%);
+      transition: transform 260ms var(--ease-standard);
+    }
+    .sheet[data-open="true"] { transform: translateY(0); }
+    .sheet-grip { width: 38px; height: 4px; border-radius: var(--radius-pill); background: var(--ds-border-2); justify-self: center; }
+    .sheet-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0 4px; }
+    .sheet-bar h2 { margin: 0; font-size: var(--text-lg); font-weight: 700; letter-spacing: -0.01em; color: var(--ds-fg-2); }
+    .sheet-body { display: grid; gap: 13px; padding-top: 8px; }
+    .sheet-actions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 9px; padding-top: 3px; }
+    .sheet-actions .btn { width: 100%; }
+    .field-summary {
+      display: none;
+      padding: 10px 12px;
+      border: 1px solid #ff7a45;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 122, 69, 0.10);
+      font-size: var(--text-xs);
+      line-height: 1.45;
+      color: #ffb694;
+    }
+    .field-summary.is-on { display: block; }
+    .field-summary a { color: #ffb694; text-decoration: underline; text-underline-offset: 2px; }
+
+    .toast {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 92px;
+      z-index: 8;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--ds-border-2);
+      border-radius: var(--radius-md);
+      background: #1e1c1a;
+      box-shadow: var(--elev-raised);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity var(--motion-base) var(--ease-standard), transform var(--motion-base) var(--ease-standard);
+    }
+    .toast[data-show="true"] { opacity: 1; transform: translateY(0); }
+    .toast .mark { flex: none; width: 8px; height: 8px; margin-top: 6px; border-radius: var(--radius-pill); background: var(--ds-accent); }
+    .toast[data-tone="good"] .mark { background: var(--ds-good); }
+    .toast .txt { font-size: var(--text-sm); line-height: 1.45; color: var(--ds-fg); }
+
+    .screen[hidden] { display: none; }
+    .fade-in { animation: fade var(--motion-base) var(--ease-standard) both; }
+    @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stage" data-od-id="stage">
+    <div class="stage-inner">
+      <div class="caption-row" data-od-id="stage-caption">
+        <span>Hi-fi prototype &middot; mobile &middot; 3 moments</span>
+        <span class="wordmark">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 25V13l5 5 5-9 5 9 3-3v10" />
+          </svg>
+          Questlog
+        </span>
+      </div>
+
+      <div class="devices" data-od-id="device-row">
+
+        <!-- ═══ PHONE 1 · cover poster ═══════════════════════════ -->
+        <div class="device-cell" data-od-id="phone-1">
+          <div class="phone-frame" data-phone-shell data-platform="neutral">
+            <span class="hardware-button volume" aria-hidden="true"></span>
+            <span class="hardware-button power" aria-hidden="true"></span>
+            <section class="phone-screen" data-phone-screen>
+              <main class="phone-content" data-phone-content>
+                <!-- APP CONTENT START -->
+                <div class="app" data-od-id="poster-screen">
+                  <div class="app-scroll poster" id="posterScroll">
+                    <p class="eyebrow">Questlog &middot; hi-fi mobile</p>
+                    <h1 class="poster-headline">Daily quests for <em>becoming</em> a better human.</h1>
+                    <p class="poster-body">
+                      Six quests on the board each morning. Finish the steps, claim the XP,
+                      keep the streak alive &mdash; habits stop feeling like chores when
+                      they read like a quest log.
+                    </p>
+
+                    <div class="poster-stats">
+                      <div class="od-stat"><span class="n" id="posterLevel">14</span><span class="k">Level</span></div>
+                      <div class="od-stat"><span class="n" id="posterXp">1,648</span><span class="k">XP earned</span></div>
+                      <div class="od-stat"><span class="n" id="posterStreak">23</span><span class="k">Day streak</span></div>
+                    </div>
+
+                    <p class="poster-tip">
+                      Tap a quest to open it &middot; tick every step to claim the XP &middot;
+                      the + button writes a new quest.
+                    </p>
+
+                    <button type="button" class="btn btn-primary poster-cta" id="posterCta">
+                      <span>Open today&rsquo;s quests</span>
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg>
+                    </button>
+
+                    <div class="teaser" style="--qa:#F54E00">
+                      <p class="eyebrow">Up next &mdash; 20:00 cutoff</p>
+                      <div class="teaser-peek" aria-hidden="true">
+                        <span class="glyph">
+                          <svg viewBox="0 0 24 24"><path d="M7 9v6M17 9v6M4 10v4M20 10v4M7 12h10" /></svg>
+                        </span>
+                        <span class="body">
+                          <span class="cat">Body</span>
+                          <span class="name">20-min strength &middot; +90 XP</span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- APP CONTENT END -->
+              </main>
+
+              <div class="status-bar" aria-hidden="true">
+                <span class="status-time">9:41</span>
+                <span class="status-cutout-zone"></span>
+                <span class="status-icons">
+                  <svg class="connectivity" viewBox="0 0 15 12"><path d="M1.5 10.5v-2m4 2v-4.5m4 4.5v-7m4 7v-9"/></svg>
+                  <svg class="wifi" viewBox="0 0 16 12"><path d="M1.5 4.7a9.2 9.2 0 0 1 13 0M4.2 7.3a5.4 5.4 0 0 1 7.6 0M6.9 10a1.55 1.55 0 0 1 2.2 0"/></svg>
+                  <svg class="battery" viewBox="0 0 20 11"><rect x=".75" y="1.25" width="16.5" height="8.5" rx="2"/><path d="M18.5 4v3M3.2 3.4h10.4v4.2H3.2z" fill="currentColor" stroke="none"/></svg>
+                </span>
+              </div>
+              <div class="camera-dot" aria-hidden="true"></div>
+              <div class="gesture-indicator" aria-hidden="true"></div>
+            </section>
+          </div>
+          <p class="device-caption">01 &mdash; Cover poster &middot; the pitch</p>
+        </div>
+
+        <!-- ═══ PHONE 2 · today's quests ══════════════════════════ -->
+        <div class="device-cell" data-od-id="phone-2">
+          <div class="phone-frame" data-phone-shell data-platform="neutral">
+            <span class="hardware-button volume" aria-hidden="true"></span>
+            <span class="hardware-button power" aria-hidden="true"></span>
+            <section class="phone-screen" data-phone-screen>
+              <main class="phone-content" data-phone-content>
+                <!-- APP CONTENT START -->
+                <div class="app" data-od-id="dashboard">
+
+                  <section class="screen od-screen" id="screen-today" data-screen="today" aria-label="Today's quests">
+                    <header class="app-top">
+                      <span class="od-spacer" aria-hidden="true"></span>
+                      <p class="title" id="todayHeading">Saturday, 4 Oct</p>
+                      <button type="button" class="icon-btn" id="todayBell" aria-label="Rewards waiting: 3 quests unclaimed">
+                        <svg class="bell-ring" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6" /><path d="M10.5 20a2 2 0 0 0 3 0" />
+                        </svg>
+                        <span class="bell-badge" id="bellBadge">3</span>
+                      </button>
+                    </header>
+
+                    <div class="app-scroll">
+                      <div class="greet">
+                        <div class="od-stack" style="--od-gap:0">
+                          <p class="eyebrow">Level 14 &middot; Ritual Adept</p>
+                          <h1 id="greeting">Good morning, Sam</h1>
+                        </div>
+                      </div>
+
+                      <div class="ribbon" data-od-id="level-ribbon">
+                        <div class="ribbon-top">
+                          <span class="ribbon-lv"><span class="num" id="ribbonLv">LV 14</span></span>
+                          <span class="ribbon-name" id="ribbonName">Ritual Adept</span>
+                        </div>
+                        <div class="ribbon-bar" role="img" id="ribbonBarRole" aria-label="Level progress: 1,648 of 2,480 XP">
+                          <div class="ribbon-fill" id="ribbonFill"></div>
+                        </div>
+                        <div class="ribbon-foot">
+                          <span class="od-nowrap"><b id="ribbonXp">1,648</b> / <span id="ribbonNext">2,480</span> XP</span>
+                          <span class="od-nowrap" id="ribbonToGo">832 XP to LV 15</span>
+                        </div>
+                      </div>
+
+                      <p class="subline" id="subline"><b>3 quests</b> waiting &middot; <b>320 XP</b> left today</p>
+
+                      <div class="quest-grid" id="questGrid" data-od-id="quest-grid"></div>
+
+                      <p class="meta-line" style="margin:16px 2px 0">
+                        Streak resets at 00:00. Clearing one quest before midnight keeps day 23 alive.
+                      </p>
+                    </div>
+
+                    <p class="sr-only" role="status" aria-live="polite" id="todayStatus"></p>
+                  </section>
+
+                  <section class="screen od-screen" id="screen-library" data-screen="library" aria-label="Quest library" hidden>
+                    <header class="app-top">
+                      <span class="od-spacer" aria-hidden="true"></span>
+                      <p class="title">Library</p>
+                      <span class="od-spacer" aria-hidden="true"></span>
+                    </header>
+                    <div class="app-scroll">
+                      <p class="subline" id="libCount" style="margin-top:0">6 quests on the board</p>
+                      <div class="lib-list" id="libList"></div>
+                      <p class="meta-line" style="margin:16px 2px 0">Tap any quest to open its steps and claim the reward.</p>
+                    </div>
+                    <p class="sr-only" role="status" aria-live="polite" id="libStatus"></p>
+                  </section>
+
+                  <section class="screen od-screen" id="screen-stats" data-screen="stats" aria-label="Stats and streaks" hidden>
+                    <header class="app-top">
+                      <span class="od-spacer" aria-hidden="true"></span>
+                      <p class="title">Stats</p>
+                      <span class="od-spacer" aria-hidden="true"></span>
+                    </header>
+                    <div class="app-scroll">
+                      <div class="stat-grid" data-od-id="stat-grid">
+                        <div class="stat-card od-stat"><span class="n" id="statLevel">14</span><span class="k">Level</span></div>
+                        <div class="stat-card od-stat"><span class="n" id="statStreak">23<span class="u"> d</span></span><span class="k">Streak</span></div>
+                        <div class="stat-card od-stat"><span class="n" id="statXp">1,648</span><span class="k">XP earned</span></div>
+                        <div class="stat-card od-stat"><span class="n" id="statBanked">320</span><span class="k">XP on board</span></div>
+                      </div>
+
+                      <p class="section-label">Quests cleared <b>7 days</b></p>
+                      <div class="week-bars" id="weekBars" role="img" aria-label="Quests cleared per day this week: Monday 4, Tuesday 5, Wednesday 3, Thursday 6, Friday 4, Saturday 2, Sunday 0"></div>
+
+                      <p class="section-label">Category balance <b>this week</b></p>
+                      <div class="bal-list" id="balList"></div>
+
+                      <p class="meta-line" style="margin:18px 2px 0">
+                        Weekly numbers are demo content for this prototype &mdash; only the level, XP and
+                        streak change when you claim a quest.
+                      </p>
+                    </div>
+                    <p class="sr-only" role="status" aria-live="polite" id="statsStatus"></p>
+                  </section>
+
+                  <nav class="tabbar" aria-label="Primary">
+                    <button type="button" class="tab" data-tab="today" aria-selected="true">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10" /></svg>
+                      <span class="tab-label">Today</span>
+                    </button>
+                    <button type="button" class="tab" data-tab="library" aria-selected="false">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z" /><path d="M9 10h6M9 14h6" /></svg>
+                      <span class="tab-label">Library</span>
+                    </button>
+                    <button type="button" class="tab-fab" id="newQuestBtn" aria-label="Write a new quest" aria-haspopup="dialog">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v12M6 12h12" /></svg>
+                    </button>
+                    <button type="button" class="tab" data-tab="stats" aria-selected="false">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6" /></svg>
+                      <span class="tab-label">Stats</span>
+                    </button>
+                    <button type="button" class="tab" data-tab="profile" aria-selected="false">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="3.4" /><path d="M5 20c1.4-3.4 4-5 7-5s5.6 1.6 7 5" /></svg>
+                      <span class="tab-label">Profile</span>
+                    </button>
+                  </nav>
+
+                  <div class="scrim" id="scrim" hidden></div>
+                  <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" data-open="false" hidden>
+                    <span class="sheet-grip" aria-hidden="true"></span>
+                    <div class="sheet-bar">
+                      <h2 id="sheetTitle">New quest</h2>
+                      <button type="button" class="icon-btn" id="sheetClose" aria-label="Close the new quest sheet">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                      </button>
+                    </div>
+                    <form class="sheet-body" id="newQuestForm" novalidate>
+                      <p class="field-summary" id="formSummary" tabindex="-1">Check the highlighted field before saving.</p>
+                      <div class="field">
+                        <label for="questName">Quest name <span class="req" aria-hidden="true">*</span></label>
+                        <input type="text" id="questName" name="questName" placeholder="Read 20 pages" autocomplete="off" required aria-describedby="questNameError" />
+                        <p class="field-error" id="questNameError">Give the quest a short name &mdash; it shows on the tile.</p>
+                      </div>
+                      <div class="field">
+                        <label for="questCat">Category</label>
+                        <select id="questCat" name="questCat">
+                          <option value="Body">Body</option>
+                          <option value="Read">Read</option>
+                          <option value="Listen" selected>Listen</option>
+                          <option value="Nourish">Nourish</option>
+                          <option value="Mind">Mind</option>
+                          <option value="Rest">Rest</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="questXp">Reward</label>
+                        <select id="questXp" name="questXp">
+                          <option value="30">+30 XP</option>
+                          <option value="60" selected>+60 XP</option>
+                          <option value="90">+90 XP</option>
+                          <option value="120">+120 XP</option>
+                        </select>
+                        <p class="field-help">Reward pays out when every step is ticked.</p>
+                      </div>
+                      <div class="sheet-actions">
+                        <button type="button" class="btn btn-quiet" id="sheetCancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="questSubmit">Add to today</button>
+                      </div>
+                    </form>
+                  </section>
+
+                  <div class="toast" id="toast" role="status" aria-live="polite">
+                    <span class="mark" aria-hidden="true"></span>
+                    <span class="txt" id="toastText"></span>
+                  </div>
+                </div>
+                <!-- APP CONTENT END -->
+              </main>
+
+              <div class="status-bar" aria-hidden="true">
+                <span class="status-time">9:41</span>
+                <span class="status-cutout-zone"></span>
+                <span class="status-icons">
+                  <svg class="connectivity" viewBox="0 0 15 12"><path d="M1.5 10.5v-2m4 2v-4.5m4 4.5v-7m4 7v-9"/></svg>
+                  <svg class="wifi" viewBox="0 0 16 12"><path d="M1.5 4.7a9.2 9.2 0 0 1 13 0M4.2 7.3a5.4 5.4 0 0 1 7.6 0M6.9 10a1.55 1.55 0 0 1 2.2 0"/></svg>
+                  <svg class="battery" viewBox="0 0 20 11"><rect x=".75" y="1.25" width="16.5" height="8.5" rx="2"/><path d="M18.5 4v3M3.2 3.4h10.4v4.2H3.2z" fill="currentColor" stroke="none"/></svg>
+                </span>
+              </div>
+              <div class="camera-dot" aria-hidden="true"></div>
+              <div class="gesture-indicator" aria-hidden="true"></div>
+            </section>
+          </div>
+          <p class="device-caption">02 &mdash; Today&rsquo;s quests &middot; the hero screen</p>
+        </div>
+
+        <!-- ═══ PHONE 3 · quest detail ════════════════════════════ -->
+        <div class="device-cell" data-od-id="phone-3">
+          <div class="phone-frame" data-phone-shell data-platform="neutral">
+            <span class="hardware-button volume" aria-hidden="true"></span>
+            <span class="hardware-button power" aria-hidden="true"></span>
+            <section class="phone-screen" data-phone-screen>
+              <main class="phone-content" data-phone-content>
+                <!-- APP CONTENT START -->
+                <div class="app" data-od-id="quest-detail">
+                  <header class="app-top">
+                    <button type="button" class="icon-btn" id="detailBack" aria-label="Back to today's quests">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+                    </button>
+                    <p class="title">Quest</p>
+                    <span class="od-spacer" aria-hidden="true"></span>
+                  </header>
+
+                  <div class="app-scroll" id="detailScroll">
+                    <section class="detail-hero" id="detailHero" data-od-id="detail-hero">
+                      <p class="quest-cat" id="detailCat">Body</p>
+                      <h2 class="detail-title" id="detailTitle">20-min strength</h2>
+                      <p class="detail-copy" id="detailCopy">
+                        Four rounds, twenty minutes, no equipment. The kind of session that keeps
+                        the rest of the day honest.
+                      </p>
+                      <span class="stamp" id="detailStamp">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.4 5.6L20 10l-4.4 3.6L17 19l-5-3-5 3 1.4-5.4L4 10l5.6-1.4z" /></svg>
+                        <span id="detailStampText">Reward +90 XP</span>
+                      </span>
+                    </section>
+
+                    <p class="section-label">Steps <b id="detailProgress">3 / 4 done</b></p>
+                    <ul class="steps" id="stepList" data-od-id="step-list"></ul>
+
+                    <div id="emptySteps" hidden>
+                      <div class="empty-note">
+                        <p><strong>No steps yet.</strong> A quest pays out once every step is ticked &mdash;
+                          this one has none, so it cannot be claimed.</p>
+                      </div>
+                      <form class="add-step" id="addStepForm" novalidate>
+                        <div class="field">
+                          <label for="stepName">First step <span class="req" aria-hidden="true">*</span></label>
+                          <input type="text" id="stepName" placeholder="Ten push-ups, slow" autocomplete="off" required aria-describedby="stepError" />
+                          <p class="field-error" id="stepError">Write the step you want to tick off.</p>
+                        </div>
+                        <button type="submit" class="btn btn-quiet">Add step</button>
+                      </form>
+                    </div>
+
+                    <p class="meta-line" style="margin:20px 2px 8px">
+                      Clearing this quest before 00:00 keeps the 23-day streak alive and pays
+                      +90 XP. Partial steps still count &mdash; they just do not pay out yet.
+                    </p>
+                  </div>
+
+                  <div class="detail-foot">
+                    <div class="cta-block">
+                      <button type="button" class="btn btn-primary" id="detailCta" aria-disabled="true">Start quest</button>
+                      <p class="cta-note" id="detailNote">1 step left to unlock the reward</p>
+                    </div>
+                  </div>
+
+                  <div class="toast" id="toast3" role="status" aria-live="polite">
+                    <span class="mark" aria-hidden="true"></span>
+                    <span class="txt" id="toast3Text"></span>
+                  </div>
+                </div>
+                <!-- APP CONTENT END -->
+              </main>
+
+              <div class="status-bar" aria-hidden="true">
+                <span class="status-time">9:41</span>
+                <span class="status-cutout-zone"></span>
+                <span class="status-icons">
+                  <svg class="connectivity" viewBox="0 0 15 12"><path d="M1.5 10.5v-2m4 2v-4.5m4 4.5v-7m4 7v-9"/></svg>
+                  <svg class="wifi" viewBox="0 0 16 12"><path d="M1.5 4.7a9.2 9.2 0 0 1 13 0M4.2 7.3a5.4 5.4 0 0 1 7.6 0M6.9 10a1.55 1.55 0 0 1 2.2 0"/></svg>
+                  <svg class="battery" viewBox="0 0 20 11"><rect x=".75" y="1.25" width="16.5" height="8.5" rx="2"/><path d="M18.5 4v3M3.2 3.4h10.4v4.2H3.2z" fill="currentColor" stroke="none"/></svg>
+                </span>
+              </div>
+              <div class="camera-dot" aria-hidden="true"></div>
+              <div class="gesture-indicator" aria-hidden="true"></div>
+            </section>
+          </div>
+          <p class="device-caption">03 &mdash; Quest detail &middot; steps to reward</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ── Demo data ─────────────────────────────────────────────── */
+      var GLYPHS = {
+        Body: '<path d="M7 9v6M17 9v6M4 10v4M20 10v4M7 12h10"/>',
+        Read: '<path d="M5 4h11l3 3v13H5z"/><path d="M9 10h6M9 14h6"/>',
+        Listen: '<path d="M5 14v-2a7 7 0 0 1 14 0v2"/><path d="M5 14h2v5H5zM17 14h2v5h-2z"/>',
+        Nourish: '<path d="M7 4v7a3 3 0 0 0 6 0V4"/><path d="M10 4v16"/>',
+        Mind: '<path d="M12 5a6 6 0 1 0 0 12 3 3 0 0 0 0-6 3 3 0 0 1 0-6z"/><path d="M12 5v12"/>',
+        Rest: '<path d="M18 15a7 7 0 0 1-9-9 7.5 7.5 0 1 0 9 9z"/>',
+        Other: '<path d="M12 5l2.4 5.6L20 10l-4.4 3.6L17 19l-5-3-5 3 1.4-5.4L4 10l5.6-1.4z"/>'
+      };
+
+      var ACCENTS = { Body: '#F54E00', Read: '#E0B33C', Listen: '#4FA3C7', Nourish: '#46B08A', Mind: '#B07BD9', Rest: '#F2A0BE', Other: '#9A948A' };
+
+      var QUESTS = [
+        { id: 'q1', cat: 'Body', title: '20-min strength', xp: 90, accent: ACCENTS.Body,
+          copy: 'Four rounds, twenty minutes, no equipment. The kind of session that keeps the rest of the day honest.',
+          steps: [
+            { t: 'Clear a 2x2 m floor space', m: '2 min' },
+            { t: '12 push-ups, 3 rounds', m: '6 min' },
+            { t: '60-second plank, 3 rounds', m: '6 min' },
+            { t: '20 lunges per side, 2 rounds', m: '6 min' }
+          ], done: [true, true, true, false] },
+        { id: 'q2', cat: 'Read', title: 'Four Thousand Weeks', xp: 160, accent: ACCENTS.Read,
+          copy: 'Four chapters of Oliver Burkeman. He writes about limits better than anyone, and it makes a Tuesday feel earned.',
+          steps: [
+            { t: 'Read ch. 1 - The four thousand weeks', m: '12 min' },
+            { t: 'Read ch. 2 - The substitutes', m: '12 min' },
+            { t: 'Read ch. 3 - Productivity', m: '12 min' },
+            { t: 'Note one argument to reuse', m: '9 min' }
+          ], done: [false, false, false, false] },
+        { id: 'q3', cat: 'Listen', title: 'Sleep architecture', xp: 120, accent: ACCENTS.Listen,
+          copy: 'Two Huberman Lab episodes on what actually moves sleep, and the one experiment worth trying tonight.',
+          steps: [
+            { t: 'Episode 1 - the sleep architecture', m: '35 min' },
+            { t: 'Episode 2 - temperature and light', m: '35 min' }
+          ], done: [false, false] },
+        { id: 'q4', cat: 'Nourish', title: 'High-protein lunch', xp: 80, accent: ACCENTS.Nourish,
+          copy: 'Thirty grams of protein before two in the afternoon. Cook once, eat twice, stop buying the sad desk sandwich.',
+          steps: [
+            { t: 'Pick the recipe', m: '3 min' },
+            { t: 'Cook the batch', m: '18 min' },
+            { t: 'Box half for tomorrow', m: '4 min' }
+          ], done: [false, false, false] },
+        { id: 'q5', cat: 'Mind', title: '10-minute focus sit', xp: 60, accent: ACCENTS.Mind,
+          copy: 'Ten minutes, one object of attention, no switching. The hardest quest on the board and the fastest win.',
+          steps: [
+            { t: 'Sit down, phone in another room', m: '1 min' },
+            { t: '10 minutes on the breath', m: '10 min' },
+            { t: 'Write one line about the day', m: '2 min' }
+          ], done: [false, false, false] },
+        { id: 'q6', cat: 'Rest', title: 'Lights-out by 22:30', xp: 70, accent: ACCENTS.Rest,
+          copy: 'Screens down, blinds shut, lights off. The quest that decides whether tomorrow is worth playing.',
+          steps: [
+            { t: 'Screens on charge outside the bedroom', m: '5 min' },
+            { t: 'Lights out, alarm set for 06:30', m: '25 min' }
+          ], done: [false, false] }
+      ];
+
+      var BALANCE = [
+        { cat: 'Body', v: 6 }, { cat: 'Read', v: 5 }, { cat: 'Listen', v: 4 },
+        { cat: 'Nourish', v: 4 }, { cat: 'Mind', v: 5 }, { cat: 'Rest', v: 5 }
+      ];
+      var WEEK = [
+        { d: 'Mon', v: 4 }, { d: 'Tue', v: 5 }, { d: 'Wed', v: 3 },
+        { d: 'Thu', v: 6 }, { d: 'Fri', v: 4 }, { d: 'Sat', v: 2, today: true }, { d: 'Sun', v: 0 }
+      ];
+      var LEVEL_NAMES = ['Ritual Adept', 'Quest Keeper', 'Habit Smith', 'Daily Architect', 'Ascendant'];
+
+      var state = {
+        xp: 1648,
+        level: 14,
+        nextAt: 2480,
+        streak: 23,
+        claimed: {},
+        custom: [],
+        activeId: 'q1',
+        tab: 'today',
+        scroll: { today: 0, library: 0, stats: 0, detail: 0 }
+      };
+
+      /* ── Helpers ───────────────────────────────────────────────── */
+      var $ = function (s, r) { return (r || document).querySelector(s); };
+      var all = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+      var fmt = function (n) { return n.toLocaleString('en-US'); };
+      var levelName = function (lv) { return LEVEL_NAMES[(lv - 1) % LEVEL_NAMES.length]; };
+      var allQuests = function () { return QUESTS.concat(state.custom); };
+      var questById = function (id) {
+        var list = allQuests();
+        for (var i = 0; i < list.length; i++) { if (list[i].id === id) return list[i]; }
+        return list[0];
+      };
+      var doneCount = function (q) { return q.done.filter(Boolean).length; };
+      var isClaimed = function (q) { return !!state.claimed[q.id]; };
+      var isComplete = function (q) { return q.steps.length > 0 && doneCount(q) === q.steps.length; };
+      var openQuests = function () { return allQuests().filter(function (q) { return !isClaimed(q); }); };
+      var bankedXp = function () {
+        return openQuests().reduce(function (sum, q) { return sum + q.xp; }, 0);
+      };
+      var glyphSvg = function (cat) {
+        return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (GLYPHS[cat] || GLYPHS.Other) + '</svg>';
+      };
+      var el = function (tag, cls) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        return n;
+      };
+
+      var toastTimer = null;
+      function toast(msg, tone, phone) {
+        var box = phone === 3 ? $('#toast3') : $('#toast');
+        var text = phone === 3 ? $('#toast3Text') : $('#toastText');
+        text.textContent = msg;
+        box.setAttribute('data-tone', tone || 'accent');
+        box.setAttribute('data-show', 'true');
+        if (toastTimer) { clearTimeout(toastTimer); }
+        toastTimer = setTimeout(function () { box.setAttribute('data-show', 'false'); }, 3400);
+      }
+
+      /* ── Dashboard rendering ───────────────────────────────────── */
+      function renderGrid() {
+        var grid = $('#questGrid');
+        grid.textContent = '';
+        allQuests().forEach(function (q) {
+          var claimed = isClaimed(q);
+          var done = doneCount(q);
+          var tile = el('button', 'quest-tile');
+          tile.type = 'button';
+          tile.style.setProperty('--qa', q.accent);
+          tile.setAttribute('data-quest', q.id);
+          tile.setAttribute('data-state', claimed ? 'claimed' : 'open');
+          tile.setAttribute('aria-label', q.cat + ' quest, ' + q.title + ', ' +
+            (claimed ? 'rewarded' : q.steps.length + ' steps, ' + done + ' done, ' + q.xp + ' XP'));
+
+          var top = el('span', 'quest-tile-top');
+          var glyph = el('span', 'glyph');
+          glyph.innerHTML = glyphSvg(q.cat);
+          var pill = el('span', 'xp-pill');
+          pill.textContent = (claimed ? '✓ ' : '+') + q.xp + ' XP';
+          top.appendChild(glyph);
+          top.appendChild(pill);
+
+          var body = el('span', 'quest-tile-body');
+          var cat = el('span', 'quest-cat');
+          cat.textContent = q.cat;
+          var name = el('span', 'quest-name od-clamp-2');
+          name.textContent = q.title;
+          var meta = el('span', 'quest-meta od-truncate');
+          meta.textContent = claimed ? 'Rewarded today' :
+            (q.steps.length ? done + ' of ' + q.steps.length + ' steps' : 'No steps yet');
+          body.appendChild(cat);
+          body.appendChild(name);
+          body.appendChild(meta);
+
+          tile.appendChild(top);
+          tile.appendChild(body);
+          grid.appendChild(tile);
+        });
+      }
+
+      function renderRibbon() {
+        var toGo = Math.max(0, state.nextAt - state.xp);
+        var pct = Math.max(0, Math.min(100, (state.xp / state.nextAt) * 100));
+        $('#ribbonLv').textContent = 'LV ' + state.level;
+        $('#ribbonName').textContent = levelName(state.level);
+        $('#ribbonXp').textContent = fmt(state.xp);
+        $('#ribbonNext').textContent = fmt(state.nextAt);
+        $('#ribbonToGo').textContent = toGo > 0 ? fmt(toGo) + ' XP to LV ' + (state.level + 1) : 'Ready to level up';
+        $('#ribbonFill').style.width = pct.toFixed(1) + '%';
+        $('#ribbonBarRole').setAttribute('aria-label', 'Level progress: ' + fmt(state.xp) + ' of ' + fmt(state.nextAt) + ' XP');
+
+        var open = openQuests();
+        $('#subline').innerHTML = '';
+        var b1 = el('b'); b1.textContent = open.length + (open.length === 1 ? ' quest' : ' quests');
+        var mid = document.createTextNode(' waiting · ');
+        var b2 = el('b'); b2.textContent = fmt(bankedXp()) + ' XP';
+        var tail = document.createTextNode(' left today');
+        $('#subline').appendChild(b1);
+        $('#subline').appendChild(mid);
+        $('#subline').appendChild(b2);
+        $('#subline').appendChild(tail);
+
+        $('#bellBadge').textContent = open.length;
+        $('#todayBell').setAttribute('aria-label', 'Rewards waiting: ' + open.length + ' quests unclaimed');
+        $('#posterLevel').textContent = state.level;
+        $('#posterXp').textContent = fmt(state.xp);
+        $('#posterStreak').textContent = state.streak;
+        $('#statLevel').textContent = state.level;
+        $('#statStreak').innerHTML = state.streak + '<span class="u"> d</span>';
+        $('#statXp').textContent = fmt(state.xp);
+        $('#statBanked').textContent = fmt(bankedXp());
+      }
+
+      function renderLibrary() {
+        var list = $('#libList');
+        list.textContent = '';
+        allQuests().forEach(function (q) {
+          var row = el('button', 'lib-row');
+          row.type = 'button';
+          row.style.setProperty('--qa', q.accent);
+          row.setAttribute('data-quest', q.id);
+
+          var glyph = el('span', 'glyph');
+          glyph.innerHTML = glyphSvg(q.cat);
+
+          var body = el('span', 'body');
+          var cat = el('span', 'cat');
+          cat.textContent = q.cat;
+          var name = el('span', 'name od-truncate');
+          name.textContent = q.title;
+          body.appendChild(cat);
+          body.appendChild(name);
+
+          var state_ = el('span', 'state');
+          state_.textContent = isClaimed(q) ? 'Rewarded' :
+            (q.steps.length ? doneCount(q) + '/' + q.steps.length + ' · ' + q.xp + ' XP' : '0 steps · ' + q.xp + ' XP');
+
+          row.appendChild(glyph);
+          row.appendChild(body);
+          row.appendChild(state_);
+          list.appendChild(row);
+        });
+        $('#libCount').textContent = allQuests().length + ' quests on the board';
+      }
+
+      function renderStats() {
+        var bars = $('#weekBars');
+        if (!bars.childNodes.length) {
+          WEEK.forEach(function (d) {
+            var cell = el('div', 'week-bar');
+            cell.setAttribute('data-today', d.today ? 'true' : 'false');
+            var col = el('div', 'col');
+            var fill = el('div', 'fill');
+            fill.style.height = Math.max(4, (d.v / 6) * 100) + '%';
+            fill.style.opacity = d.v === 0 ? '0.25' : '1';
+            col.appendChild(fill);
+            var label = el('span', 'day');
+            label.textContent = d.d;
+            cell.appendChild(col);
+            cell.appendChild(label);
+            bars.appendChild(cell);
+          });
+          var bal = $('#balList');
+          BALANCE.forEach(function (b) {
+            var row = el('div', 'bal-row');
+            row.style.setProperty('--qa', ACCENTS[b.cat]);
+            var name = el('span', 'name');
+            name.textContent = b.cat;
+            var track = el('div', 'track');
+            var bar = el('div', 'bar');
+            bar.style.width = ((b.v / 7) * 100).toFixed(0) + '%';
+            track.appendChild(bar);
+            var val = el('span', 'val od-nowrap');
+            val.textContent = b.v + '/7';
+            row.appendChild(name);
+            row.appendChild(track);
+            row.appendChild(val);
+            bal.appendChild(row);
+          });
+        }
+      }
+
+      function renderAll() {
+        renderRibbon();
+        renderGrid();
+        renderLibrary();
+        renderStats();
+      }
+
+      /* ── Detail rendering ──────────────────────────────────────── */
+      function renderDetail() {
+        var q = questById(state.activeId);
+        var done = doneCount(q);
+        var claimed = isClaimed(q);
+
+        $('#detailHero').style.setProperty('--qa', q.accent);
+        $('#detailCat').textContent = q.cat + (q.custom ? ' · yours' : '');
+        $('#detailTitle').textContent = q.title;
+        $('#detailCopy').textContent = q.copy;
+        $('#detailStampText').textContent = claimed ? 'Rewarded +' + q.xp + ' XP' : 'Reward +' + q.xp + ' XP';
+
+        var list = $('#stepList');
+        list.textContent = '';
+        q.steps.forEach(function (step, i) {
+          var li = el('li');
+          var btn = el('button', 'step' + (q.done[i] ? ' is-done' : ''));
+          btn.type = 'button';
+          btn.setAttribute('data-step', String(i));
+          btn.setAttribute('aria-pressed', q.done[i] ? 'true' : 'false');
+          btn.setAttribute('aria-label', (q.done[i] ? 'Done: ' : 'Not done: ') + step.t + ', ' + step.m);
+
+          var box = el('span', 'step-box');
+          box.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>';
+          var text = el('span', 'step-text');
+          var t = el('span', 'step-title');
+          t.textContent = step.t;
+          var m = el('span', 'step-meta od-nowrap');
+          m.textContent = step.m;
+          text.appendChild(t);
+          text.appendChild(m);
+
+          btn.appendChild(box);
+          btn.appendChild(text);
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+
+        var empty = q.steps.length === 0;
+        $('#emptySteps').hidden = !empty;
+        $('#detailProgress').textContent = empty ? 'No steps yet' : done + ' / ' + q.steps.length + ' done';
+        $('#stepList').hidden = empty;
+
+        var cta = $('#detailCta');
+        var note = $('#detailNote');
+        if (claimed) {
+          cta.textContent = 'Rewarded';
+          cta.setAttribute('aria-disabled', 'true');
+          note.textContent = '+' + q.xp + ' XP added · streak day ' + state.streak;
+        } else if (empty) {
+          cta.textContent = 'Locked';
+          cta.setAttribute('aria-disabled', 'true');
+          note.textContent = 'Add at least one step to unlock';
+        } else if (isComplete(q)) {
+          cta.textContent = 'Claim +' + q.xp + ' XP';
+          cta.setAttribute('aria-disabled', 'false');
+          note.textContent = 'Every step done · reward ready';
+        } else {
+          cta.textContent = 'Start quest';
+          cta.setAttribute('aria-disabled', 'true');
+          var left = q.steps.length - done;
+          note.textContent = left + (left === 1 ? ' step left' : ' steps left') + ' to unlock the reward';
+        }
+      }
+
+      /* ── Navigation ────────────────────────────────────────────── */
+      function setTab(tab, opts) {
+        state.tab = tab;
+        ['today', 'library', 'stats'].forEach(function (name) {
+          var node = $('#screen-' + name);
+          var isOn = name === tab;
+          node.hidden = !isOn;
+          if (isOn && !(opts && opts.keepScroll)) {
+            var scroller = $('.app-scroll', node);
+            scroller.scrollTop = state.scroll[name] || 0;
+            var heading = $('#greeting', node) || $('h1', node);
+            if (heading && !(opts && opts.silent)) {
+              heading.setAttribute('tabindex', '-1');
+              heading.focus({ preventScroll: true });
+            }
+            var fresh = $('.app-scroll', node).firstElementChild;
+            if (fresh && !(opts && opts.silent)) {
+              fresh.classList.remove('fade-in');
+              void fresh.offsetWidth;
+              fresh.classList.add('fade-in');
+            }
+          }
+        });
+        all('.tab').forEach(function (btn) {
+          btn.setAttribute('aria-selected', btn.getAttribute('data-tab') === tab ? 'true' : 'false');
+        });
+      }
+
+      var STATUS = { today: '#todayStatus', library: '#libStatus', stats: '#statsStatus' };
+
+      function openQuest(id, origin) {
+        state.activeId = id;
+        state.origin = origin || 'today';
+        var scroller = $('#detailScroll');
+        state.scroll.detail = 0;
+        scroller.scrollTop = 0;
+        renderDetail();
+        var q = questById(id);
+        STATUS[state.origin].textContent = q.cat + ' quest ' + q.title + ' opened.';
+        toast(q.cat + ' · ' + q.title + ' opened', 'accent', 3);
+        var hero = $('#detailHero');
+        hero.classList.remove('fade-in');
+        void hero.offsetWidth;
+        hero.classList.add('fade-in');
+        $('#detailBack').focus({ preventScroll: true });
+      }
+
+      function closeDetail() {
+        var back = state.origin === 'library' ? 'library' : state.origin === 'stats' ? 'stats' : 'today';
+        setTab(back, { silent: true });
+        renderAll();
+        STATUS[back].textContent = 'Back to ' + back + '.';
+        var target = back === 'today' ? $('#greeting') : $('.tab[data-tab="' + back + '"]');
+        if (target && target.focus) { target.focus({ preventScroll: true }); }
+      }
+
+      /* ── Events ────────────────────────────────────────────────── */
+      $('#posterCta').addEventListener('click', function () {
+        setTab('today', { keepScroll: true, silent: true });
+        $('#todayStatus').textContent = 'Today\'s quests opened from the cover poster.';
+        $('#greeting').focus({ preventScroll: true });
+        toast('Today\'s quests · ' + openQuests().length + ' waiting', 'accent', 1);
+      });
+
+      $('#todayBell').addEventListener('click', function () {
+        var open = openQuests();
+        if (!open.length) {
+          toast('Every quest rewarded today · streak day ' + state.streak, 'good', 2);
+          $('#todayStatus').textContent = 'Every quest is rewarded. Nothing left to claim today.';
+          return;
+        }
+        openQuest(open[0].id, 'today');
+      });
+
+      $('#questGrid').addEventListener('click', function (e) {
+        var tile = e.target.closest('[data-quest]');
+        if (tile) { openQuest(tile.getAttribute('data-quest'), 'today'); }
+      });
+
+      $('#libList').addEventListener('click', function (e) {
+        var row = e.target.closest('[data-quest]');
+        if (row) {
+          $('#libStatus').textContent = questById(row.getAttribute('data-quest')).title + ' opened.';
+          openQuest(row.getAttribute('data-quest'), 'library');
+        }
+      });
+
+      $('#detailBack').addEventListener('click', closeDetail);
+
+      $('#stepList').addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-step]');
+        if (!btn) { return; }
+        var q = questById(state.activeId);
+        var i = parseInt(btn.getAttribute('data-step'), 10);
+        if (isClaimed(q)) { return; }
+        q.done[i] = !q.done[i];
+        renderDetail();
+        renderAll();
+        var done = doneCount(q);
+        var msg = q.done[i]
+          ? q.steps[i].t + ' done · ' + done + ' of ' + q.steps.length + ' steps'
+          : q.steps[i].t + ' reopened · ' + done + ' of ' + q.steps.length + ' steps';
+        toast(msg, 'accent', 3);
+        var again = $('#stepList').querySelector('[data-step="' + i + '"]');
+        if (again) { again.focus({ preventScroll: true }); }
+        if (isComplete(q)) { toast('All steps done — claim +' + q.xp + ' XP below', 'good', 3); }
+      });
+
+      $('#detailCta').addEventListener('click', function () {
+        var cta = this;
+        var q = questById(state.activeId);
+        if (isClaimed(q)) { return; }
+        if (q.steps.length === 0) {
+          toast('Add a step first — a quest with no steps cannot be claimed', 'accent', 3);
+          $('#stepName').focus();
+          return;
+        }
+        if (!isComplete(q)) {
+          cta.classList.remove('shake');
+          void cta.offsetWidth;
+          cta.classList.add('shake');
+          var left = q.steps.length - doneCount(q);
+          toast(left + (left === 1 ? ' step still' : ' steps still') + ' open — tick them to claim the reward', 'accent', 3);
+          return;
+        }
+        state.claimed[q.id] = true;
+        state.xp += q.xp;
+        var levelled = false;
+        if (state.xp >= state.nextAt) {
+          state.xp -= state.nextAt;
+          state.nextAt = Math.round(state.nextAt + 640);
+          state.level += 1;
+          levelled = true;
+        }
+        state.streak += 1;
+        renderAll();
+        renderDetail();
+        if (levelled) {
+          toast('+' + q.xp + ' XP · LEVEL ' + state.level + ' — ' + levelName(state.level), 'good', 3);
+          toast('Level ' + state.level + ' reached · ' + levelName(state.level), 'good', 2);
+        } else {
+          toast('+' + q.xp + ' XP claimed · streak day ' + state.streak, 'good', 3);
+          toast('+' + q.xp + ' XP claimed · streak day ' + state.streak, 'good', 2);
+        }
+      });
+
+      $('#addStepForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var input = $('#stepName');
+        var err = $('#stepError');
+        var value = input.value.trim();
+        if (value.length < 3) {
+          err.classList.add('is-on');
+          input.setAttribute('aria-invalid', 'true');
+          input.focus();
+          return;
+        }
+        err.classList.remove('is-on');
+        input.removeAttribute('aria-invalid');
+        var q = questById(state.activeId);
+        q.steps.push({ t: value, m: 'self-set' });
+        q.done.push(false);
+        input.value = '';
+        renderDetail();
+        renderAll();
+        toast('Step added to ' + q.title, 'good', 3);
+        var first = $('#stepList').querySelector('[data-step="0"]');
+        if (first) { first.focus({ preventScroll: true }); }
+      });
+      $('#stepName').addEventListener('blur', function () {
+        var err = $('#stepError');
+        if (this.value.trim().length < 3) {
+          err.classList.add('is-on');
+          this.setAttribute('aria-invalid', 'true');
+        } else {
+          err.classList.remove('is-on');
+          this.removeAttribute('aria-invalid');
+        }
+      });
+
+      all('.tab').forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          var name = tab.getAttribute('data-tab');
+          if (name === 'profile') {
+            $('#todayStatus').textContent = 'Profile is not part of this prototype build — Today, Library and Stats are.';
+            toast('Profile screen is out of scope for this build', 'accent', 2);
+            var bell = $('#todayBell');
+            setTab('today', { keepScroll: true, silent: true });
+            bell.focus({ preventScroll: true });
+            return;
+          }
+          var scroller = $('#screen-' + state.tab + ' .app-scroll');
+          if (scroller) { state.scroll[state.tab] = scroller.scrollTop; }
+          setTab(name);
+        });
+      });
+
+      ['today', 'library', 'stats'].forEach(function (name) {
+        $('#screen-' + name + ' .app-scroll').addEventListener('scroll', function () {
+          state.scroll[name] = this.scrollTop;
+        });
+      });
+      $('#detailScroll').addEventListener('scroll', function () { state.scroll.detail = this.scrollTop; });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && $('#sheet').getAttribute('data-open') === 'true') { closeSheet(); }
+      });
+
+      /* ── New-quest sheet ───────────────────────────────────────── */
+      var lastFocus = null;
+      function openSheet() {
+        lastFocus = document.activeElement;
+        var sheet = $('#sheet');
+        var scrim = $('#scrim');
+        scrim.hidden = false;
+        sheet.hidden = false;
+        void sheet.offsetWidth;
+        scrim.style.opacity = '1';
+        sheet.setAttribute('data-open', 'true');
+        $('#questName').focus();
+      }
+      function closeSheet() {
+        var sheet = $('#sheet');
+        var scrim = $('#scrim');
+        sheet.setAttribute('data-open', 'false');
+        scrim.style.opacity = '0';
+        window.setTimeout(function () { sheet.hidden = true; scrim.hidden = true; }, 260);
+        $('#formSummary').classList.remove('is-on');
+        if (lastFocus && lastFocus.focus) { lastFocus.focus({ preventScroll: true }); }
+      }
+      $('#newQuestBtn').addEventListener('click', openSheet);
+      $('#sheetClose').addEventListener('click', closeSheet);
+      $('#sheetCancel').addEventListener('click', closeSheet);
+      $('#scrim').addEventListener('click', closeSheet);
+
+      $('#questName').addEventListener('blur', function () {
+        var bad = this.value.trim().length < 3;
+        $('#questNameError').classList.toggle('is-on', bad);
+        if (bad) { this.setAttribute('aria-invalid', 'true'); } else { this.removeAttribute('aria-invalid'); }
+      });
+
+      $('#newQuestForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var input = $('#questName');
+        var submit = $('#questSubmit');
+        var value = input.value.trim();
+        var summary = $('#formSummary');
+        if (value.length < 3) {
+          $('#questNameError').classList.add('is-on');
+          input.setAttribute('aria-invalid', 'true');
+          summary.classList.add('is-on');
+          summary.textContent = 'One field needs attention: the quest name is too short.';
+          input.focus();
+          return;
+        }
+        summary.classList.remove('is-on');
+        $('#questNameError').classList.remove('is-on');
+        input.removeAttribute('aria-invalid');
+        submit.setAttribute('data-pending', 'true');
+        submit.textContent = 'Adding…';
+        window.setTimeout(function () {
+          var cat = $('#questCat').value;
+          var xp = parseInt($('#questXp').value, 10);
+          var id = 'c' + (state.custom.length + 1);
+          state.custom.push({
+            id: id, cat: cat, title: value, xp: xp, accent: ACCENTS[cat] || ACCENTS.Other,
+            copy: 'Your quest, written today. Add the steps that actually make it count.',
+            steps: [], done: [], custom: true
+          });
+          submit.removeAttribute('data-pending');
+          submit.textContent = 'Add to today';
+          input.value = '';
+          renderAll();
+          closeSheet();
+          toast('“' + value + '” added to today · +' + xp + ' XP', 'good', 2);
+          $('#todayStatus').textContent = 'New quest added: ' + value + '.';
+          var tile = $('#questGrid').querySelector('[data-quest="' + id + '"]');
+          if (tile) {
+            tile.classList.remove('fade-in');
+            void tile.offsetWidth;
+            tile.classList.add('fade-in');
+            tile.focus({ preventScroll: true });
+          }
+        }, 620);
+      });
+
+      /* ── Boot ──────────────────────────────────────────────────── */
+      renderAll();
+      renderDetail();
+      setTab('today', { silent: true });
+    })();
+  </script>
+</body>
+</html>

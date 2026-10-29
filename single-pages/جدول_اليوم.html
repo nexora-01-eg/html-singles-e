@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جدول اليوم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070605;
+    --bg-vign:#0c0a08;
+    --surface:#121110;
+    --surface-2:#1a1815;
+    --border:#2b2620;
+    --border-soft:#201d18;
+    --gold:#c9a227;
+    --gold-bright:#e9c874;
+    --gold-dim:#7a651e;
+    --text:#ece5d6;
+    --text-dim:#8c8574;
+    --text-faint:#5c584c;
+    --done-strike:#5c5847;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #171310 0%, transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    min-height:100vh;
+    padding:36px 18px 80px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+
+  /* Header */
+  header{
+    text-align:center;
+    margin-bottom:30px;
+    position:relative;
+  }
+  .eyebrow{
+    font-size:13px;
+    color:var(--gold);
+    letter-spacing:.02em;
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'El Messiri',serif;
+    font-weight:700;
+    font-size:38px;
+    margin:0 0 8px;
+    background:linear-gradient(180deg,var(--gold-bright),var(--gold) 70%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .date-line{
+    color:var(--text-dim);
+    font-size:15px;
+    font-weight:400;
+  }
+  .divider{
+    width:120px;height:1px;
+    margin:20px auto 0;
+    background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+  }
+
+  /* Progress */
+  .progress-card{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:var(--surface);
+    border:1px solid var(--border-soft);
+    border-radius:14px;
+    padding:16px 18px;
+    margin:26px 0 28px;
+  }
+  .progress-ring{
+    position:relative;
+    width:54px;height:54px;flex:none;
+  }
+  .progress-ring svg{transform:rotate(-90deg);}
+  .progress-ring circle{fill:none;stroke-width:5;}
+  .progress-ring .bg{stroke:var(--surface-2);}
+  .progress-ring .fg{stroke:var(--gold);stroke-linecap:round;transition:stroke-dashoffset .4s ease;}
+  .progress-ring .pct{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:var(--gold-bright);
+  }
+  .progress-text{flex:1;}
+  .progress-text .label{font-size:14px;color:var(--text);font-weight:500;}
+  .progress-text .sub{font-size:12.5px;color:var(--text-faint);margin-top:2px;}
+  .reset-btn{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-family:'Tajawal',sans-serif;
+    font-size:12.5px;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.2s;
+    white-space:nowrap;
+  }
+  .reset-btn:hover{border-color:var(--gold-dim);color:var(--gold-bright);}
+
+  /* Timeline */
+  .timeline{position:relative;padding-inline-end:0;}
+  .timeline::before{
+    content:"";
+    position:absolute;
+    top:6px;bottom:6px;
+    right:29px;
+    width:1px;
+    background:linear-gradient(180deg,var(--gold-dim),var(--border-soft) 90%);
+  }
+  .slot{
+    position:relative;
+    display:flex;
+    gap:14px;
+    padding:0 0 22px 0;
+  }
+  .slot:last-child{padding-bottom:0;}
+  .slot-marker{
+    flex:none;
+    width:60px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top:2px;
+    position:relative;
+    z-index:1;
+  }
+  .slot-dot{
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--surface-2);
+    border:1.5px solid var(--gold-dim);
+    margin-bottom:8px;
+    transition:.2s;
+  }
+  .slot.done .slot-dot{
+    background:var(--gold);
+    border-color:var(--gold);
+    box-shadow:0 0 8px 1px rgba(201,162,39,.5);
+  }
+  .slot-time{
+    font-size:11px;
+    color:var(--text-faint);
+    text-align:center;
+    line-height:1.3;
+    writing-mode:horizontal-tb;
+  }
+  .slot.done .slot-time{color:var(--gold-dim);}
+
+  .slot-card{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--border-soft);
+    border-radius:14px;
+    padding:14px 16px;
+    transition:border-color .2s, opacity .2s;
+  }
+  .slot.done .slot-card{
+    opacity:.55;
+    border-color:var(--border-soft);
+  }
+  .slot-card:focus-within{border-color:var(--gold-dim);}
+
+  .cats{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .cat-btn{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-faint);
+    font-family:'Tajawal',sans-serif;
+    font-size:11.5px;
+    padding:5px 10px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .cat-btn:hover{border-color:var(--gold-dim);color:var(--text-dim);}
+  .cat-btn.active{
+    background:rgba(201,162,39,.12);
+    border-color:var(--gold);
+    color:var(--gold-bright);
+  }
+  .cat-btn .ic{font-size:12px;line-height:1;}
+
+  .row-2{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .task-input{
+    flex:1;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--border-soft);
+    color:var(--text);
+    font-family:'Tajawal',sans-serif;
+    font-size:14.5px;
+    padding:5px 2px;
+    outline:none;
+    transition:border-color .15s;
+  }
+  .task-input::placeholder{color:var(--text-faint);}
+  .task-input:focus{border-color:var(--gold-dim);}
+  .slot.done .task-input{
+    text-decoration:line-through;
+    color:var(--done-strike);
+  }
+
+  .check{
+    flex:none;
+    width:22px;height:22px;
+    border-radius:6px;
+    border:1.5px solid var(--gold-dim);
+    background:transparent;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:.15s;
+    padding:0;
+  }
+  .check svg{width:13px;height:13px;opacity:0;transition:.15s;}
+  .slot.done .check{background:var(--gold);border-color:var(--gold);}
+  .slot.done .check svg{opacity:1;}
+
+  footer{
+    text-align:center;
+    margin-top:36px;
+    font-size:11.5px;
+    color:var(--text-faint);
+  }
+
+  .save-flag{
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--surface-2);
+    border:1px solid var(--gold-dim);
+    color:var(--gold-bright);
+    font-size:12.5px;
+    padding:8px 16px;
+    border-radius:999px;
+    opacity:0;
+    transition:opacity .25s, transform .25s;
+    pointer-events:none;
+  }
+  .save-flag.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:480px){
+    h1{font-size:30px;}
+    .slot-marker{width:48px;}
+    .timeline::before{right:23px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">إدارة الوقت</div>
+    <h1>جدول اليوم</h1>
+    <div class="date-line" id="dateLine"></div>
+    <div class="divider"></div>
+  </header>
+
+  <div class="progress-card">
+    <div class="progress-ring">
+      <svg width="54" height="54" viewBox="0 0 54 54">
+        <circle class="bg" cx="27" cy="27" r="23"></circle>
+        <circle class="fg" id="ringFg" cx="27" cy="27" r="23" stroke-dasharray="144.5" stroke-dashoffset="144.5"></circle>
+      </svg>
+      <div class="pct" id="ringPct">0%</div>
+    </div>
+    <div class="progress-text">
+      <div class="label" id="progLabel">لسه ما بدأتش</div>
+      <div class="sub">من الساعة ٨ صباحًا لحد ١٢ بالليل</div>
+    </div>
+    <button class="reset-btn" id="resetBtn">امسح اليوم</button>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <footer id="loadingNote">جاري تحميل الجدول…</footer>
+</div>
+
+<div class="save-flag" id="saveFlag">اتحفظ ✓</div>
+
+<script>
+const CATS = [
+  { id:'work',   label:'شفت/عمل',    icon:'💼' },
+  { id:'prayer', label:'صلاة',        icon:'☪️' },
+  { id:'learn',  label:'تعليم',       icon:'📘' },
+  { id:'sport',  label:'رياضة',       icon:'🏋️' },
+  { id:'fun',    label:'ترفيه',       icon:'✨' },
+  { id:'field',  label:'عمل ميداني', icon:'📍' },
+];
+
+function pad(n){ return n.toString().padStart(2,'0'); }
+
+function buildDefaultSlots(){
+  const slots = [];
+  for(let h=8; h<24; h++){
+    const nextH = (h+1)===24 ? 0 : h+1;
+    slots.push({
+      hour: h,
+      label: `${pad(h)}:00 - ${nextH===0?'00:00':pad(nextH)+':00'}`,
+      categories: [],
+      text: '',
+      done: false
+    });
+  }
+  return slots;
+}
+
+function todayKey(){
+  const d = new Date();
+  return `schedule:${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+
+function arabicDateLine(){
+  const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const d = new Date();
+  return `${days[d.getDay()]}، ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+let state = [];
+const key = todayKey();
+
+function catInfo(id){
+  return CATS.find(c=>c.id===id);
+}
+
+async function save(){
+  try{
+    await window.storage.set(key, JSON.stringify(state));
+    flashSaved();
+  }catch(e){
+    console.error('save failed', e);
+  }
+}
+
+function flashSaved(){
+  const el = document.getElementById('saveFlag');
+  el.classList.add('show');
+  clearTimeout(flashSaved._t);
+  flashSaved._t = setTimeout(()=>el.classList.remove('show'), 900);
+}
+
+function updateProgress(){
+  const total = state.length;
+  const done = state.filter(s=>s.done).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  const circumference = 144.5;
+  const offset = circumference - (pct/100)*circumference;
+  document.getElementById('ringFg').style.strokeDashoffset = offset;
+  document.getElementById('ringPct').textContent = pct + '%';
+  const label = document.getElementById('progLabel');
+  if(done===0) label.textContent = 'لسه ما بدأتش';
+  else if(done===total) label.textContent = 'خلصت يومك بالكامل 🎉';
+  else label.textContent = `خلصت ${done} من ${total} مهمة`;
+}
+
+function render(){
+  const container = document.getElementById('timeline');
+  container.innerHTML = '';
+  state.forEach((slot, idx) => {
+    const row = document.createElement('div');
+    row.className = 'slot' + (slot.done ? ' done' : '');
+
+    row.innerHTML = `
+      <div class="slot-marker">
+        <div class="slot-dot"></div>
+        <div class="slot-time">${slot.label}</div>
+      </div>
+      <div class="slot-card">
+        <div class="cats">
+          ${CATS.map(c => `<button type="button" class="cat-btn${slot.categories.includes(c.id)?' active':''}" data-cat="${c.id}"><span class="ic">${c.icon}</span>${c.label}</button>`).join('')}
+        </div>
+        <div class="row-2">
+          <input class="task-input" type="text" placeholder="اكتب المهمة هنا…" value="${slot.text.replace(/"/g,'&quot;')}">
+          <button type="button" class="check" aria-label="تم">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.2 11.7L13 4.5" stroke="#0a0908" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    `;
+
+    row.querySelectorAll('.cat-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const catId = btn.dataset.cat;
+        const i = slot.categories.indexOf(catId);
+        if(i === -1) slot.categories.push(catId);
+        else slot.categories.splice(i, 1);
+        render();
+        save();
+      });
+    });
+
+    const input = row.querySelector('.task-input');
+    input.addEventListener('input', (e)=>{
+      slot.text = e.target.value;
+    });
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){ input.blur(); }
+    });
+
+    row.querySelector('.check').addEventListener('click', ()=>{
+      slot.done = !slot.done;
+      render();
+      updateProgress();
+      save();
+    });
+
+    container.appendChild(row);
+  });
+  updateProgress();
+}
+
+async function init(){
+  document.getElementById('dateLine').textContent = arabicDateLine();
+  try{
+    const result = await window.storage.get(key);
+    state = result && result.value ? JSON.parse(result.value) : buildDefaultSlots();
+    state = state.map(s => {
+      if(!Array.isArray(s.categories)){
+        s.categories = s.category ? [s.category] : [];
+      }
+      delete s.category;
+      return s;
+    });
+  }catch(e){
+    state = buildDefaultSlots();
+  }
+  document.getElementById('loadingNote').textContent = 'الجدول بيتحفظ تلقائيًا على جهازك';
+  render();
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  state = buildDefaultSlots();
+  render();
+  save();
+});
+
+init();
+</script>
+</body>
+</html>
