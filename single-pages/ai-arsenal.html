@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ترسانة الأدوات — 200 أداة AI مجانية ومحلية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0C0F;
+    --panel:#13161B;
+    --panel-2:#191D23;
+    --line:#262B32;
+    --text:#E7E5DF;
+    --muted:#8C9199;
+    --orange:#FF6A39;
+    --amber:#F2B84B;
+    --green:#5FBF7A;
+    --yellow:#E0B84A;
+    --red:#E0604A;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--text);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+
+  /* HERO */
+  header.hero{
+    padding:90px 0 60px;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(ellipse 700px 300px at 80% 0%, rgba(255,106,57,0.10), transparent 60%),
+      var(--ink);
+  }
+  .eyebrow-tag{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;color:var(--orange);
+    border:1px solid rgba(255,106,57,0.35);
+    padding:5px 12px;border-radius:3px;
+    margin-bottom:28px;
+  }
+  .eyebrow-tag::before{content:"●";font-size:9px;color:var(--green);}
+  h1.hero-title{
+    font-size:clamp(38px,6vw,58px);
+    font-weight:700;
+    line-height:1.15;
+    margin:0 0 20px;
+    letter-spacing:-0.01em;
+  }
+  h1.hero-title .num{
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--orange);
+  }
+  .hero-sub{
+    font-size:18px;
+    color:var(--muted);
+    max-width:640px;
+    margin:0;
+  }
+
+  /* SECTION GENERIC */
+  section{padding:56px 0;border-bottom:1px solid var(--line);}
+  h2.section-title{
+    font-size:26px;font-weight:600;margin:0 0 8px;
+  }
+  .section-lede{color:var(--muted);font-size:16px;margin:0 0 32px;max-width:640px;}
+
+  /* LEGEND */
+  .legend-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:14px;
+  }
+  .legend-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-right:3px solid var(--dot,var(--green));
+    border-radius:6px;
+    padding:18px 20px;
+  }
+  .legend-card .dot{font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;display:block;margin-bottom:6px;}
+  .legend-card p{margin:0;color:var(--muted);font-size:14.5px;}
+  .legend-card.green{--dot:var(--green);} .legend-card.green .dot{color:var(--green);}
+  .legend-card.yellow{--dot:var(--yellow);} .legend-card.yellow .dot{color:var(--yellow);}
+  .legend-card.red{--dot:var(--red);} .legend-card.red .dot{color:var(--red);}
+
+  /* STACK PIPELINE */
+  .pipeline{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:32px 26px;
+    display:flex;flex-wrap:wrap;
+    align-items:center;
+    gap:0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14.5px;
+  }
+  .pipeline .node{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    padding:9px 15px;
+    border-radius:5px;
+    white-space:nowrap;
+    color:var(--text);
+  }
+  .pipeline .arrow{color:var(--orange);padding:0 10px;font-size:15px;}
+  .stack-caption{margin-top:22px;color:var(--muted);font-size:15px;}
+  .stack-caption b{color:var(--text);font-weight:600;}
+
+  /* TIER S */
+  .tier-s-wrap{
+    background:linear-gradient(180deg, rgba(255,106,57,0.06), transparent 40%);
+    border:1px solid rgba(255,106,57,0.3);
+    border-radius:10px;
+    padding:30px;
+  }
+  .tier-s-head{display:flex;align-items:baseline;gap:12px;margin-bottom:18px;}
+  .tier-s-head .badge{
+    font-family:'IBM Plex Mono', monospace;
+    background:var(--orange);color:#1A0D06;
+    font-weight:700;font-size:14px;
+    padding:4px 11px;border-radius:4px;
+  }
+  .tier-s-head h3{margin:0;font-size:19px;font-weight:600;}
+  .tier-s-list{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:10px;list-style:none;padding:0;margin:0;
+  }
+  .tier-s-list li{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:10px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    text-align:center;
+  }
+
+  /* CATEGORY GRID */
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:16px;
+  }
+  .cat-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:20px 22px;
+  }
+  .cat-card h4{
+    margin:0 0 12px;
+    font-size:15.5px;
+    font-weight:600;
+    display:flex;align-items:center;gap:8px;
+    padding-bottom:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .cat-card .icon{font-size:18px;}
+  .cat-card .tools{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    line-height:2;
+    margin:0;
+  }
+  .cat-card .tools span{color:var(--text);}
+
+  /* CLOSING */
+  .closing{padding:56px 0 90px;border-bottom:none;}
+  .closing-box{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:30px 32px;
+  }
+  .closing-box p{margin:0 0 14px;color:var(--text);font-size:16px;}
+  .closing-box p:last-child{margin-bottom:0;color:var(--muted);font-size:14.5px;}
+
+  footer{padding:26px 0 50px;text-align:center;color:var(--muted);font-size:13px;font-family:'IBM Plex Mono',monospace;}
+
+  @media(max-width:640px){
+    header.hero{padding:60px 0 40px;}
+    section{padding:40px 0;}
+    .pipeline{font-size:13px;padding:22px 18px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow-tag">Local &middot; Open Source &middot; No Limits</span>
+    <h1 class="hero-title">ترسانة الأدوات: <span class="num">1000</span> أداة AI مجانية بالكامل</h1>
+    <p class="hero-sub">قائمة مركّزة على الأدوات التي تشتغل محليًا على جهازك من غير Credits ولا حدود استخدام، مبنية حول PowerShell كنقطة تحكم مركزية. المعيار الحقيقي لعدم وجود حدود شهرية هو Open Source + Local/Self-hosted، مش مجرد "Free Plan" على خدمة سحابية.</p>
+  </div>
+</header>
+
+<section id="legend">
+  <div class="wrap">
+    <h2 class="section-title">ليه "مجاني" مش كلمة واحدة</h2>
+    <p class="section-lede">قبل ما تدخل في القائمة، الفرق ده بيحدد فعلًا هل الأداة تخدم هدفك ولا لأ.</p>
+    <div class="legend-grid">
+      <div class="legend-card green">
+        <span class="dot">Free + Local</span>
+        <p>تشغلها على جهازك، مفيش حد استخدام من أي شركة، ومفيش اتصال إجباري بالإنترنت.</p>
+      </div>
+      <div class="legend-card green">
+        <span class="dot">Open Source / Open Weight</span>
+        <p>تقدر تنزل النموذج أو الكود وتشغله محليًا، لكن انتبه للترخيص لو نيتك استخدام تجاري.</p>
+      </div>
+      <div class="legend-card yellow">
+        <span class="dot">Free Tier</span>
+        <p>مجاني فعلًا، لكن عليه سقف استخدام أو Rate Limit من مزوّد الخدمة.</p>
+      </div>
+      <div class="legend-card red">
+        <span class="dot">Paid / API</span>
+        <p>مش الأولوية هنا؛ خارج نطاق هدفك من ستاك Local بالكامل.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stack">
+  <div class="wrap">
+    <h2 class="section-title">الستاك المركزي المقترح</h2>
+    <p class="section-lede">بدل ما تثبّت 200 برنامج، الأدوات دي التسعة كافية تغطي معظم اللي محتاجه.</p>
+    <div class="pipeline">
+      <span class="node">PowerShell</span><span class="arrow">←</span>
+      <span class="node">Ollama</span><span class="arrow">←</span>
+      <span class="node">Open WebUI</span><span class="arrow">←</span>
+      <span class="node">OpenCode</span><span class="arrow">←</span>
+      <span class="node">n8n</span><span class="arrow">←</span>
+      <span class="node">ComfyUI</span><span class="arrow">←</span>
+      <span class="node">Wan</span><span class="arrow">←</span>
+      <span class="node">Whisper</span><span class="arrow">←</span>
+      <span class="node">Piper</span><span class="arrow">←</span>
+      <span class="node">FFmpeg</span>
+    </div>
+    <p class="stack-caption">وبالترتيب ده بيغطي: <b>LLM + Coding + Agents + Automation + Image + Video + Voice + TTS + STT + Editing</b> — كله Local من غير الاعتماد على API مدفوع.</p>
+  </div>
+</section>
+
+<section id="tier-s">
+  <div class="wrap">
+    <div class="tier-s-wrap">
+      <div class="tier-s-head">
+        <span class="badge">S-TIER</span>
+        <h3>لازم تكون عندك</h3>
+      </div>
+      <ul class="tier-s-list">
+        <li>Ollama</li><li>OpenCode</li><li>Open WebUI</li><li>ComfyUI</li><li>FFmpeg</li>
+        <li>Whisper</li><li>Piper</li><li>n8n</li><li>OpenHands</li><li>Aider</li>
+        <li>Wan</li><li>LTX</li><li>Qwen-Image</li><li>FLUX</li><li>Stable Diffusion</li>
+        <li>Kdenlive</li><li>Blender</li><li>AnythingLLM</li><li>Flowise</li><li>Langflow</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="categories">
+  <div class="wrap">
+    <h2 class="section-title">الدفعة الأولى <span class="mono" style="color:var(--muted);font-size:16px;">— 1–200</span></h2>
+    <p class="section-lede">20 مجال × 10 أدوات = 200 أداة، مرتبة حسب الاستخدام مش حسب أهمية عشوائية.</p>
+    <div class="cat-grid">
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> Local AI / LLM</h4><p class="tools"><span>Ollama</span> · llama.cpp · LM Studio · Jan · GPT4All · KoboldCpp · LocalAI · vLLM · <span>Open WebUI</span> · text-generation-webui</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🤖</span> AI Coding</h4><p class="tools"><span>OpenCode</span> · <span>Aider</span> · <span>OpenHands</span> · Cline · Roo Code · Continue · Tabby · Zed AI · Void · Plandex</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧩</span> AI Agents</h4><p class="tools">OpenClaw · AutoGen · CrewAI · LangGraph · MetaGPT · SuperAGI · Agent Zero · BabyAGI · smolagents · PydanticAI</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔗</span> Automation</h4><p class="tools"><span>n8n</span> · Node-RED · Activepieces · Windmill · Kestra · Huginn · Automatisch · Trigger.dev · Temporal · Apache Airflow</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> AI Workflows</h4><p class="tools"><span>Flowise</span> · <span>Langflow</span> · Dify · Haystack · LlamaIndex · DSPy · Semantic Kernel · LiteLLM · Instructor · Guidance</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📚</span> RAG / Knowledge</h4><p class="tools"><span>AnythingLLM</span> · RAGFlow · Khoj · PrivateGPT · Quivr · LocalRecall · OpenRAG · GraphRAG · txtai · Chroma</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🗄️</span> Vector / AI DB</h4><p class="tools">Qdrant · Milvus · Weaviate · LanceDB · FAISS · ChromaDB · pgvector · Vespa · Vald · Meilisearch</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎨</span> AI Image</h4><p class="tools"><span>ComfyUI</span> · <span>Stable Diffusion WebUI</span> · Forge · Fooocus · InvokeAI · Krita AI Diffusion · DiffusionBee · Draw Things · SwarmUI</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🖼️</span> Image Models</h4><p class="tools"><span>FLUX</span> · <span>Qwen-Image</span> · Stable Diffusion 3.5 · SDXL · HunyuanImage · Sana · Z-Image · PixArt · AuraFlow · Lumina</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧰</span> Image Control</h4><p class="tools">ControlNet · IP-Adapter · T2I-Adapter · InstantID · PuLID · PhotoMaker · LoRA · Kohya SS · ComfyUI-Manager · Segment Anything</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎬</span> AI Video</h4><p class="tools"><span>Wan 2.1/2.2</span> · <span>LTX-Video/LTX-2</span> · HunyuanVideo · CogVideoX · Mochi · Open-Sora · SkyReels · AnimateDiff · Stable Video Diffusion · Pyramid Flow</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎞️</span> Video Processing</h4><p class="tools"><span>FFmpeg</span> · <span>Kdenlive</span> · Shotcut · <span>Blender</span> · Natron · OpenShot · Olive · LosslessCut · VapourSynth · Flowblade</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎤</span> Speech-to-Text</h4><p class="tools"><span>Whisper</span> · faster-whisper · whisper.cpp · WhisperX · Vosk · Kaldi · NVIDIA NeMo · FunASR · Paraformer · Moonshine</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔊</span> Text-to-Speech</h4><p class="tools"><span>Piper</span> · Kokoro · Coqui TTS · XTTS · StyleTTS2 · Fish Speech · F5-TTS · OpenVoice · Parler-TTS · MeloTTS</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎵</span> Audio AI</h4><p class="tools">AudioCraft · MusicGen · Stable Audio Open · MusicGen-Plus · ACE-Step · Riffusion · Demucs · AudioSep · Ultimate Vocal Remover · Spleeter</p></div>
+
+      <div class="cat-card"><h4><span class="icon">👤</span> Face / Avatar</h4><p class="tools">LivePortrait · SadTalker · Wav2Lip · MuseTalk · Hallo · Hallo2 · Thin-Plate-Spline Motion Model · FaceFusion · DeepFaceLab · SimSwap</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧑‍💻</span> Computer Vision</h4><p class="tools">OpenCV · YOLO · Ultralytics · Detectron2 · SAM · SAM 2 · GroundingDINO · MediaPipe · OpenMMLab · MMDetection</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📝</span> Documents / OCR</h4><p class="tools">OCRmyPDF · Tesseract · PaddleOCR · EasyOCR · DocTR · Surya · Marker · Unstructured · Apache Tika · MinerU</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🛠️</span> AI Infrastructure</h4><p class="tools">Docker · Podman · Kubernetes · CUDA · ROCm · Hugging Face Transformers · Diffusers · Accelerate · PEFT · BitsAndBytes</p></div>
+
+      <div class="cat-card"><h4><span class="icon">⚡</span> AI Dev / Utilities</h4><p class="tools">Git · Git LFS · Hugging Face Hub · ModelScope · GitHub CLI · <span>PowerShell</span> · Python · uv · Conda/Mamba · Jupyter</p></div>
+
+    </div>
+  </div>
+</section>
+
+<section id="categories-2">
+  <div class="wrap">
+    <h2 class="section-title">الدفعة الثانية <span class="mono" style="color:var(--muted);font-size:16px;">— 201–400</span></h2>
+    <p class="section-lede">20 مجال إضافي، بتركيز أكبر على الـAgents والـMemory والـMCP والأدوات المتخصصة.</p>
+    <div class="cat-grid">
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> LLM Serving</h4><p class="tools"><span>SGLang</span> · TensorRT-LLM · MLC LLM · ExLlamaV2 · Aphrodite Engine · TGI · llama-box · PowerInfer · Mistral.rs · Candle</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🤖</span> Coding Agents</h4><p class="tools"><span>Kilo Code</span> · <span>Qwen Code</span> · Codex CLI · Gemini CLI · <span>Open Interpreter</span> · <span>Goose</span> · <span>SWE-agent</span> · Mentat · Devika · GPT-Pilot</p></div>
+
+      <div class="cat-card"><h4><span class="icon">💻</span> Dev AI</h4><p class="tools">Vibe Kanban · Ruler · Continue CLI · PearAI · Twinny · FauxPilot · Refact.ai · Sweep · AutoDev · GPT Engineer</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🕵️</span> Autonomous Agents</h4><p class="tools"><span>Letta</span> · CAMEL · AutoGPT · OpenAGI · AgentScope · Agno · Atomic Agents · AutoGen Studio · BeeAI Framework · Mastra</p></div>
+
+      <div class="cat-card"><h4><span class="icon">👥</span> Multi-Agent</h4><p class="tools">Swarm · Langroid · TaskWeaver · OpenAgents · ChatDev · AgentVerse · CrewAI Studio · AgentLite · MetaGPT X · PraisonAI</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> Agent Memory</h4><p class="tools"><span>Mem0</span> · Zep · Letta Memory · Graphiti · Cognee · Memary · MemoryBank · HippoRAG · LightRAG · R2R</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔌</span> MCP / Tools</h4><p class="tools">MCP Inspector · FastMCP · MCPHub · mcpo · mcp-proxy · MCP Gateway · ToolHive · Supergateway · MCPJam · Smithery CLI</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔎</span> AI Search</h4><p class="tools"><span>SearXNG</span> · <span>Perplexica</span> · Morphic · SearchGPT UI · Open WebSearch · Farfalle · MiniPerplx · Storm · SurfSense · <span>Onyx</span></p></div>
+
+      <div class="cat-card"><h4><span class="icon">📖</span> Research AI</h4><p class="tools"><span>GPT Researcher</span> · Open Deep Research · STORM · PaperQA2 · Paperless-AI · OpenAlex tools · Zotero GPT integrations · OpenScholar · ScholarPhi · LitLLM</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📄</span> PDF / Docs AI</h4><p class="tools"><span>Docling</span> · <span>Marker</span> · Nougat · GROBID · PyMuPDF4LLM · PDFPlumber · Camelot · Tabula · Documind OSS · Paperless-ngx</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🖼️</span> Image Generation</h4><p class="tools"><span>SD.Next</span> · AUTOMATIC1111 · Easy Diffusion · RuinedFooocus · Stability Matrix · VoltaML · OneTrainer · SimpleTuner · DreamBooth · Diffusers UI</p></div>
+
+      <div class="cat-card"><h4><span class="icon">✏️</span> Image Editing</h4><p class="tools">InstructPix2Pix · BrushNet · PowerPaint · LaMa · MAT · IOPaint · <span>SUPIR</span> · <span>Real-ESRGAN</span> · GFPGAN · CodeFormer</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎭</span> Face / Identity</h4><p class="tools">InsightFace · FaceSwap · DeepFaceLive · Roop-Unleashed · Rope · ComfyUI Reactor · IP-Adapter FaceID · ArcFace · AdaFace · FaceShifter</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎬</span> Video Generation</h4><p class="tools">CogVideoX-Fun · EasyAnimate · VideoCrafter2 · ModelScope T2V · MagicAnimate · DynamiCrafter · Stable Video Diffusion XT · VideoBooth · AnimateAnyone · MimicMotion</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎥</span> Video AI / Edit</h4><p class="tools">Video2X · <span>RIFE</span> · FILM · DAIN · RealBasicVSR · BasicVSR++ · VSGAN · SVFI · rife-ncnn-vulkan · realesrgan-ncnn-vulkan</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎙️</span> Voice / TTS</h4><p class="tools"><span>ChatTTS</span> · <span>GPT-SoVITS</span> · CosyVoice · Bark · Tortoise-TTS · MaskGCT · Mars5-TTS · E2-TTS · VITS · MaryTTS</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎤</span> Voice Conversion</h4><p class="tools"><span>RVC</span> · so-vits-svc · OpenVoice V2 · Diff-SVC · DDSP-SVC · Seed-VC · <span>Applio</span> · W-Okada Voice Changer · SVC Fusion · FreeVC</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎶</span> Music / Audio</h4><p class="tools">Stable Audio Tools · <span>AudioLDM2</span> · MusicLDM · Dance Diffusion · Magenta · Basic Pitch · Essentia · librosa · Pedalboard · Audiocraft Plus</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> Data / ML</h4><p class="tools">PyTorch · TensorFlow · JAX · Keras · scikit-learn · XGBoost · LightGBM · CatBoost · ONNX Runtime · OpenVINO</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🚀</span> AI Deployment</h4><p class="tools">BentoML · Ray Serve · KServe · Triton Inference Server · TorchServe · RunPod-local stack · <span>Gradio</span> · Streamlit · FastAPI · <span>Chainlit</span></p></div>
+
+    </div>
+  </div>
+</section>
+
+<section id="treasures">
+  <div class="wrap">
+    <div class="tier-s-wrap" style="border-color:rgba(242,184,75,0.35); background:linear-gradient(180deg, rgba(242,184,75,0.07), transparent 40%);">
+      <div class="tier-s-head">
+        <span class="badge" style="background:var(--amber);">أهم الكنوز</span>
+        <h3>أقوى اختيارات الدفعة الثانية لبناء AI Computer كامل</h3>
+      </div>
+      <ul class="tier-s-list">
+        <li>SGLang</li><li>Kilo Code</li><li>Qwen Code</li><li>Open Interpreter</li><li>Goose</li>
+        <li>SWE-agent</li><li>Letta</li><li>Mem0</li><li>SearXNG</li><li>Perplexica</li>
+        <li>Onyx</li><li>GPT Researcher</li><li>Docling</li><li>Marker</li><li>SD.Next</li>
+        <li>SUPIR</li><li>Real-ESRGAN</li><li>RIFE</li><li>GPT-SoVITS</li><li>RVC</li>
+        <li>Applio</li><li>ChatTTS</li><li>AudioLDM2</li><li>Gradio</li><li>Chainlit</li><li>FastAPI</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="categories-3">
+  <div class="wrap">
+    <h2 class="section-title">الدفعة الثالثة <span class="mono" style="color:var(--muted);font-size:16px;">— 401–600</span></h2>
+    <p class="section-lede">20 مجال إضافي، بتركيز على الـ3D والـVision والـKnowledge Management والـMedia Processing.</p>
+    <div class="cat-grid">
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> LLM Frameworks</h4><p class="tools">Haystack 2 · Marvin · Outlines · LMQL · Guidance · SGLang · DSPy · LangChain · Semantic Kernel · LlamaIndex</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🤖</span> Agent Frameworks</h4><p class="tools">AutoAgent · AgentScope · Agently · SwarmZero · CAMEL-AI · Magentic-One · OpenAI Swarm · PraisonAI · Agentarium · <span>AgenticSeek</span></p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧑‍💻</span> Coding</h4><p class="tools">Cline CLI · Goose · <span>OpenHands</span> · <span>SWE-agent</span> · SWE-ReX · OpenDevin · Mentat · GPT Pilot · Aider · Continue</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔧</span> Dev Tools</h4><p class="tools">Copilot alternatives · Tabby · CodeGeeX · Continue.dev · FauxPilot · Codeium alternatives · Refact · PearAI · Void · Zed</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🗃️</span> Databases</h4><p class="tools">DuckDB · SQLite · PostgreSQL · SurrealDB · Neo4j · ArangoDB · Apache AGE · Redis · Valkey · Elasticsearch</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔍</span> Search / RAG</h4><p class="tools">OpenSearch · SearXNG · <span>Perplexica</span> · <span>RAGFlow</span> · Danswer · Onyx · <span>Khoj</span> · AnythingLLM · PrivateGPT · Quivr</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📑</span> Knowledge</h4><p class="tools">Logseq · Obsidian · Joplin · Trilium · <span>AFFiNE</span> · AppFlowy · SiYuan · Anytype · SilverBullet · Outline</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📚</span> Research</h4><p class="tools">Zotero · JabRef · OpenAlex · Semantic Scholar API · Crossref · Unpaywall · Connected Papers alternatives · Litmaps alternatives · OpenReview · arXiv tools</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📊</span> Data Science</h4><p class="tools">JupyterLab · Apache Zeppelin · KNIME · Orange · RapidMiner Community · Weka · <span>Polars</span> · Pandas · NumPy · SciPy</p></div>
+
+      <div class="cat-card"><h4><span class="icon">📈</span> Visualization</h4><p class="tools">Apache Superset · Metabase · Grafana · Kibana · Plotly · Bokeh · Altair · Vega-Lite · Observable Plot · Datawrapper</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎨</span> 3D / Generative 3D</h4><p class="tools">Blender · <span>TripoSR</span> · InstantMesh · Wonder3D · <span>Hunyuan3D</span> · Stable Fast 3D · Shap-E · Point-E · GET3D · DreamGaussian</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧊</span> 3D AI</h4><p class="tools">Zero123++ · SyncDreamer · LGM · Instant3D · 3D Gaussian Splatting · <span>Nerfstudio</span> · COLMAP · Meshroom · Open3D · Kaolin</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎞️</span> Motion</h4><p class="tools">AnimateDiff · MotionCtrl · CameraCtrl · MotionDirector · AnimateAnyone · MagicAnimate · MimicMotion · LivePortrait · SparseCtrl · VideoControlNet</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🖼️</span> Segmentation</h4><p class="tools">SAM · SAM 2 · SAM 3 · MobileSAM · FastSAM · EfficientSAM · HQ-SAM · Grounded-SAM · Semantic-SAM · SEEM</p></div>
+
+      <div class="cat-card"><h4><span class="icon">👁️</span> Vision</h4><p class="tools"><span>Florence-2</span> · PaliGemma · Qwen2.5-VL · InternVL · LLaVA · MiniCPM-V · <span>Molmo</span> · Idefics · Kosmos-2 · Pixtral</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔎</span> OCR / Vision Docs</h4><p class="tools">PaddleOCR · <span>Surya</span> · Tesseract · EasyOCR · DocTR · MMOCR · OCRmyPDF · Nougat · GROBID · <span>Marker</span></p></div>
+
+      <div class="cat-card"><h4><span class="icon">🗣️</span> Speech</h4><p class="tools">Whisper · WhisperX · faster-whisper · whisper.cpp · Vosk · Kaldi · NeMo · FunASR · Paraformer · Moonshine</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔊</span> TTS</h4><p class="tools"><span>Kokoro</span> · Piper · <span>Fish Speech</span> · <span>F5-TTS</span> · CosyVoice · XTTS · OpenVoice · StyleTTS2 · ChatTTS · Parler-TTS</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎵</span> Music</h4><p class="tools">MusicGen · Stable Audio Open · <span>ACE-Step</span> · AudioCraft · Riffusion · AudioLDM · MusicLDM · Magenta · Jukebox · Dance Diffusion</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎬</span> Media AI</h4><p class="tools">FFmpeg · VapourSynth · AviSynth+ · <span>RIFE</span> · DAIN · Real-ESRGAN · <span>Video2X</span> · Flowframes · SVFI · Waifu2x</p></div>
+
+    </div>
+  </div>
+</section>
+
+<section id="gems">
+  <div class="wrap">
+    <div class="tier-s-wrap" style="border-color:rgba(95,191,122,0.35); background:linear-gradient(180deg, rgba(95,191,122,0.07), transparent 40%);">
+      <div class="tier-s-head">
+        <span class="badge" style="background:var(--green);color:#06170C;">Hidden Gems</span>
+        <h3>أقوى اختيارات الدفعة الثالثة — أدوات مش مشهورة بالقد اللي تستاهله</h3>
+      </div>
+      <ul class="tier-s-list">
+        <li>AgenticSeek</li><li>OpenHands</li><li>SWE-agent</li><li>Perplexica</li><li>Khoj</li>
+        <li>RAGFlow</li><li>AFFiNE</li><li>DuckDB</li><li>Polars</li><li>Hunyuan3D</li>
+        <li>TripoSR</li><li>Nerfstudio</li><li>Florence-2</li><li>Qwen-VL</li><li>Molmo</li>
+        <li>Surya</li><li>Marker</li><li>Kokoro</li><li>Fish Speech</li><li>F5-TTS</li>
+        <li>ACE-Step</li><li>RIFE</li><li>Video2X</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="categories-4">
+  <div class="wrap">
+    <h2 class="section-title">الدفعة الرابعة <span class="mono" style="color:var(--muted);font-size:16px;">— 601–800</span></h2>
+    <p class="section-lede">MLOps، تحسين النماذج، Computer Vision المتخصص، والعلوم (Geospatial / Biology / Chemistry).</p>
+    <div class="cat-grid">
+
+      <div class="cat-card"><h4><span class="icon">🏗️</span> AI Infrastructure</h4><p class="tools">Kubeflow · MLflow · Weights &amp; Biases · ClearML · DVC · Pachyderm · Metaflow · ZenML · Flyte · Dagster</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧪</span> ML Experimentation</h4><p class="tools">Optuna · Ray Tune · Hyperopt · Ax · Nevergrad · Katib · NNI · Ludwig · AutoGluon · H2O AutoML</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧠</span> Classical ML</h4><p class="tools">XGBoost · LightGBM · CatBoost · scikit-learn · H2O · Vowpal Wabbit · LIBSVM · Shogun · MLJ · Statsmodels</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧬</span> Deep Learning</h4><p class="tools">PyTorch Lightning · Lightning Fabric · DeepSpeed · Megatron-LM · Colossal-AI · FairScale · Horovod · MosaicML Composer · Accelerate · TorchTune</p></div>
+
+      <div class="cat-card"><h4><span class="icon">⚡</span> Model Optimization</h4><p class="tools">GPTQ · AWQ · GGUF · GGML · EXL2 · bitsandbytes · Quanto · Optimum · TensorRT · ONNX</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🖥️</span> GPU / Inference</h4><p class="tools">ONNX Runtime · OpenVINO · TensorRT-LLM · vLLM · SGLang · TGI · llama.cpp · MLC · TVM · Apache MXNet</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧰</span> Model Management</h4><p class="tools">Hugging Face Hub · ModelScope · Civitai · Ollama Registry · Replicate alternatives · DagsHub · Git LFS · Git Annex · LakeFS · Dolt</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🗂️</span> Data Versioning</h4><p class="tools">DVC · Pachyderm · LakeFS · Git LFS · Quilt · Dolt · DataLad · Git-annex · Delta Lake · Apache Iceberg</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧹</span> Data Cleaning</h4><p class="tools">OpenRefine · Great Expectations · Pandera · Deequ · Soda Core · DataPrep · Cleanlab · YData Profiling · Frictionless · Data Wrangler</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🏷️</span> Data Labeling</h4><p class="tools">Label Studio · CVAT · Labelme · Doccano · Prodigy alternatives · FiftyOne · Supervisely alternatives · MakeSense.ai · VoTT · LabelImg</p></div>
+
+      <div class="cat-card"><h4><span class="icon">👁️</span> Computer Vision</h4><p class="tools">OpenCV · Detectron2 · MMDetection · MMEngine · YOLO · RT-DETR · YOLO-NAS · YOLO-World · GroundingDINO · OWLv2</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎯</span> Object Detection</h4><p class="tools">YOLOX · YOLOv5 · YOLOv8 · YOLOv10 · YOLO11 · PP-YOLOE · DETR · Deformable DETR · DINO · Faster R-CNN</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧩</span> Segmentation</h4><p class="tools">SAM · SAM2 · MobileSAM · FastSAM · HQ-SAM · EfficientSAM · Mask2Former · SegFormer · DeepLabV3 · U-Net</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧍</span> Pose / Tracking</h4><p class="tools">MediaPipe · MMPose · OpenPose · PoseNet · DeepSORT · ByteTrack · BoT-SORT · OC-SORT · Norfair · StrongSORT</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔬</span> Image Analysis</h4><p class="tools">ImageJ · Fiji · napari · scikit-image · SimpleITK · MONAI · ITK · VTK · CellProfiler · QuPath</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🌍</span> Geospatial AI</h4><p class="tools">QGIS · GRASS GIS · GeoPandas · Rasterio · GDAL · Shapely · OSMnx · Kepler.gl · Leafmap · WhiteboxTools</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🗺️</span> Maps / Spatial</h4><p class="tools">PostGIS · DuckDB Spatial · H3 · S2 Geometry · PySAL · NetworkX · OSMnx · MovingPandas · PyProj · Fiona</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧪</span> Science AI</h4><p class="tools">DeepChem · RDKit · OpenMM · BioPython · scvi-tools · Scanpy · Cellpose · MONAI · TorchDrug · DGL-LifeSci</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧬</span> Biology</h4><p class="tools">AlphaFold · ColabFold · ESM · ESMFold · OpenFold · RoseTTAFold · Boltz · ProteinMPNN · RFdiffusion · DiffDock</p></div>
+
+      <div class="cat-card"><h4><span class="icon">⚗️</span> Chemistry</h4><p class="tools">RDKit · DeepChem · Mol* · Open Babel · AutoDock Vina · Gnina · Psi4 · PySCF · ASE · MDAnalysis</p></div>
+
+    </div>
+  </div>
+</section>
+
+<section id="categories-5">
+  <div class="wrap">
+    <h2 class="section-title">الدفعة الخامسة <span class="mono" style="color:var(--muted);font-size:16px;">— 801–1000</span></h2>
+    <p class="section-lede">لغة وترجمة، صوت وموسيقى، جرافيك، فيديو وأفاتار، وأدوات نظام وأعمال عامة.</p>
+    <div class="cat-grid">
+
+      <div class="cat-card"><h4><span class="icon">📝</span> Writing AI</h4><p class="tools">LanguageTool · Vale · Proselint · Harper · Grammalecte · Write-Good · TextBlob · spaCy · NLTK · Gensim</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🌐</span> Translation</h4><p class="tools">Argos Translate · LibreTranslate · Bergamot · Marian NMT · OpenNMT · NLLB · OPUS-MT · SeamlessM4T · Fairseq · Sockeye</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔤</span> NLP</h4><p class="tools">spaCy · NLTK · Stanza · Flair · Gensim · AllenNLP · Hugging Face Tokenizers · SentencePiece · fastText · TextAttack</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🗣️</span> NLP / Speech</h4><p class="tools">SpeechBrain · ESPnet · NeMo · Kaldi · Vosk · Montreal Forced Aligner · Gentle · aeneas · WhisperX · whisper.cpp</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎧</span> Audio Processing</h4><p class="tools">FFmpeg · SoX · Audacity · Ocenaudio · Ardour · Reaper alternatives · librosa · Essentia · pydub · soundfile</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎙️</span> Voice AI</h4><p class="tools">RVC · OpenVoice · GPT-SoVITS · Fish Speech · CosyVoice · F5-TTS · StyleTTS2 · Piper · Kokoro · Parler-TTS</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎛️</span> Voice Tools</h4><p class="tools">Whisper · WhisperX · UVR · Demucs · Spleeter · AudioSep · VoiceFixer · DeepFilterNet · RNNoise · Silero VAD</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎵</span> Music Creation</h4><p class="tools">LMMS · Ardour · Hydrogen · MuseScore · Rosegarden · Sonic Pi · SunVox · Zrythm · Carla · Bespoke Synth</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎨</span> Graphics</h4><p class="tools">GIMP · Krita · Inkscape · PhotoGIMP · RawTherapee · Darktable · digiKam · MyPaint · Pinta · Glaxnimate</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🖌️</span> Design AI</h4><p class="tools">ComfyUI · InvokeAI · Krita AI Diffusion · GIMP plugins · StableSwarmUI · DiffusionBee · Fooocus · Forge · SD.Next · Easy Diffusion</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎥</span> Video Editors</h4><p class="tools">Kdenlive · Shotcut · Blender · Olive · OpenShot · Flowblade · Pitivi · Natron · Cinelerra · LosslessCut</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🎞️</span> Video AI</h4><p class="tools">Wan · LTX · HunyuanVideo · CogVideoX · Mochi · Open-Sora · Pyramid Flow · AnimateDiff · Stable Video Diffusion · VideoCrafter</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧑‍🎤</span> Avatar AI</h4><p class="tools">LivePortrait · SadTalker · Wav2Lip · MuseTalk · Hallo · Hallo2 · EchoMimic · AniPortrait · AniTalker · EMO</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧑‍💻</span> 3D</h4><p class="tools">Blender · Godot · Unreal alternatives · FreeCAD · OpenSCAD · MeshLab · Meshroom · Open3D · CloudCompare · Wings 3D</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧊</span> Generative 3D</h4><p class="tools">Hunyuan3D · TripoSR · Stable Fast 3D · InstantMesh · Shap-E · Point-E · Wonder3D · Zero123++ · DreamGaussian · LGM</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🌐</span> Web / UI</h4><p class="tools">Penpot · Figma alternatives · Framer alternatives · Plasmic · GrapesJS · Webstudio · Builder.io alternatives · Appsmith · Budibase · ToolJet</p></div>
+
+      <div class="cat-card"><h4><span class="icon">⚙️</span> Automation</h4><p class="tools">n8n · Activepieces · Node-RED · Automatisch · Huginn · Windmill · Kestra · Temporal · Airflow · Prefect</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🏢</span> Business AI</h4><p class="tools">ERPNext · Odoo Community · Dolibarr · SuiteCRM · EspoCRM · Twenty · Monica · ERPNext HR · Akaunting · InvoicePlane</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🔐</span> Security / Privacy AI</h4><p class="tools">PrivateGPT · LocalAI · Ollama · Open WebUI · Trivy · Semgrep · Gitleaks · OWASP ZAP · OpenVAS · Wazuh</p></div>
+
+      <div class="cat-card"><h4><span class="icon">🧰</span> Ultimate Utilities</h4><p class="tools">DevToys · PowerToys · Everything · ShareX · AutoHotkey · <span>PowerShell</span> · Git · ripgrep · fd · jq</p></div>
+
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="wrap">
+    <h2 class="section-title">AI Operating System — بدل ما تثبّت الـ1000 كلهم</h2>
+    <p class="section-lede">العدد نفسه مش الهدف. لو بنيت الستاك ده، هتغطي 90% من الاستخدام بـ30–50 برنامج بس، والباقي Models / Plugins / Workflows فوقه.</p>
+    <div class="pipeline" style="display:block;text-align:center;font-size:14px;line-height:1.9;padding:34px 20px;">
+<pre class="mono" style="margin:0;color:var(--text);background:none;border:none;white-space:pre;overflow-x:auto;">                 YOUR PC
+                    │
+             ┌──────▼──────┐
+             │   Ollama    │
+             │ Local LLMs  │
+             └──────┬──────┘
+                    │
+       ┌────────────┼────────────┐
+       ▼            ▼            ▼
+   Open WebUI     OpenCode      Agents
+       │            │            │
+       └────────────┼────────────┘
+                    ▼
+                   MCP
+                    │
+      ┌─────────────┼─────────────┐
+      ▼             ▼             ▼
+     n8n         ComfyUI        FFmpeg
+      │             │             │
+      ▼             ▼             ▼
+ Automation       Images         Video
+                    │
+             ┌──────┴──────┐
+             ▼             ▼
+           Wan           TTS/STT</pre>
+    </div>
+  </div>
+</section>
+
+<section class="closing" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="closing-box">
+      <p>وصلنا رسميًا لـ1000 أداة على خمس دفعات. فيه تكرار متوقع بين الدفعات (زي SGLang وMarker وPiper) لأنها أدوات مشتركة بين أكتر من مجال — ده طبيعي في قائمة بالحجم ده.</p>
+      <p>الخطوة الأدق دلوقتي مش عدد أكبر، لازم Master Database بدون تكرار لكل أداة: الرابط الرسمي + 🟢 Free Forever · ♾️ No Limit · 🔓 Open Source · 🏠 Local · 🪟 Windows · ⚡ PowerShell · 🎮 GPU · RAM/VRAM. ومنها نقدر نطلع أفضل 100 أداة لجهازك تحديدًا بدل الاختيار العشوائي. قولّي تبدأ بأنهي جزء.</p>
+    </div>
+  </div>
+</section>
+
+<footer>AI ARSENAL — 1000 TOOLS — LOCAL FIRST STACK</footer>
+
+</body>
+</html>

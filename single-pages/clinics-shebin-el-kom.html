@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>دليل عيادات شبين الكوم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2E2C;
+    --paper:#F5F0E4;
+    --paper-2:#EDE5D2;
+    --gold:#A9782E;
+    --gold-deep:#7C5620;
+    --brick:#9C3B2E;
+    --line:#D9CEB3;
+    --card:#FCFAF3;
+    --muted:#6B685D;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,.display{
+    font-family:'Tajawal', sans-serif;
+  }
+
+  /* header */
+  header{
+    position:relative;
+    padding:56px 24px 40px;
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(600px 200px at 85% -20%, rgba(169,120,46,0.14), transparent 70%),
+      var(--paper);
+    overflow:hidden;
+  }
+  .header-inner{max-width:980px;margin:0 auto;}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;letter-spacing:.04em;color:var(--gold-deep);
+    font-weight:600;margin-bottom:14px;
+  }
+  .eyebrow::before{
+    content:"";width:22px;height:1px;background:var(--gold-deep);display:inline-block;
+  }
+  h1{
+    font-size:clamp(30px,5vw,46px);
+    font-weight:900;
+    margin:0 0 12px;
+    line-height:1.15;
+    color:var(--ink);
+  }
+  h1 span{color:var(--gold-deep);}
+  .subtitle{
+    font-size:16px;color:var(--muted);max-width:560px;line-height:1.8;margin:0 0 28px;
+  }
+  .stats{
+    display:flex;flex-wrap:wrap;gap:0;
+    border-top:1px solid var(--line);
+    margin-top:8px;
+  }
+  .stat{
+    padding:16px 26px 0 0;
+    margin-left:26px;
+    min-width:120px;
+  }
+  .stat b{
+    display:block;font-family:'Tajawal',sans-serif;font-size:28px;font-weight:900;color:var(--gold-deep);
+  }
+  .stat span{font-size:13px;color:var(--muted);}
+
+  /* controls */
+  .controls{
+    max-width:980px;margin:0 auto;padding:28px 24px 0;
+    position:sticky;top:0;background:var(--paper);z-index:5;
+  }
+  .search-wrap{
+    display:flex;gap:10px;margin-bottom:16px;
+  }
+  #search{
+    flex:1;
+    padding:13px 16px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:var(--card);
+    font-family:inherit;font-size:15px;color:var(--ink);
+    outline:none;
+  }
+  #search:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(169,120,46,0.15);}
+  #search::placeholder{color:#9c9788;}
+
+  .filters{
+    display:flex;flex-wrap:wrap;gap:8px;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--line);
+  }
+  .pill{
+    font-family:'IBM Plex Sans Arabic',sans-serif;
+    font-size:13.5px;
+    padding:8px 14px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:var(--card);
+    color:var(--muted);
+    cursor:pointer;
+    transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .pill:hover{border-color:var(--gold);color:var(--ink);}
+  .pill.active{
+    background:var(--ink);border-color:var(--ink);color:var(--paper);
+  }
+  .pill .n{opacity:.65;font-size:12px;margin-right:4px;}
+
+  /* list */
+  main{max-width:980px;margin:0 auto;padding:22px 24px 80px;}
+  #count-line{
+    font-size:13px;color:var(--muted);margin-bottom:16px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:720px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:20px;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .card:hover{border-color:var(--gold);}
+  .card-top{
+    display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;
+  }
+  .card h3{
+    font-family:'Tajawal',sans-serif;
+    font-size:17px;font-weight:700;margin:0;color:var(--ink);line-height:1.4;
+  }
+  .tag{
+    flex-shrink:0;
+    font-size:11px;
+    padding:3px 9px;
+    border-radius:20px;
+    background:var(--paper-2);
+    color:var(--gold-deep);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .doctor{font-size:13.5px;color:var(--muted);margin-bottom:2px;}
+  .specialty{font-size:13px;color:var(--brick);margin-bottom:10px;font-weight:500;}
+  .address{
+    font-size:13.5px;color:var(--ink);line-height:1.7;margin-bottom:14px;
+    padding-right:12px;
+    border-right:2px solid var(--line);
+  }
+  .actions{display:flex;flex-wrap:wrap;gap:8px;}
+  .actions a{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:12.5px;
+    padding:7px 11px;
+    border-radius:3px;
+    text-decoration:none;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:'IBM Plex Sans Arabic',sans-serif;
+    transition:all .15s ease;
+  }
+  .actions a:hover{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .actions a.call{border-color:var(--gold);color:var(--gold-deep);}
+  .actions a.call:hover{background:var(--gold-deep);border-color:var(--gold-deep);color:#fff;}
+
+  #empty{
+    display:none;
+    text-align:center;padding:60px 20px;color:var(--muted);
+  }
+  #empty b{display:block;font-family:'Tajawal',sans-serif;font-size:18px;color:var(--ink);margin-bottom:6px;}
+
+  footer{
+    max-width:980px;margin:0 auto;padding:0 24px 50px;
+    font-size:12px;color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">شبين الكوم — المنوفية</div>
+    <h1>دليل <span>العيادات</span> والمراكز الطبية</h1>
+    <p class="subtitle">قائمة بالعيادات والأطباء في شبين الكوم، بالتخصص والعنوان وأرقام التواصل، جمعناها من جوجل ماب وفيسبوك ومواقع العيادات.</p>
+    <div class="stats">
+      <div class="stat"><b>39</b><span>عيادة ومركز</span></div>
+      <div class="stat"><b id="stat-specs">—</b><span>تخصص مختلف</span></div>
+      <div class="stat"><b>12</b><span>حوالين ميدان شرف</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <input type="text" id="search" placeholder="دور باسم العيادة، الدكتور، أو التخصص...">
+  </div>
+  <div class="filters" id="filters"></div>
+</div>
+
+<main>
+  <div id="count-line"></div>
+  <div class="grid" id="grid"></div>
+  <div id="empty"><b>مفيش نتائج</b>جرب كلمة تانية أو تخصص مختلف</div>
+</main>
+
+<footer>البيانات مجمّعة من جوجل ماب وفيسبوك ومواقع العيادات الرسمية — يُنصح بالتأكد من الأرقام والمواعيد قبل الزيارة.</footer>
+
+<script>
+const DATA = [{"name": "Alma Clinic", "doctor": "N/A (Multi-specialty)", "specialty": "Medical Clinic (Nutrition/General)", "group": "متعدد التخصصات", "address": "ميدان شرف برج المنوفية شبين الكوم المنوفية مصر", "phone": "+201559174893", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/p/Alma-clinic-61571940254846/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJL4V3IgDX9xQRoKT6gXrng7s"}, {"name": "Allure Clinic Shebin - Menofia", "doctor": "N/A", "specialty": "Cosmetic Surgery / Dermatology / Laser", "group": "جلدية وتجميل وليزر", "address": "Paris Street above Al Ghalban Restaurant Shebin El Kom Menoufia Egypt", "phone": "+201200001576", "whatsapp": "N/A", "website": "https://allure-clinic.eg/", "facebook": "https://www.facebook.com/Allureclinicegypt/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJj0WR5J7X9xQRiDqF-Gi3jfI"}, {"name": "Dr. Mohamed El Batanony - Neurosurgery", "doctor": "Dr. Mohamed El Batanony", "specialty": "Neurosurgery & Spine Surgery", "group": "مخ وأعصاب", "address": "أمام فلفلة ومركز النخبة للأشعة ميدان شرف شبين الكوم المنوفية", "phone": "+201002778987", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJJWAgGajX9xQRU-0-k-aGG1w"}, {"name": "HRM Center - Gastrointestinal Motility", "doctor": "N/A", "specialty": "Gastroenterology / GI Motility", "group": "جهاز هضمي", "address": "برج المنوفية الطبي بجوار صيدلية المنوفية ميدان شرف شبين الكوم المنوفية", "phone": "+201099181618", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJtUrB3QTX9xQRta-pfYmJosY"}, {"name": "Al-Muttahida Al-Masriya - Endoscopy & GI", "doctor": "N/A", "specialty": "Endoscopy & Gastroenterology", "group": "جهاز هضمي", "address": "بجوار مجمع المصالح في مستشفي المحروقي شبين الكوم المنوفية", "phone": "+201157838244", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ3x1kkx7X9xQRnaZT-YQTqHU"}, {"name": "Tallah Center Official", "doctor": "N/A", "specialty": "Skin Care Clinic", "group": "جلدية وتجميل وليزر", "address": "Hathot شبين الكوم المنوفية", "phone": "+201050770714", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJcf7GoCTX9xQRIJxmlQB0acs"}, {"name": "Abu Bakr El-Sedeek Medical Complex", "doctor": "N/A", "specialty": "Medical Clinic", "group": "متعدد التخصصات", "address": "Abou Bakr El-Sedeek Al Meseilhah شبين الكوم المنوفية", "phone": "+201068876011", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ5cMm3unX9xQRJsIhoEAKj5I"}, {"name": "Dr. Amr Khedr Center", "doctor": "Dr. Amr Khedr", "specialty": "Physical Therapy & Clinical Nutrition", "group": "علاج طبيعي وتغذية", "address": "شبين الكوم برج العاصمة الدور الخامس بعد سيف للسياحة المنوفية", "phone": "+201064447572", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/Dr.AmrKhedr.DrFit/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJnfr_eerX9xQRhO2pOrPNH5g"}, {"name": "Dr. Ahmed El Hamouly Clinic", "doctor": "Dr. Ahmed El Hamouly", "specialty": "OB/GYN & IVF", "group": "نساء وتوليد", "address": "برج الديوان ميدان شرف شبين الكوم المنوفية", "phone": "+201019662697", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/drahmedelhamouly/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ30P6L6_X9xQRevzuJZI2JYM"}, {"name": "Dr. Ehab Hafez Eye Center", "doctor": "Dr. Ehab Hafez", "specialty": "Ophthalmology (Eye Surgery & Laser)", "group": "عيون", "address": "ميدان شرف برج الحكمة فوق محلات بي تك شبين الكوم المنوفية", "phone": "+201093265633", "whatsapp": "N/A", "website": "https://drehabhafez.com/", "facebook": "https://www.facebook.com/EhabHafezCenter/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJvY1uCwDX9xQRZPccO5falB8"}, {"name": "Al-Maydan Dental Clinic", "doctor": "Dr. Mahmoud El Sayed Ibrahim", "specialty": "Dentistry (Oral & Dental Surgery)", "group": "أسنان", "address": "شارع المهدي متفرع من شارع عمر أفندي شبين الكوم المنوفية", "phone": "+201150737055", "whatsapp": "01150737055", "website": "N/A", "facebook": "https://www.facebook.com/Almiedan007", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ8yhYxkzX9xQRbKwZ0tN34V4"}, {"name": "Soly Clinic", "doctor": "N/A", "specialty": "Laser Hair Removal", "group": "جلدية وتجميل وليزر", "address": "ميدان شرف شبين الكوم المنوفية", "phone": "+201050830071", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJs9wrcI3X9xQRIYPQRa5M-M0"}, {"name": "Dr. Gamal El Gendy", "doctor": "Dr. Gamal El Gendy", "specialty": "ENT (Otolaryngology)", "group": "أنف وأذن وحنجرة", "address": "شبين الكوم المنوفية", "phone": "+20482223948", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJQwgHBNjX9xQRsy1JSc41p0I"}, {"name": "Smart Clinic", "doctor": "Dr. Mohamed Sharbash", "specialty": "Cosmetic Dentistry & Orthodontics", "group": "أسنان", "address": "شبين الكوم ميدان شرف أعلى مطعم فلفلة الدور الثالث المنوفية", "phone": "+201000642333", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/Smartclinic0", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJVUT8h-TX9xQRlSGcurWrCyQ"}, {"name": "Al-Yasmin Specialized Clinics", "doctor": "N/A", "specialty": "Medical Center (Multi-specialty)", "group": "متعدد التخصصات", "address": "الكوم الأخضر شبين الكوم المنوفية", "phone": "+201555171615", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/alyasmin.23", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJrci_7sjR9xQRF8k9DFptSuw"}, {"name": "Dr. Beauty Clinic", "doctor": "N/A", "specialty": "Cosmetic / Dermatology", "group": "جلدية وتجميل وليزر", "address": "شبين الكوم شارع الجلاء البحري بجوار كاميرا شوب المنوفية", "phone": "+201025805558", "whatsapp": "01025805558", "website": "N/A", "facebook": "https://www.facebook.com/drbeautycliniceg/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ1e7KFV_X9xQReE3Zh3_RgpI"}, {"name": "Moon Medical Center", "doctor": "N/A", "specialty": "Skin Care / Beauty / Nutrition / Physiotherapy", "group": "علاج طبيعي وتغذية", "address": "Al-Galaa Street off Talaat Harb Street شبين الكوم المنوفية", "phone": "+201033555393", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.instagram.com/moon.medical.center/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ1xQLKk7X9xQRrUJHRgI2O7E"}, {"name": "Dr. Ahmed Ali Zahra", "doctor": "Dr. Ahmed Ali Zahra", "specialty": "Urology (مسالك بولية والذكورة)", "group": "مسالك بولية", "address": "بجوار معهد الكبد برج السلام أمام كلية طب الأسنان شبين الكوم المنوفية", "phone": "+201503366345", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/dr.ahmedzah/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJrzsh0jnX9xQRcRL4iMeSUxU"}, {"name": "Dr. Ayman Kilany Clinic", "doctor": "Dr. Ayman Kilany", "specialty": "Neurosurgery & Spine Surgery", "group": "مخ وأعصاب", "address": "شبين الكوم المنوفية", "phone": "+201152782753", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJKYdic-vX9xQRGOB8NRrdqQY"}, {"name": "Dr. Mohamed El Senbawy Oncology Clinic", "doctor": "Dr. Mohamed El Senbawy", "specialty": "Oncology (علاج الأورام)", "group": "أورام", "address": "برج المنوفية الطبي بجوار صيدلية المنوفية ميدان شرف شبين الكوم المنوفية", "phone": "+20482333595", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/Dr.mohammedelsenbawy", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJUaPOKmfX9xQRa4GBFLFyGOU"}, {"name": "Prof. Sanaa Gazareen Clinic", "doctor": "Prof. Sanaa Gazareen", "specialty": "Endocrinology (Diabetes & Endocrine)", "group": "باطنة وكلى وسكر", "address": "64 شارع جمال عبد الناصر شبين الكوم المنوفية", "phone": "+201003061846", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/prof.drsanaagazareen/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJAeU_pl_X9xQRgrXZxwih8ig"}, {"name": "Dr. Abdelrahman El Zafzaf Clinic", "doctor": "Dr. Abdelrahman El Zafzaf", "specialty": "Internal Medicine (باطنة عامة)", "group": "باطنة عامة", "address": "شبين الكوم المنوفية", "phone": "+201066376859", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJN-9DZgDX9xQRofDsCttE6NA"}, {"name": "Dr. Ahmed Mohamed Hasaballah", "doctor": "Dr. Ahmed Mohamed Hasaballah", "specialty": "Orthopedics & Spine", "group": "عظام", "address": "برج الديوان جمال عبد الناصر شبين الكوم المنوفية", "phone": "+201011738204", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJPX15llDX9xQRlxGh6O9VRNg"}, {"name": "Dr. Amira Yousef", "doctor": "Dr. Amira Yousef", "specialty": "Dermatology", "group": "جلدية وتجميل وليزر", "address": "شبين الكوم المنوفية", "phone": "+201559609902", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/share/1HQ1x2H6C4/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ15BPMADX9xQRNPVczITrMGM"}, {"name": "Chest Disease Clinic", "doctor": "Dr. Ahmed Abdel Shakour", "specialty": "Chest Diseases (أمراض صدرية)", "group": "صدرية", "address": "شبين الكوم المنوفية", "phone": "+201068643435", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJSxPMfo3W9xQRG12mCjafNWg"}, {"name": "Prof. Mahmoud Emara Clinic", "doctor": "Prof. Mahmoud Emara", "specialty": "Nephrology & Diabetes (كلى وسكر)", "group": "باطنة وكلى وسكر", "address": "76 شارع جمال عبد الناصر شبين الكوم المنوفية", "phone": "+201011818222", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/drmahmoudemarah", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJOc7ZCNTX9xQRx8OIi-sk0Ik"}, {"name": "Dr. Ayman Ebied", "doctor": "Dr. Ayman Ebied", "specialty": "Orthopedics", "group": "عظام", "address": "برج الزهراء شبين الكوم المنوفية", "phone": "+201005148382", "whatsapp": "N/A", "website": "https://www.aymanebied.com/", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJoT0iXKjX9xQRe81JGnss6ew"}, {"name": "Dr. Walid Fouda", "doctor": "Dr. Walid Fouda", "specialty": "Orthopedics", "group": "عظام", "address": "ميدان شرف شبين الكوم المنوفية", "phone": "+201080051868", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJwSFyjEPX9xQRjE7Ns8HWM_0"}, {"name": "Signature Dental Clinic", "doctor": "N/A", "specialty": "Dentistry", "group": "أسنان", "address": "شارع الجلاء القبلي شبين الكوم المنوفية", "phone": "+201090903458", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJW5iZQ9vX9xQReYZ6_j_CqO8"}, {"name": "Dr. Basem Gafar Dental Clinic", "doctor": "Dr. Basem Gafar", "specialty": "Dentistry (Orthodontics Implants Cosmetic)", "group": "أسنان", "address": "بجوار مسجد وصيدلية الأربعين شبين الكوم المنوفية", "phone": "+201017240112", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ_99bSGrX9xQRxSnUHtUQvP8"}, {"name": "Dental Scene Clinic", "doctor": "N/A", "specialty": "Dentistry", "group": "أسنان", "address": "شارع جمال عبد الناصر شبين الكوم المنوفية", "phone": "+201550066696", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/TheDentalScene/", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJ303jrHDX9xQRWFMeJjBRyD0"}, {"name": "Dr. Hosam Magdy Dental Clinic", "doctor": "Dr. Hosam Magdy", "specialty": "Dentistry (Cosmetic & Orthodontics)", "group": "أسنان", "address": "شبين الكوم المنوفية", "phone": "+201060412420", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/DoctorHosamMagdy", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJr27WEW7X9xQRsP-JhuBGOcE"}, {"name": "Dr. Mohammed Hefni Center", "doctor": "Dr. Mohammed Hefni", "specialty": "Dentistry", "group": "أسنان", "address": "شارع الأمين بعد معمل النخبة شبين الكوم المنوفية", "phone": "+201099180069", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/mohammed.hefni.77", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJL1xYSuTX9xQRMWBlIt9r42Q"}, {"name": "Dr. Ahmed Fathy El Masry", "doctor": "Dr. Ahmed Fathy El Masry", "specialty": "Dentistry", "group": "أسنان", "address": "ميدان شرف شبين الكوم المنوفية", "phone": "+201009937477", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJg9ugaYPV9xQR08A-zotUt7k"}, {"name": "Dr. Mohamed AbdelSamea El Bahhat", "doctor": "Dr. Mohamed AbdelSamea El Bahhat", "specialty": "Vascular Surgery & Diabetic Foot", "group": "أوعية دموية", "address": "برج الحكمة ميدان شرف شبين الكوم المنوفية", "phone": "+201003923421", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJcy3A7QvX9xQRThHUu-69O_w"}, {"name": "InShape Clinic Menofia", "doctor": "N/A", "specialty": "Medical Center (Multi-specialty)", "group": "متعدد التخصصات", "address": "برج الديوان ميدان شرف شبين الكوم المنوفية", "phone": "+20221266800", "whatsapp": "N/A", "website": "N/A", "facebook": "N/A", "maps": "https://www.google.com/maps/place/?q=place_id:ChIJzbDK-8_X9xQR4OdFOISzxrw"}, {"name": "Doctor Laser Clinic", "doctor": "N/A", "specialty": "Laser / Dermatology", "group": "جلدية وتجميل وليزر", "address": "شبين الكوم شارع باريس بجوار توكيل أديداس برج الأحلام المنوفية", "phone": "+201067709173", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/DoctorLaserClinic.Eg/", "maps": "N/A"}, {"name": "AROMA Center - Dermatology & Beauty", "doctor": "N/A", "specialty": "Dermatology & Beauty / Laser", "group": "جلدية وتجميل وليزر", "address": "شبين الكوم شارع جمال عبد الناصر أمام دلتا ماركت المنوفية", "phone": "+201092206431", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/p/مركز-أروما-جلدية-تجميل-ليزر-61565668071487/", "maps": "N/A"}, {"name": "Safe Medical Clinic - Seif Specialized Clinics", "doctor": "N/A", "specialty": "Multi-specialty Medical Clinic", "group": "متعدد التخصصات", "address": "شبين الكوم شارع جمال عبد الناصر البحري عمارات سيف أمام قصر الثقافة المنوفية", "phone": "+20482317566", "whatsapp": "N/A", "website": "N/A", "facebook": "https://www.facebook.com/SafeMedicalClinic/", "maps": "N/A"}];
+
+const grid = document.getElementById('grid');
+const filtersEl = document.getElementById('filters');
+const searchEl = document.getElementById('search');
+const countLine = document.getElementById('count-line');
+const emptyEl = document.getElementById('empty');
+
+let activeGroup = 'الكل';
+
+// build group counts
+const counts = {};
+DATA.forEach(d => counts[d.group] = (counts[d.group]||0)+1);
+const groups = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+document.getElementById('stat-specs').textContent = groups.length;
+
+function renderFilters(){
+  const all = [['الكل', DATA.length], ...groups.map(g=>[g, counts[g]])];
+  filtersEl.innerHTML = all.map(([g,n]) => `
+    <button class="pill ${g===activeGroup?'active':''}" data-g="${g}">${g}<span class="n">${n}</span></button>
+  `).join('');
+  filtersEl.querySelectorAll('.pill').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      activeGroup = btn.dataset.g;
+      renderFilters();
+      render();
+    });
+  });
+}
+
+function normalize(s){ return (s||'').toString().toLowerCase(); }
+
+function actionButtons(d){
+  let out = '';
+  if(d.phone && d.phone !== 'N/A'){
+    out += `<a class="call" href="tel:${d.phone}">📞 اتصال</a>`;
+  }
+  const wa = (d.whatsapp && d.whatsapp !== 'N/A') ? d.whatsapp : (d.phone && d.phone !== 'N/A' ? d.phone : null);
+  if(wa){
+    const clean = wa.replace(/[^0-9+]/g,'').replace(/^\+/,'');
+    out += `<a href="https://wa.me/${clean}" target="_blank" rel="noopener">واتساب</a>`;
+  }
+  if(d.maps && d.maps !== 'N/A'){
+    out += `<a href="${d.maps}" target="_blank" rel="noopener">📍 الموقع</a>`;
+  }
+  if(d.website && d.website !== 'N/A'){
+    out += `<a href="${d.website}" target="_blank" rel="noopener">الموقع الإلكتروني</a>`;
+  }
+  if(d.facebook && d.facebook !== 'N/A'){
+    out += `<a href="${d.facebook}" target="_blank" rel="noopener">فيسبوك</a>`;
+  }
+  return out;
+}
+
+function render(){
+  const q = normalize(searchEl.value.trim());
+  const filtered = DATA.filter(d=>{
+    const matchGroup = activeGroup==='الكل' || d.group===activeGroup;
+    if(!matchGroup) return false;
+    if(!q) return true;
+    return normalize(d.name).includes(q) || normalize(d.doctor).includes(q) || normalize(d.specialty).includes(q) || normalize(d.group).includes(q);
+  });
+
+  countLine.textContent = `${filtered.length} من ${DATA.length} عيادة`;
+  emptyEl.style.display = filtered.length ? 'none' : 'block';
+
+  grid.innerHTML = filtered.map(d => `
+    <div class="card">
+      <div class="card-top">
+        <h3>${d.name}</h3>
+        <span class="tag">${d.group}</span>
+      </div>
+      ${d.doctor && d.doctor !== 'N/A' ? `<div class="doctor">${d.doctor}</div>` : ''}
+      <div class="specialty">${d.specialty}</div>
+      <div class="address">${d.address}</div>
+      <div class="actions">${actionButtons(d)}</div>
+    </div>
+  `).join('');
+}
+
+searchEl.addEventListener('input', render);
+renderFilters();
+render();
+</script>
+
+</body>
+</html>

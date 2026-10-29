@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURA OS — نظام التشغيل الخاص بتطورك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#050505;
+    --void-2:#0c0a07;
+    --panel:#100d09;
+    --gold:#c9a227;
+    --gold-bright:#e4c15a;
+    --bronze:#8b6f3d;
+    --ivory:#ede6d6;
+    --ivory-dim:#a89e8c;
+    --wine:#210a0f;
+    --hair:rgba(201,162,39,0.16);
+    --hair-strong:rgba(201,162,39,0.34);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--void);
+    color:var(--ivory);
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    font-weight:400;
+    overflow-x:hidden;
+    cursor:default;
+  }
+
+  ::selection{background:var(--gold);color:var(--void);}
+
+  h1,h2,h3,.serif{
+    font-family:'Amiri', serif;
+    font-weight:700;
+  }
+
+  .container{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 40px;
+  }
+
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- cursor glow ---------- */
+  #glow{
+    position:fixed;
+    top:0;left:0;
+    width:420px;height:420px;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(201,162,39,0.10) 0%, rgba(201,162,39,0) 70%);
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    z-index:2;
+    will-change:transform;
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:26px 40px;
+    background:linear-gradient(to bottom, rgba(5,5,5,0.92), rgba(5,5,5,0));
+    opacity:0;
+  }
+  .logo{
+    font-family:'Amiri', serif;
+    font-size:22px;
+    letter-spacing:0.06em;
+    color:var(--ivory);
+  }
+  .logo span{color:var(--gold);}
+  .nav-links{
+    display:flex;
+    gap:38px;
+    font-size:14.5px;
+    color:var(--ivory-dim);
+  }
+  .nav-links a{
+    position:relative;
+    transition:color .35s ease;
+  }
+  .nav-links a::after{
+    content:'';
+    position:absolute;
+    right:0;left:0;
+    bottom:-6px;
+    height:1px;
+    background:var(--gold);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .4s ease;
+  }
+  .nav-links a:hover{color:var(--ivory);}
+  .nav-links a:hover::after{transform:scaleX(1);}
+  .nav-cta{
+    border:1px solid var(--hair-strong);
+    padding:9px 22px;
+    font-size:13.5px;
+    letter-spacing:0.03em;
+    color:var(--gold-bright);
+    transition:background .35s ease, color .35s ease, border-color .35s ease;
+  }
+  .nav-cta:hover{background:var(--gold);border-color:var(--gold);color:var(--void);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding-top:120px;
+    overflow:hidden;
+  }
+  #hero-canvas{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    opacity:0.85;
+  }
+  .hero-inner{
+    position:relative;
+    z-index:3;
+  }
+  .hero-eyebrow{
+    font-size:13px;
+    letter-spacing:0.18em;
+    color:var(--bronze);
+    margin-bottom:26px;
+    opacity:0;
+  }
+  .hero h1{
+    font-size:clamp(42px, 6.2vw, 92px);
+    line-height:1.18;
+    color:var(--ivory);
+    max-width:920px;
+  }
+  .hero h1 .line{overflow:hidden;display:block;}
+  .hero h1 .line span{display:inline-block;opacity:0;transform:translateY(60px);}
+  .hero h1 em{
+    font-style:italic;
+    color:var(--gold);
+  }
+  .hero-sub{
+    margin-top:34px;
+    max-width:520px;
+    font-size:17px;
+    line-height:1.9;
+    color:var(--ivory-dim);
+    opacity:0;
+  }
+  .hero-actions{
+    margin-top:46px;
+    display:flex;
+    align-items:center;
+    gap:28px;
+    opacity:0;
+  }
+  .btn-primary{
+    background:var(--gold);
+    color:var(--void);
+    padding:16px 34px;
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    position:relative;
+    overflow:hidden;
+    transition:transform .3s ease, box-shadow .3s ease;
+  }
+  .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 34px -10px rgba(201,162,39,0.55);
+  }
+  .btn-ghost{
+    font-size:14.5px;
+    color:var(--ivory-dim);
+    border-bottom:1px solid var(--hair-strong);
+    padding-bottom:3px;
+    transition:color .3s ease, border-color .3s ease;
+  }
+  .btn-ghost:hover{color:var(--gold-bright);border-color:var(--gold-bright);}
+
+  .hero-mark{
+    position:absolute;
+    bottom:48px;
+    left:40px;
+    z-index:3;
+    font-size:11.5px;
+    letter-spacing:0.22em;
+    color:rgba(168,158,140,0.55);
+    text-transform:uppercase;
+    opacity:0;
+  }
+
+  .scroll-cue{
+    position:absolute;
+    bottom:46px;
+    right:40px;
+    z-index:3;
+    width:1px;
+    height:64px;
+    background:linear-gradient(to bottom, var(--gold), transparent);
+    opacity:0;
+  }
+
+  /* ---------- section shared ---------- */
+  section{
+    position:relative;
+    padding:150px 0;
+  }
+  .kicker{
+    font-size:13px;
+    letter-spacing:0.14em;
+    color:var(--bronze);
+    margin-bottom:18px;
+  }
+  .rule{
+    height:1px;
+    background:var(--hair);
+    width:100%;
+  }
+
+  /* ---------- manifesto ---------- */
+  .manifesto{
+    padding:170px 0;
+    border-top:1px solid var(--hair);
+    border-bottom:1px solid var(--hair);
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 30%, rgba(139,111,61,0.08), transparent 60%),
+      var(--void-2);
+  }
+  .manifesto .container{
+    display:grid;
+    grid-template-columns:0.9fr 1.6fr;
+    gap:70px;
+    align-items:start;
+  }
+  .manifesto-label{
+    font-size:13px;
+    letter-spacing:0.14em;
+    color:var(--bronze);
+    padding-top:10px;
+  }
+  .manifesto-text{
+    font-family:'Amiri', serif;
+    font-style:italic;
+    font-size:clamp(26px, 3vw, 40px);
+    line-height:1.75;
+    color:var(--ivory-dim);
+  }
+  .manifesto-text .word{opacity:0.22;transition:opacity .05s linear;}
+  .manifesto-text .word.lit{opacity:1;color:var(--ivory);}
+  .manifesto-text em{
+    font-style:italic;
+    color:var(--gold);
+  }
+
+  /* ---------- systems ---------- */
+  .systems-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:70px;
+    gap:40px;
+  }
+  .systems-head h2{
+    font-size:clamp(30px, 3.6vw, 48px);
+    line-height:1.3;
+    max-width:600px;
+  }
+  .systems-head p{
+    max-width:340px;
+    font-size:15px;
+    line-height:1.8;
+    color:var(--ivory-dim);
+    padding-bottom:6px;
+  }
+
+  .systems-grid{
+    display:grid;
+    grid-template-columns:repeat(6, 1fr);
+    gap:1px;
+    background:var(--hair);
+    border:1px solid var(--hair);
+  }
+  .sys-card{
+    background:var(--void);
+    padding:38px 30px;
+    grid-column:span 3;
+    position:relative;
+    transition:background .4s ease;
+  }
+  .sys-card.wide{grid-column:span 4;}
+  .sys-card.narrow{grid-column:span 2;}
+  .sys-card:hover{background:var(--panel);}
+  .sys-icon{
+    width:34px;height:34px;
+    margin-bottom:26px;
+    stroke:var(--gold);
+    fill:none;
+    stroke-width:1.2;
+    opacity:0.9;
+  }
+  .sys-card h3{
+    font-family:'IBM Plex Sans Arabic', sans-serif;
+    font-weight:600;
+    font-size:19px;
+    color:var(--ivory);
+    margin-bottom:12px;
+  }
+  .sys-card p{
+    font-size:14px;
+    line-height:1.85;
+    color:var(--ivory-dim);
+    max-width:320px;
+  }
+  .sys-tag{
+    position:absolute;
+    top:38px;
+    left:30px;
+    font-size:11px;
+    letter-spacing:0.1em;
+    color:var(--bronze);
+  }
+
+  /* ---------- dashboard mock ---------- */
+  .showcase{
+    border-top:1px solid var(--hair);
+  }
+  .showcase .container{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:80px;
+    align-items:center;
+  }
+  .showcase h2{
+    font-size:clamp(28px, 3.4vw, 44px);
+    line-height:1.35;
+    margin-bottom:24px;
+  }
+  .showcase p{
+    font-size:15.5px;
+    line-height:1.9;
+    color:var(--ivory-dim);
+    max-width:420px;
+    margin-bottom:14px;
+  }
+  .stat-row{
+    display:flex;
+    gap:50px;
+    margin-top:40px;
+  }
+  .stat b{
+    display:block;
+    font-family:'Amiri', serif;
+    font-size:34px;
+    color:var(--gold-bright);
+  }
+  .stat span{
+    font-size:12.5px;
+    color:var(--ivory-dim);
+    letter-spacing:0.04em;
+  }
+
+  .mock-panel{
+    background:linear-gradient(160deg, var(--panel), var(--void));
+    border:1px solid var(--hair-strong);
+    padding:34px;
+    position:relative;
+  }
+  .mock-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 0;
+    border-bottom:1px solid var(--hair);
+    font-size:13.5px;
+    color:var(--ivory-dim);
+  }
+  .mock-row:last-child{border-bottom:none;}
+  .mock-bar-track{
+    width:120px;
+    height:4px;
+    background:rgba(237,230,214,0.08);
+    position:relative;
+  }
+  .mock-bar-fill{
+    position:absolute;
+    top:0;right:0;
+    height:100%;
+    background:var(--gold);
+    width:0%;
+  }
+  .mock-ring{
+    width:64px;height:64px;
+  }
+
+  /* ---------- closing cta ---------- */
+  .closing{
+    text-align:center;
+    padding:220px 0 180px;
+    border-top:1px solid var(--hair);
+    background:radial-gradient(ellipse 70% 60% at 50% 30%, rgba(201,162,39,0.06), transparent 65%);
+  }
+  .closing h2{
+    font-size:clamp(34px, 5vw, 64px);
+    line-height:1.3;
+    max-width:760px;
+    margin:0 auto 44px;
+  }
+  .closing h2 em{color:var(--gold);font-style:italic;}
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top:1px solid var(--hair);
+    padding:36px 0;
+  }
+  footer .container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12.5px;
+    color:rgba(168,158,140,0.5);
+    letter-spacing:0.03em;
+  }
+
+  @media (max-width:860px){
+    .container{padding:0 24px;}
+    nav{padding:20px 24px;}
+    .nav-links{display:none;}
+    .manifesto .container,
+    .showcase .container{
+      grid-template-columns:1fr;
+    }
+    .systems-grid{grid-template-columns:repeat(2,1fr);}
+    .sys-card,.sys-card.wide,.sys-card.narrow{grid-column:span 1;}
+    .hero-mark{display:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="glow"></div>
+
+<nav>
+  <div class="logo">AURA<span>.</span></div>
+  <div class="nav-links">
+    <a href="#systems">الأنظمة</a>
+    <a href="#manifesto">الفلسفة</a>
+    <a href="#showcase">اللوحة</a>
+  </div>
+  <a href="#cta" class="nav-cta">ابدأ الآن</a>
+</nav>
+
+<header class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="container hero-inner">
+    <div class="hero-eyebrow">AURA OS — نظام تشغيل شخصي</div>
+    <h1>
+      <span class="line"><span>ليس تطبيقاً</span></span>
+      <span class="line"><span>يُدير <em>وقتك</em>،</span></span>
+      <span class="line"><span>بل نظاماً يُعيد بناء عاداتك</span></span>
+    </h1>
+    <p class="hero-sub">لوحة تحكم واحدة تجمع تركيزك وملاحظاتك وعاداتك وتحدياتك في تجربة داكنة هادئة، مصمّمة لمن يأخذ تطوره على محمل الجد.</p>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-primary">ادخل إلى AURA</a>
+      <a href="#systems" class="btn-ghost">تعرّف على الأنظمة</a>
+    </div>
+  </div>
+  <div class="hero-mark">The Operating System for Human Evolution</div>
+  <div class="scroll-cue"></div>
+</header>
+
+<section class="manifesto" id="manifesto">
+  <div class="container">
+    <div class="manifesto-label">الفلسفة</div>
+    <p class="manifesto-text" id="manifestoText">التطور الحقيقي لا يحدث في القفزات، بل في <em>الانضباط الهادئ</em> المتكرر يوماً بعد يوم. AURA لا يمنحك مهام جديدة، بل يمنحك مرآة واضحة لكل ما تفعله، وكل ما تؤجله، حتى يصبح التقدّم أمراً محسوساً لا شعورياً غامضاً.</p>
+  </div>
+</section>
+
+<section id="systems">
+  <div class="container">
+    <div class="systems-head">
+      <h2>تسعة أنظمة متكاملة، لوحة تحكّم واحدة</h2>
+      <p>كل نظام يعمل بمفرده، لكن قوته الحقيقية تظهر حين تترابط جميعها داخل مساحة واحدة هادئة.</p>
+    </div>
+    <div class="systems-grid">
+      <div class="sys-card wide">
+        <span class="sys-tag">01</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M3 9h18M9 21V9"/></svg>
+        <h3>لوحة القيادة</h3>
+        <p>نظرة واحدة على يومك بالكامل — المهام، الطاقة، والتقدّم — بلا ضجيج بصري.</p>
+      </div>
+      <div class="sys-card narrow">
+        <span class="sys-tag">02</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        <h3>مؤقّت التركيز</h3>
+        <p>جلسات عمل عميقة محكومة بإيقاع واضح.</p>
+      </div>
+      <div class="sys-card narrow">
+        <span class="sys-tag">03</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h5"/></svg>
+        <h3>الملاحظات</h3>
+        <p>أفكارك موثّقة في مكان واحد يسهل الرجوع إليه.</p>
+      </div>
+      <div class="sys-card narrow">
+        <span class="sys-tag">04</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><path d="M12 3l7 4v6c0 4.5-3 7.5-7 8-4-0.5-7-3.5-7-8V7z"/></svg>
+        <h3>الخزنة الآمنة</h3>
+        <p>ما يخصّك وحدك، محميّاً بالكامل داخل جهازك.</p>
+      </div>
+      <div class="sys-card wide">
+        <span class="sys-tag">05</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+        <h3>متتبّع العادات</h3>
+        <p>سلاسل مرئية تُظهر ثباتك، لا مجرد صناديق اختيار عابرة.</p>
+      </div>
+      <div class="sys-card wide">
+        <span class="sys-tag">06</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-0.5z"/></svg>
+        <h3>التحديات والخبرة</h3>
+        <p>كل جهد يُترجَم إلى تقدّم قابل للقياس، لا مجرد شعور بالإنجاز.</p>
+      </div>
+      <div class="sys-card narrow">
+        <span class="sys-tag">07</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h10"/></svg>
+        <h3>المراجعة الأسبوعية</h3>
+        <p>وقفة قصيرة لإعادة ضبط الاتجاه.</p>
+      </div>
+      <div class="sys-card narrow">
+        <span class="sys-tag">08</span>
+        <svg class="sys-icon" viewBox="0 0 24 24"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/></svg>
+        <h3>محلي بالكامل</h3>
+        <p>بياناتك تبقى على جهازك، ولا تُرسَل إلى أي خادم.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="showcase" id="showcase">
+  <div class="container">
+    <div>
+      <div class="kicker">داخل اللوحة</div>
+      <h2>كل مؤشّر تراه له معنى، لا مجرد رقم يتحرّك.</h2>
+      <p>يُترجم AURA نشاطك اليومي إلى إيقاع بصري هادئ: خطوط تقدّم، سلاسل انضباط، ونسب إنجاز تتحدّث بلغة واضحة بدل الإشعارات المتكرّرة.</p>
+      <div class="stat-row">
+        <div class="stat"><b>٩</b><span>أنظمة مترابطة</span></div>
+        <div class="stat"><b>٪١٠٠</b><span>يعمل محلياً</span></div>
+        <div class="stat"><b>٠</b><span>تسجيل دخول مطلوب</span></div>
+      </div>
+    </div>
+    <div class="mock-panel" id="mockPanel">
+      <div class="mock-row"><span>التركيز اليومي</span><div class="mock-bar-track"><div class="mock-bar-fill" data-fill="78"></div></div></div>
+      <div class="mock-row"><span>سلسلة العادات</span><div class="mock-bar-track"><div class="mock-bar-fill" data-fill="92"></div></div></div>
+      <div class="mock-row"><span>مهام مكتملة</span><div class="mock-bar-track"><div class="mock-bar-fill" data-fill="64"></div></div></div>
+      <div class="mock-row"><span>تقدّم التحدّي</span><div class="mock-bar-track"><div class="mock-bar-fill" data-fill="45"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="closing" id="cta">
+  <div class="container">
+    <h2>ابدأ يومك التالي داخل نظام <em>يعرف</em> إلى أين أنت ذاهب.</h2>
+    <a href="#" class="btn-primary">ادخل إلى AURA OS</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>AURA OS</span>
+    <span>The Operating System for Human Evolution</span>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---------- cursor glow ---------- */
+const glow = document.getElementById('glow');
+window.addEventListener('mousemove', e=>{
+  gsap.to(glow, {x:e.clientX, y:e.clientY, duration:0.6, ease:'power2.out'});
+});
+
+/* ---------- three.js ambient background ---------- */
+const canvas = document.getElementById('hero-canvas');
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.z = 9;
+
+function resizeCanvas(){
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  camera.aspect = w/h;
+  camera.updateProjectionMatrix();
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const goldColor = new THREE.Color(0xc9a227);
+
+const geo = new THREE.IcosahedronGeometry(3.6, 1);
+const wire = new THREE.WireframeGeometry(geo);
+const mat = new THREE.LineBasicMaterial({color: goldColor, transparent:true, opacity:0.22});
+const shape = new THREE.LineSegments(wire, mat);
+shape.position.set(3.4, 0.4, 0);
+scene.add(shape);
+
+const particleCount = 260;
+const positions = new Float32Array(particleCount*3);
+for(let i=0;i<particleCount;i++){
+  positions[i*3] = (Math.random()-0.5)*24;
+  positions[i*3+1] = (Math.random()-0.5)*14;
+  positions[i*3+2] = (Math.random()-0.5)*10;
+}
+const pGeo = new THREE.BufferGeometry();
+pGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+const pMat = new THREE.PointsMaterial({color:0xede6d6, size:0.018, transparent:true, opacity:0.35});
+const particles = new THREE.Points(pGeo, pMat);
+scene.add(particles);
+
+let mouseX = 0, mouseY = 0;
+window.addEventListener('mousemove', e=>{
+  mouseX = (e.clientX/window.innerWidth - 0.5);
+  mouseY = (e.clientY/window.innerHeight - 0.5);
+});
+
+function animate(){
+  requestAnimationFrame(animate);
+  shape.rotation.y += 0.0018;
+  shape.rotation.x += 0.0007;
+  particles.rotation.y += 0.0004;
+  camera.position.x += (mouseX*0.6 - camera.position.x)*0.02;
+  camera.position.y += (-mouseY*0.4 - camera.position.y)*0.02;
+  camera.lookAt(scene.position);
+  renderer.render(scene, camera);
+}
+animate();
+
+/* ---------- hero load-in sequence ---------- */
+const tl = gsap.timeline({defaults:{ease:'power3.out'}});
+tl.to('nav', {opacity:1, duration:1})
+  .to('.hero-eyebrow', {opacity:1, duration:0.8}, '-=0.5')
+  .to('.hero h1 .line span', {opacity:1, y:0, duration:1, stagger:0.14}, '-=0.4')
+  .to('.hero-sub', {opacity:1, duration:1}, '-=0.5')
+  .to('.hero-actions', {opacity:1, duration:1}, '-=0.6')
+  .to('.hero-mark', {opacity:1, duration:1}, '-=0.7')
+  .to('.scroll-cue', {opacity:1, duration:1, scaleY:1}, '-=0.8');
+
+/* ---------- manifesto word reveal on scroll ---------- */
+const manifestoEl = document.getElementById('manifestoText');
+const rawHTML = manifestoEl.innerHTML;
+const wrapped = rawHTML.replace(/(<em>.*?<\/em>|[^\s<>]+)/g, m=>{
+  if(m.startsWith('<em>')) return m;
+  return `<span class="word">${m}</span>`;
+});
+manifestoEl.innerHTML = wrapped;
+const words = manifestoEl.querySelectorAll('.word, em');
+
+gsap.to(words, {
+  className: '+=lit',
+  stagger:0.5,
+  scrollTrigger:{
+    trigger: manifestoEl,
+    start:'top 75%',
+    end:'bottom 55%',
+    scrub:0.6
+  }
+});
+
+/* ---------- systems grid entrance ---------- */
+gsap.from('.sys-card', {
+  opacity:0,
+  y:26,
+  duration:0.7,
+  stagger:0.06,
+  ease:'power2.out',
+  scrollTrigger:{
+    trigger:'.systems-grid',
+    start:'top 82%'
+  }
+});
+
+/* ---------- dashboard bars fill on scroll ---------- */
+ScrollTrigger.create({
+  trigger:'#mockPanel',
+  start:'top 78%',
+  once:true,
+  onEnter:()=>{
+    document.querySelectorAll('.mock-bar-fill').forEach(bar=>{
+      gsap.to(bar, {width: bar.dataset.fill+'%', duration:1.4, ease:'power3.out'});
+    });
+  }
+});
+
+gsap.from('.showcase h2, .showcase p, .stat', {
+  opacity:0, y:20, duration:0.8, stagger:0.08,
+  scrollTrigger:{trigger:'.showcase', start:'top 75%'}
+});
+
+gsap.from('.closing h2, .closing .btn-primary', {
+  opacity:0, y:24, duration:0.9, stagger:0.12,
+  scrollTrigger:{trigger:'.closing', start:'top 80%'}
+});
+</script>
+</body>
+</html>
